@@ -23,7 +23,7 @@ export const PublicHeader = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                {t('common.automate')}
+                <span className="brand-text">{t('common.automate')}</span>
               </h1>
             </div>
           </Link>

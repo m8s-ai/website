@@ -13,7 +13,7 @@ export const TrustSection = () => {
   const { t } = useLanguage();
   
   return (
-    <section className="py-24">
+    <section className="pt-12 md:pt-16 pb-24">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16 animate-slide-up">

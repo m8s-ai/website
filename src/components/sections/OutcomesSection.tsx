@@ -36,7 +36,7 @@ export const OutcomesSection = () => {
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="pt-12 md:pt-16 pb-24 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-card opacity-50"></div>
       

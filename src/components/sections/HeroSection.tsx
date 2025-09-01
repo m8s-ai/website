@@ -7,7 +7,7 @@ export const HeroSection = () => {
   const { t, isRTL } = useLanguage();
   
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
+    <section className="relative pt-24 md:pt-32 pb-12 md:pb-16 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-hero opacity-30"></div>
       <div className="absolute inset-0">
@@ -19,7 +19,7 @@ export const HeroSection = () => {
         <div className="text-center max-w-5xl mx-auto">
           {/* Main Headline */}
           <div className="animate-slide-up mb-8">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight font-display">
               <span className="bg-gradient-primary bg-clip-text text-transparent">
                 {t('hero.accelerate_growth')}
               </span>
@@ -49,8 +49,9 @@ export const HeroSection = () => {
             
             <Button asChild variant="outline" size="lg" className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10">
               <Link to="/solutions" className="flex items-center gap-2">
-                <Play className="h-5 w-5" />
+                {isRTL && <Play className="h-5 w-5" />}
                 {t('hero.explore_use_cases')}
+                {!isRTL && <Play className="h-5 w-5" />}
               </Link>
             </Button>
           </div>

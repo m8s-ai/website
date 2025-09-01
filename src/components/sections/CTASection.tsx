@@ -7,7 +7,7 @@ export const CTASection = () => {
   const { t, isRTL } = useLanguage();
   
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="pt-12 md:pt-16 pb-24 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-hero opacity-50"></div>
       <div className="absolute inset-0">

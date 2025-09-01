@@ -411,8 +411,23 @@ const translations = {
     'solutions.cta.description': 'Let\'s discuss which solution is right for your business needs.',
     'solutions.cta.button': 'Book a Strategy Call',
 
+    // Assistant Chat
+    'assistant.greeting': 'How can I help your business?',
+    'assistant.input_placeholder': 'Ask me about AI automation...',
+    'assistant.hello_response': 'Hello! I\'m here to help you discover how AI automation can transform your business. What challenges are you facing?',
+    'assistant.automation_response': 'AI automation can help streamline your operations, reduce costs, and improve efficiency. Would you like to know more about our solutions for your specific industry?',
+    'assistant.cost_response': 'Our solutions are tailored to your specific needs and budget. We offer flexible pricing options starting from $10k. Would you like to schedule a free consultation to discuss your requirements?',
+    'assistant.contact_response': 'I\'d be happy to help you get in touch with our team! You can book a strategy call or reach out directly. What would you prefer?',
+    'assistant.default_response': 'That\'s a great question! Our AI automation solutions can help with various business challenges. Could you tell me more about your specific needs so I can provide more targeted assistance?',
+
+    // Onboarding
+    'onboarding.title': 'Hey, I\'m Mate!',
+    'onboarding.message': 'I\'m your assistant, let\'s talk about your business and how AI automation can help you grow.',
+    'onboarding.start_chat': 'Let\'s Talk!',
+    'onboarding.maybe_later': 'Maybe Later',
+
     // Common
-    'common.automate': 'Mates',
+    'common.automate': '\mates',
     'common.loading': 'Loading...',
     'common.learn_more': 'Learn More',
     'common.get_started': 'Get Started',
@@ -818,8 +833,23 @@ const translations = {
     'solutions.cta.description': 'בואו נדון איזה פתרון מתאים לצרכי העסק שלך.',
     'solutions.cta.button': 'קבע פגישת אסטרטגיה',
 
+    // Assistant Chat
+    'assistant.greeting': 'איך אני יכול לעזור לעסק שלך?',
+    'assistant.input_placeholder': 'שאל אותי על אוטומציית AI...',
+    'assistant.hello_response': 'שלום! אני כאן כדי לעזור לך לגלות איך אוטומציית AI יכולה לשנות את העסק שלך. באילו אתגרים אתה מתמודד?',
+    'assistant.automation_response': 'אוטומציית AI יכולה לעזור לייעל את הפעילות שלך, להפחית עלויות ולשפר יעילות. האם תרצה לדעת יותר על הפתרונות שלנו לתעשייה הספציפית שלך?',
+    'assistant.cost_response': 'הפתרונות שלנו מותאמים לצרכים ותקציב הספציפיים שלך. אנו מציעים אפשרויות תמחור גמישות החל מ-$10k. האם תרצה לקבוע ייעוץ חינמי כדי לדון בדרישות שלך?',
+    'assistant.contact_response': 'אני אשמח לעזור לך ליצור קשר עם הצוות שלנו! תוכל לקבוע שיחת אסטרטגיה או ליצור קשר ישירות. מה תעדיף?',
+    'assistant.default_response': 'זאת שאלה מעולה! פתרונות האוטומציה שלנו יכולים לעזור עם אתגרים עסקיים שונים. האם תוכל לספר לי יותר על הצרכים הספציפיים שלך כדי שאוכל לספק סיוע ממוקד יותר?',
+
+    // Onboarding
+    'onboarding.title': 'היי, אני מייט!',
+    'onboarding.message': 'אני העוזר שלך, בוא נדבר על העסק שלך ואיך אוטומציית AI יכולה לעזור לך לצמוח.',
+    'onboarding.start_chat': 'בוא נדבר!',
+    'onboarding.maybe_later': 'אולי מאוחר יותר',
+
     // Common
-    'common.automate': 'Mates',
+    'common.automate': '\mates',
     'common.loading': 'טוען...',
     'common.learn_more': 'למד עוד',
     'common.get_started': 'התחל כעת',
@@ -829,7 +859,7 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>('he');
 
   const t = (key: string): string => {
     return translations[language][key as keyof typeof translations[typeof language]] || key;
@@ -840,7 +870,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
-  }, [isRTL, language]);
+    // Update document title based on language
+    document.title = t('common.automate');
+  }, [isRTL, language, t]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, isRTL }}>

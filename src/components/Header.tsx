@@ -17,7 +17,7 @@ export const Header = () => {
           </div>
           <div className="space-y-1">
             <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              {t('common.automate')} Market
+              <span className="brand-text">{t('common.automate')}</span> Market
             </h1>
             <p className="text-sm text-muted-foreground font-medium">
               Internal Automation Flows

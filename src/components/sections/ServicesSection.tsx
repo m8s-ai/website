@@ -61,7 +61,7 @@ export const ServicesSection = () => {
   ];
   
   return (
-    <section className="py-24 relative">
+    <section className="pt-12 md:pt-16 pb-24 relative">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16 animate-slide-up">

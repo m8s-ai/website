@@ -15,6 +15,7 @@ import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
 import NotFound from "./pages/NotFound";
 import { Protected } from "./components/Protected";
+import { AssistantButton } from "./components/AssistantChat";
 
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        <AssistantButton />
         </TooltipProvider>
       </LanguageProvider>
     </QueryClientProvider>

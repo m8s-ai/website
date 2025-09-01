@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Bot } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Header = () => {
   const { t } = useLanguage();
@@ -8,7 +9,8 @@ export const Header = () => {
   return (
     <header className="glass-card border-b border-border/20 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-6 py-6">
-        <Link to="/" className="flex items-center space-x-4 group hover:scale-105 transition-all duration-300">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-4 group hover:scale-105 transition-all duration-300">
           <div className="relative">
             <div className="flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-xl shadow-glow animate-glow">
               <Bot className="h-10 w-10 text-white" />
@@ -24,6 +26,8 @@ export const Header = () => {
             </p>
           </div>
         </Link>
+        <ThemeToggle />
+        </div>
       </div>
     </header>
   );

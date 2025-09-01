@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const PublicHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,6 +50,7 @@ export const PublicHeader = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             <LanguageSwitcher />
             <Button variant="ghost" asChild>
               <Link to="/contact">{t('nav.contact')}</Link>
@@ -90,6 +92,7 @@ export const PublicHeader = () => {
               </Link>
               <div className="flex flex-col space-y-2 pt-2">
                 <div className="flex items-center justify-between">
+                  <ThemeToggle />
                   <LanguageSwitcher />
                 </div>
                 <Button variant="ghost" asChild>

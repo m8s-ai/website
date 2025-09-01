@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Bot, Send, X } from "lucide-react";
+import { Send, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Message {
@@ -69,7 +69,7 @@ const OnboardingSpeechBubble: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         {/* Header with robot icon and name */}
         <div className="flex items-center gap-2 mb-3 pr-6">
           <div className="flex items-center justify-center w-8 h-8 bg-gradient-primary rounded-full">
-            <Bot className="w-4 h-4 text-white" />
+            <img src="/favicon.ico" alt="Assistant" className="w-4 h-4" />
           </div>
           <span className="bg-gradient-primary bg-clip-text text-transparent font-bold text-sm">
             {t('onboarding.title')}
@@ -186,11 +186,19 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({ isOpen, onClose })
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md h-[600px] p-0 gap-0 glass-card border-primary/20">
+      <DialogContent className="max-w-md h-[600px] p-0 gap-0 glass-card border-primary/20 [&>*:last-child]:hidden">
         <DialogHeader className="p-4 pb-0">
           <DialogTitle className="flex items-center gap-3 text-lg">
+            <Button
+              onClick={onClose}
+              size="icon"
+              variant="ghost"
+              className="w-8 h-8 hover:bg-secondary/50"
+            >
+              <X className="w-4 h-4" />
+            </Button>
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-primary rounded-full">
-              <Bot className="w-5 h-5 text-white" />
+              <img src="/favicon.ico" alt="Assistant" className="w-5 h-5" />
             </div>
             <span className="bg-gradient-primary bg-clip-text text-transparent font-semibold">
               AI Assistant
@@ -297,12 +305,12 @@ export const AssistantButton: React.FC = () => {
       <Button
         onClick={() => setIsOpen(true)}
         size="icon"
-        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-primary hover:opacity-90 text-white shadow-glow rounded-full z-40 animate-float"
+        className="fixed bottom-6 right-6 w-20 h-20 bg-gradient-primary hover:opacity-90 text-white shadow-glow rounded-full z-40 animate-float"
         style={{
           boxShadow: '0 8px 32px -8px hsl(260 85% 65% / 0.4), 0 0 0 1px hsl(260 85% 65% / 0.2)'
         }}
       >
-        <Bot className="w-8 h-8" />
+        <img src="/favicon.ico" alt="Assistant" className="w-12 h-12" />
       </Button>
       
       <OnboardingSpeechBubble

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, CreditCard, Headphones, Settings, Users } from "lucide-react";
+import { Building2, CreditCard, Headphones, Settings, Users, Stethoscope, Calculator, Scale } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -51,6 +51,39 @@ export const IndustriesSection = () => {
         t("industries.horizontal.solution3"),
         t("industries.horizontal.solution4")
       ]
+    },
+    {
+      icon: Stethoscope,
+      title: t("industries.medical.title"),
+      description: t("industries.medical.description"),
+      useCases: [
+        t("industries.medical.solution1"),
+        t("industries.medical.solution2"),
+        t("industries.medical.solution3"),
+        t("industries.medical.solution4")
+      ]
+    },
+    {
+      icon: Calculator,
+      title: t("industries.accounting.title"),
+      description: t("industries.accounting.description"),
+      useCases: [
+        t("industries.accounting.solution1"),
+        t("industries.accounting.solution2"),
+        t("industries.accounting.solution3"),
+        t("industries.accounting.solution4")
+      ]
+    },
+    {
+      icon: Scale,
+      title: t("industries.legal.title"),
+      description: t("industries.legal.description"),
+      useCases: [
+        t("industries.legal.solution1"),
+        t("industries.legal.solution2"),
+        t("industries.legal.solution3"),
+        t("industries.legal.solution4")
+      ]
     }
   ];
 
@@ -70,7 +103,7 @@ export const IndustriesSection = () => {
         </div>
 
         {/* Industries Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {industries.map((industry, index) => (
             <div
               key={industry.title}
@@ -97,9 +130,9 @@ export const IndustriesSection = () => {
                     <h4 className="font-semibold text-foreground mb-3">{t("industries.key_use_cases")}</h4>
                     <div className="grid grid-cols-2 gap-2">
                       {industry.useCases.map((useCase) => (
-                        <div key={useCase} className="flex items-center text-sm text-muted-foreground">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full mr-3"></div>
-                          {useCase}
+                        <div key={useCase} className="flex items-start text-sm text-muted-foreground">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full ltr:mr-3 rtl:ml-3 mt-2 flex-shrink-0"></div>
+                          <span>{useCase}</span>
                         </div>
                       ))}
                     </div>

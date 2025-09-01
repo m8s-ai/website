@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bot, Brain, Cog, Users, Zap } from "lucide-react";
+import { MessageCircle, ShoppingCart, Settings, Mail, Calendar, Shield, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -9,53 +9,78 @@ export const ServicesSection = () => {
   
   const services = [
     {
-      icon: Bot,
-      title: t("services.ai_automation.title"),
-      description: t("services.ai_automation.description"),
+      icon: MessageCircle,
+      title: t("services.chatbot.title"),
+      subtitle: t("services.chatbot.subtitle"),
+      description: t("services.chatbot.description"),
       features: [
-        t("services.ai_automation.feature1"),
-        t("services.ai_automation.feature2"),
-        t("services.ai_automation.feature3")
+        t("services.chatbot.feature1"),
+        t("services.chatbot.feature2"),
+        t("services.chatbot.feature3")
       ]
     },
     {
-      icon: Brain,
-      title: t("services.generative_ai.title"),
-      description: t("services.generative_ai.description"),
+      icon: ShoppingCart,
+      title: t("services.crm_sales.title"),
+      subtitle: t("services.crm_sales.subtitle"),
+      description: t("services.crm_sales.description"),
       features: [
-        t("services.generative_ai.feature1"),
-        t("services.generative_ai.feature2"),
-        t("services.generative_ai.feature3")
+        t("services.crm_sales.feature1"),
+        t("services.crm_sales.feature2"),
+        t("services.crm_sales.feature3"),
+        t("services.crm_sales.feature4"),
+        t("services.crm_sales.feature5")
       ]
     },
     {
-      icon: Cog,
-      title: t("services.enterprise_ai.title"),
-      description: t("services.enterprise_ai.description"),
+      icon: Mail,
+      title: t("services.emails.title"),
+      subtitle: t("services.emails.subtitle"),
+      description: "",
       features: [
-        t("services.enterprise_ai.feature1"),
-        t("services.enterprise_ai.feature2"),
-        t("services.enterprise_ai.feature3")
+        t("services.emails.feature1"),
+        t("services.emails.feature2"),
+        t("services.emails.feature3"),
+        t("services.emails.feature4"),
+        t("services.emails.feature5")
       ]
     },
     {
-      icon: Users,
-      title: t("services.consulting.title"),
-      description: t("services.consulting.description"),
+      icon: Calendar,
+      title: t("services.calendars.title"),
+      subtitle: t("services.calendars.subtitle"),
+      description: "",
       features: [
-        t("services.consulting.feature1"),
-        t("services.consulting.feature2"),
-        t("services.consulting.feature3")
+        t("services.calendars.feature1"),
+        t("services.calendars.feature2"),
+        t("services.calendars.feature3"),
+        t("services.calendars.feature4"),
+        t("services.calendars.feature5")
       ]
     },
     {
-      icon: Zap,
-      title: t("services.rpa.title"),
-      description: t("services.rpa.description"),
+      icon: Shield,
+      title: t("services.security.title"),
+      subtitle: t("services.security.subtitle"),
+      description: "",
       features: [
-        t("services.rpa.feature1"),
-        t("services.rpa.feature2"),
-        t("services.rpa.feature3")
+        t("services.security.feature1"),
+        t("services.security.feature2"),
+        t("services.security.feature3"),
+        t("services.security.feature4")
+      ]
+    },
+    {
+      icon: FileText,
+      title: t("services.processing.title"),
+      subtitle: t("services.processing.subtitle"),
+      description: "",
+      features: [
+        t("services.processing.feature1"),
+        t("services.processing.feature2"),
+        t("services.processing.feature3"),
+        t("services.processing.feature4"),
+        t("services.processing.feature5")
       ]
     }
   ];
@@ -89,18 +114,23 @@ export const ServicesSection = () => {
                     <service.icon className="h-6 w-6 text-primary" />
                   </div>
                   <CardTitle className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                    {service.title}
+                    {service.subtitle}
                   </CardTitle>
+                  <div className="text-sm text-muted-foreground font-medium">
+                    {service.title}
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <CardDescription className="text-muted-foreground leading-relaxed">
-                    {service.description}
-                  </CardDescription>
+                  {service.description && (
+                    <CardDescription className="text-muted-foreground leading-relaxed">
+                      {service.description}
+                    </CardDescription>
+                  )}
                   <ul className="space-y-2">
                     {service.features.map((feature) => (
-                      <li key={feature} className="flex items-center text-sm text-muted-foreground">
-                        <div className="w-1.5 h-1.5 bg-primary rounded-full mr-3"></div>
-                        {feature}
+                      <li key={feature} className="flex items-start text-sm text-muted-foreground">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full ltr:mr-3 rtl:ml-3 mt-2 flex-shrink-0"></div>
+                        <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -108,6 +138,20 @@ export const ServicesSection = () => {
               </Card>
             </div>
           ))}
+        </div>
+
+        {/* Custom AI Automations Section */}
+        <div className="text-center mb-16 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          <div className="glass-card border-border/20 rounded-2xl p-8 max-w-4xl mx-auto">
+            <h3 className="text-3xl font-bold mb-4">
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
+                {t('services.custom_ai.title')}
+              </span>
+            </h3>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              {t('services.custom_ai.description')}
+            </p>
+          </div>
         </div>
 
         {/* CTA */}

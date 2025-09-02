@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ShoppingCart, Settings, Mail, Calendar, Shield, FileText } from "lucide-react";
+import { Laptop, Smartphone, ShoppingCart, Bot, CreditCard, Store } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -9,78 +9,78 @@ export const ServicesSection = () => {
   
   const services = [
     {
-      icon: MessageCircle,
-      title: t("services.chatbot.title"),
-      subtitle: t("services.chatbot.subtitle"),
-      description: t("services.chatbot.description"),
+      icon: Laptop,
+      title: t("services.saas.title"),
+      subtitle: t("services.saas.subtitle"),
+      description: t("services.saas.description"),
       features: [
-        t("services.chatbot.feature1"),
-        t("services.chatbot.feature2"),
-        t("services.chatbot.feature3")
+        t("services.saas.feature1"),
+        t("services.saas.feature2"),
+        t("services.saas.feature3")
+      ]
+    },
+    {
+      icon: Smartphone,
+      title: t("services.mobile.title"),
+      subtitle: t("services.mobile.subtitle"),
+      description: t("services.mobile.description"),
+      features: [
+        t("services.mobile.feature1"),
+        t("services.mobile.feature2"),
+        t("services.mobile.feature3"),
+        t("services.mobile.feature4"),
+        t("services.mobile.feature5")
       ]
     },
     {
       icon: ShoppingCart,
-      title: t("services.crm_sales.title"),
-      subtitle: t("services.crm_sales.subtitle"),
-      description: t("services.crm_sales.description"),
+      title: t("services.ecommerce.title"),
+      subtitle: t("services.ecommerce.subtitle"),
+      description: t("services.ecommerce.description"),
       features: [
-        t("services.crm_sales.feature1"),
-        t("services.crm_sales.feature2"),
-        t("services.crm_sales.feature3"),
-        t("services.crm_sales.feature4"),
-        t("services.crm_sales.feature5")
+        t("services.ecommerce.feature1"),
+        t("services.ecommerce.feature2"),
+        t("services.ecommerce.feature3"),
+        t("services.ecommerce.feature4"),
+        t("services.ecommerce.feature5")
       ]
     },
     {
-      icon: Mail,
-      title: t("services.emails.title"),
-      subtitle: t("services.emails.subtitle"),
-      description: "",
+      icon: Bot,
+      title: t("services.ai_powered.title"),
+      subtitle: t("services.ai_powered.subtitle"),
+      description: t("services.ai_powered.description"),
       features: [
-        t("services.emails.feature1"),
-        t("services.emails.feature2"),
-        t("services.emails.feature3"),
-        t("services.emails.feature4"),
-        t("services.emails.feature5")
+        t("services.ai_powered.feature1"),
+        t("services.ai_powered.feature2"),
+        t("services.ai_powered.feature3"),
+        t("services.ai_powered.feature4")
       ]
     },
     {
-      icon: Calendar,
-      title: t("services.calendars.title"),
-      subtitle: t("services.calendars.subtitle"),
-      description: "",
+      icon: CreditCard,
+      title: t("services.fintech.title"),
+      subtitle: t("services.fintech.subtitle"),
+      description: t("services.fintech.description"),
       features: [
-        t("services.calendars.feature1"),
-        t("services.calendars.feature2"),
-        t("services.calendars.feature3"),
-        t("services.calendars.feature4"),
-        t("services.calendars.feature5")
+        t("services.fintech.feature1"),
+        t("services.fintech.feature2"),
+        t("services.fintech.feature3"),
+        t("services.fintech.feature4"),
+        t("services.fintech.feature5")
       ]
     },
     {
-      icon: Shield,
-      title: t("services.security.title"),
-      subtitle: t("services.security.subtitle"),
-      description: "",
+      icon: Store,
+      title: t("services.marketplace.title"),
+      subtitle: t("services.marketplace.subtitle"),
+      description: t("services.marketplace.description"),
       features: [
-        t("services.security.feature1"),
-        t("services.security.feature2"),
-        t("services.security.feature3"),
-        t("services.security.feature4")
-      ]
-    },
-    {
-      icon: FileText,
-      title: t("services.processing.title"),
-      subtitle: t("services.processing.subtitle"),
-      description: "",
-      features: [
-        t("services.processing.feature1"),
-        t("services.processing.feature2"),
-        t("services.processing.feature3"),
-        t("services.processing.feature4"),
-        t("services.processing.feature5")
+        t("services.marketplace.feature1"),
+        t("services.marketplace.feature2"),
+        t("services.marketplace.feature3"),
+        t("services.marketplace.feature4"),
+        t("services.marketplace.feature5")
       ]
     }
   ];
@@ -140,27 +140,26 @@ export const ServicesSection = () => {
           ))}
         </div>
 
-        {/* Custom AI Automations Section */}
-        <div className="text-center mb-16 animate-fade-in" style={{ animationDelay: '0.5s' }}>
-          <div className="glass-card border-border/20 rounded-2xl p-8 max-w-4xl mx-auto">
-            <h3 className="text-3xl font-bold mb-4">
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
-                {t('services.custom_ai.title')}
-              </span>
-            </h3>
-            <p className="text-xl text-muted-foreground leading-relaxed">
-              {t('services.custom_ai.description')}
-            </p>
-          </div>
-        </div>
-
-        {/* CTA */}
+        {/* Urgency CTA */}
         <div className="text-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <Button asChild size="lg" className="bg-gradient-primary hover:opacity-90 text-white shadow-glow px-8 py-4">
-            <Link to="/solutions">
-              {t('common.learn_more')}
-            </Link>
-          </Button>
+          <div className="glass-card border-border/20 rounded-2xl p-8 max-w-2xl mx-auto mb-8">
+            <div className="mb-4">
+              <span className="inline-flex items-center px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-sm font-bold text-red-400 animate-pulse">
+                ⚡ Limited Time: 3 Spots Left for Q1 2025
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4 text-foreground">
+              Ready to Build Your Million-Dollar App?
+            </h3>
+            <p className="text-lg text-muted-foreground mb-6">
+              Join the ranks of successful founders. Book your free strategy call now.
+            </p>
+            <Button asChild size="lg" className="bg-gradient-primary hover:scale-105 text-white shadow-glow px-12 py-4 text-xl font-bold transform transition-all duration-300">
+              <Link to="/contact">
+                Book Your FREE Strategy Call →
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </section>

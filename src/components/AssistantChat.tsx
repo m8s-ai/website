@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Send, X } from "lucide-react";
+import { WhiteRobotIcon } from "@/components/ui/WhiteRobotIcon";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Message {
@@ -69,7 +70,7 @@ const OnboardingSpeechBubble: React.FC<OnboardingModalProps> = ({ isOpen, onClos
         {/* Header with robot icon and name */}
         <div className="flex items-center gap-2 mb-3 pr-6">
           <div className="flex items-center justify-center w-8 h-8 bg-gradient-primary rounded-full">
-            <img src="/favicon.ico" alt="Assistant" className="w-4 h-4" />
+            <WhiteRobotIcon size={16} />
           </div>
           <span className="bg-gradient-primary bg-clip-text text-transparent font-bold text-sm">
             {t('onboarding.title')}
@@ -198,7 +199,7 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({ isOpen, onClose })
               <X className="w-4 h-4" />
             </Button>
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-primary rounded-full">
-              <img src="/favicon.ico" alt="Assistant" className="w-5 h-5" />
+              <WhiteRobotIcon size={20} />
             </div>
             <span className="bg-gradient-primary bg-clip-text text-transparent font-semibold">
               AI Assistant
@@ -310,7 +311,7 @@ export const AssistantButton: React.FC = () => {
           boxShadow: '0 8px 32px -8px hsl(260 85% 65% / 0.4), 0 0 0 1px hsl(260 85% 65% / 0.2)'
         }}
       >
-        <img src="/favicon.ico" alt="Assistant" className="w-12 h-12" />
+        <WhiteRobotIcon size={48} />
       </Button>
       
       <OnboardingSpeechBubble

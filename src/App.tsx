@@ -14,6 +14,7 @@ import { IndustriesPage } from "./pages/IndustriesPage";
 import { ResourcesPage } from "./pages/ResourcesPage";
 import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
+import { AppBuilderPage } from "./pages/AppBuilderPage";
 import NotFound from "./pages/NotFound";
 import { Protected } from "./components/Protected";
 import { AssistantButton } from "./components/AssistantChat";
@@ -38,6 +39,7 @@ const App = () => {
             <Route path="/resources" element={<ResourcesPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/app-builder" element={<AppBuilderPage />} />
             <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
             <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

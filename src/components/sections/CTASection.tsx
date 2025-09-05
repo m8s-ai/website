@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Calendar } from "lucide-react";
+import { ArrowRight, ArrowLeft, Calendar, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -39,9 +39,10 @@ export const CTASection = () => {
               </Link>
             </Button>
             
-            <Button asChild variant="outline" size="lg" className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10">
-              <Link to="/contact" className="flex items-center gap-2">
-                {t('common.learn_more')}
+            <Button asChild variant="outline" size="lg" className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10 border-primary/30">
+              <Link to="/app-builder" className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Try App Builder
                 {isRTL ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
               </Link>
             </Button>

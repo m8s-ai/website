@@ -26,6 +26,7 @@ const DEMO_STEP_KEY = 'demo_chat_step';
 export const InteractiveChatDemo = () => {
   const { isChatExpanded, isChatMinimized, setIsChatExpanded, setIsChatMinimized } = useChatWindow();
   const { toast } = useToast();
+  const { t, isRTL } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(() => {
     return sessionStorage.getItem(DEMO_EXPANDED_KEY) === 'true';
   });
@@ -333,11 +334,44 @@ export const InteractiveChatDemo = () => {
           </div>
           
           <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Try Our AI App Builder
+            {t('app_builder.chat.demo_title')}
           </h3>
           <p className="text-gray-300 mb-6 text-lg leading-relaxed">
-            Experience how our intelligent conversation turns your app idea into a working prototype
+            {t('app_builder.chat.demo_subtitle')}
           </p>
+          
+          {/* Process Steps */}
+          <div className="mb-8 space-y-4 text-left">
+            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-cyan-900/40 to-purple-900/40 rounded-lg border border-cyan-500/40 backdrop-blur-sm">
+              <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                1
+              </div>
+              <div className="text-left">
+                <h4 className="font-semibold text-cyan-300 mb-1">{t('app_builder.chat.step1_title')}</h4>
+                <p className="text-gray-300 text-sm">{t('app_builder.chat.step1_description')}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-lg border border-purple-500/40 backdrop-blur-sm">
+              <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                2
+              </div>
+              <div className="text-left">
+                <h4 className="font-semibold text-purple-300 mb-1">{t('app_builder.chat.step2_title')}</h4>
+                <p className="text-gray-300 text-sm">{t('app_builder.chat.step2_description')}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-4 p-4 bg-gradient-to-r from-pink-900/40 to-cyan-900/40 rounded-lg border border-pink-500/40 backdrop-blur-sm">
+              <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                3
+              </div>
+              <div className="text-left">
+                <h4 className="font-semibold text-pink-300 mb-1">{t('app_builder.chat.step3_title')}</h4>
+                <p className="text-gray-300 text-sm">{t('app_builder.chat.step3_description')}</p>
+              </div>
+            </div>
+          </div>
           
           {/* Neon CTA Button */}
           <Button 
@@ -354,11 +388,11 @@ export const InteractiveChatDemo = () => {
           </Button>
           
           {/* Neon indicators */}
-          <div className="flex justify-center space-x-6 mt-6">
-            {['No signup required', 'See results instantly', 'Takes 2 minutes'].map((text, index) => (
+          <div className="flex justify-start space-x-6 mt-6">
+            {['No signup required', 'Get PRD + POC', 'Book development meeting'].map((text, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.8)] animate-pulse" style={{ animationDelay: `${index * 0.5}s` }} />
-                <span className="text-sm text-gray-400">{text}</span>
+                <span className="text-sm text-gray-300">{text}</span>
               </div>
             ))}
           </div>

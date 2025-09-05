@@ -543,10 +543,16 @@ const translations = {
     'app_builder.social_proof.quote': 'This prototype helped us raise $2M in seed funding. Investors could actually see and test our vision.',
     'app_builder.social_proof.author': 'Sarah Chen, CEO of TechStart (Y Combinator W23)',
     
-    'app_builder.chat.demo_title': 'Try Our AI App Builder',
-    'app_builder.chat.demo_subtitle': 'Experience how our intelligent conversation turns your app idea into a working prototype',
+    'app_builder.chat.demo_title': 'AI-powered project validation through natural conversation',
+    'app_builder.chat.demo_subtitle': 'Experience our intelligent conversation that turns your app idea into a complete development package',
     'app_builder.chat.start_button': 'Start Building My App',
-    'app_builder.chat.disclaimer': 'No signup required • See results instantly • Takes 2 minutes',
+    'app_builder.chat.disclaimer': 'No signup required • Get PRD + POC • Book development meeting',
+    'app_builder.chat.step1_title': 'Talk with the AI Bot',
+    'app_builder.chat.step1_description': 'Share your app idea and answer questions about features, users, and requirements',
+    'app_builder.chat.step2_title': 'Get PRD & POC App',
+    'app_builder.chat.step2_description': 'Receive a professional Product Requirements Document and a working Proof of Concept app',
+    'app_builder.chat.step3_title': 'Schedule Full Development',
+    'app_builder.chat.step3_description': 'Book a meeting to discuss full app development with our expert team',
 
     // Common
     'common.automate': '\mates',
@@ -1087,10 +1093,16 @@ const translations = {
     'app_builder.social_proof.quote': 'האבטיפוס הזה עזר לנו לגייס 2 מיליון דולר במימון ראשוני. המשקיעים באמת יכלו לראות ולבדוק את החזון שלנו.',
     'app_builder.social_proof.author': 'שרה צ\'ן, מנכ"לית TechStart (Y Combinator W23)',
     
-    'app_builder.chat.demo_title': 'נסה את בונה האפליקציות האוטומטי שלנו',
-    'app_builder.chat.demo_subtitle': 'חווה איך השיחה החכמה שלנו הופכת רעיון אפליקציה לאבטיפוס עובד',
+    'app_builder.chat.demo_title': 'אימות פרויקטים מונע בינה מלאכותית באמצעות שיחה טבעית',
+    'app_builder.chat.demo_subtitle': 'חווה את השיחה החכמה שלנו שהופכת רעיון אפליקציה לחבילת פיתוח מלאה',
     'app_builder.chat.start_button': 'התחל לבנות את האפליקציה שלי',
-    'app_builder.chat.disclaimer': 'ללא הרשמה נדרשת • ראה תוצאות מיד • לוקח 2 דקות',
+    'app_builder.chat.disclaimer': 'ללא הרשמה נדרשת • קבל מסמך דרישות + אבטיפוס • קבע פגישת פיתוח',
+    'app_builder.chat.step1_title': 'דבר עם הבוט האוטומטי',
+    'app_builder.chat.step1_description': 'שתף את רעיון האפליקציה שלך וענה על שאלות על תכונות, משתמשים ודרישות',
+    'app_builder.chat.step2_title': 'קבל מסמך דרישות ואבטיפוס',
+    'app_builder.chat.step2_description': 'קבל מסמך דרישות מוצר מקצועי ואפליקציית הוכחת קונצפט עובדת',
+    'app_builder.chat.step3_title': 'קבע פיתוח מלא',
+    'app_builder.chat.step3_description': 'קבע פגישה לדון בפיתוח אפליקציה מלא עם הצוות המומחה שלנו',
 
     // Common
     'common.automate': '\mates',

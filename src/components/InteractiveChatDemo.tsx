@@ -59,11 +59,11 @@ export const InteractiveChatDemo = () => {
       ]
     },
     {
-      botMessage: "Great choice! I'm already seeing the structure of your app. Let me generate a professional Product Requirements Document and create a working prototype you can test. This usually takes 24 hours - would you like to see what that looks like?",
+      botMessage: "Perfect! I now have enough to create your complete package: professional PRD documents, system architecture, AND a working prototype you can actually click through and test. You'll know exactly what your app costs and looks like before building. Ready to see the magic?",
       suggestions: [
-        "Yes, show me the magic! ✨",
+        "Yes, create my prototype! ✨",
         "What exactly will I get?",
-        "How much does this cost?",
+        "Show me cost & timeline",
         "Can I see examples first?"
       ]
     }
@@ -128,10 +128,10 @@ export const InteractiveChatDemo = () => {
         // Final message - CTA
         const finalMessage: Message = {
           id: (Date.now() + 1).toString(),
-          content: "🎉 Amazing! I have everything I need to create your app prototype. Ready to see your idea come to life?",
+          content: "🎉 Perfect! I have everything needed to create your complete package: PRD docs, architecture diagrams, working prototype you can test, AND accurate cost estimate. Ready to see your idea come to life?",
           sender: 'bot',
           timestamp: new Date(),
-          suggestions: ["Get My Prototype Now!", "Tell me more about the process", "What does this cost?"]
+          suggestions: ["Get My Complete Package!", "What exactly do I get?", "Show me pricing", "See example prototypes"]
         };
         setMessages(prev => [...prev, finalMessage]);
       }

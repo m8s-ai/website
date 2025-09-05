@@ -33,8 +33,8 @@ export const AppBuilderPage = () => {
       focus: "risk"
     },
     C: {
-      title: "Know Exactly What Your App Will Cost",
-      subtitle: "Accurate pricing and timeline before you commit",
+      title: "Know Exactly What Your App Will Cost & Look Like",
+      subtitle: "Get accurate pricing, timeline, and a working prototype to test",
       focus: "cost"
     },
     D: {
@@ -131,8 +131,8 @@ export const AppBuilderPage = () => {
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
                   <DollarSign className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="font-semibold mb-2">Get Accurate Quote</h3>
-                <p className="text-sm text-muted-foreground">Know exactly what it costs to build</p>
+                <h3 className="font-semibold mb-2">Get Accurate Quote & POC</h3>
+                <p className="text-sm text-muted-foreground">Know exactly what it costs AND see how it looks</p>
               </div>
             </div>
           </div>
@@ -145,9 +145,9 @@ export const AppBuilderPage = () => {
           <div className="max-w-2xl mx-auto">
             <Card className="border-primary/20 shadow-xl">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold">Get Your App Prototype in 24 Hours</CardTitle>
+                <CardTitle className="text-2xl font-bold">Get Your Complete App Package in 24 Hours</CardTitle>
                 <CardDescription className="text-lg">
-                  Tell us about your app idea and we'll create a working prototype you can test and share
+                  Professional docs + working prototype + accurate pricing - everything you need to move forward
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -214,11 +214,11 @@ export const AppBuilderPage = () => {
                     size="lg"
                     className="w-full bg-gradient-primary hover:scale-105 text-white shadow-glow py-6 text-xl font-bold transform transition-all duration-300"
                   >
-                    Get My App Prototype <ArrowRight className="ml-2 h-6 w-6" />
+                    Get My Complete Package <ArrowRight className="ml-2 h-6 w-6" />
                   </Button>
                   
                   <p className="text-center text-sm text-muted-foreground">
-                    No commitment required • Free prototype review • 24-hour turnaround
+                    No commitment required • See cost & prototype first • 24-hour delivery
                   </p>
                 </form>
               </CardContent>

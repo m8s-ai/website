@@ -373,6 +373,35 @@ export const InteractiveChatDemo = () => {
             </div>
           </div>
           
+          {/* Value Proposition - Subtle Integration */}
+          <div className="mb-6 p-4 bg-gradient-to-r from-red-900/10 to-orange-900/10 rounded-lg border border-red-500/20 backdrop-blur-sm">
+            <div className="text-center">
+              <h4 className="text-sm font-semibold text-red-300 mb-2">
+                {t('app_builder.chat.value_prop_title')}
+              </h4>
+              <p className="text-xs text-gray-400 mb-3">
+                {t('app_builder.chat.value_prop_problem')}
+              </p>
+              <p className="text-xs text-green-300 mb-3">
+                {t('app_builder.chat.value_prop_solution')}
+              </p>
+              <div className="flex justify-center space-x-4 text-xs">
+                <div className="flex items-center space-x-1">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-green-300">{t('app_builder.chat.value_prop_benefit1')}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }} />
+                  <span className="text-blue-300">{t('app_builder.chat.value_prop_benefit2')}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '0.6s' }} />
+                  <span className="text-purple-300">{t('app_builder.chat.value_prop_benefit3')}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           {/* Neon CTA Button */}
           <Button 
             onClick={startDemo}

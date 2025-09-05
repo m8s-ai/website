@@ -147,6 +147,129 @@ export const AppBuilderPage = () => {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section className="py-16 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-cyan-400/10 to-purple-600/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/10 to-pink-600/10 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                {t('pricing.title')}
+              </span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              {t('pricing.subtitle')}
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Starter Plan */}
+            <div className="p-6 bg-gradient-to-br from-cyan-900/20 to-purple-900/20 rounded-xl border border-cyan-500/30 backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]">
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-cyan-300 mb-3">{t('pricing.starter.title')}</h3>
+                <p className="text-sm text-gray-400 mb-4">{t('pricing.starter.description')}</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-white">{t('pricing.starter.price')}</span>
+                  <span className="text-lg text-gray-400">{t('pricing.starter.period')}</span>
+                </div>
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                    <span className="text-gray-300">{t('pricing.starter.projects')}</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                    <span className="text-gray-300">{t('pricing.starter.features')}</span>
+                  </div>
+                </div>
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white border-0 shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
+                >
+                  {t('pricing.starter.button')}
+                </Button>
+              </div>
+            </div>
+            
+            {/* Professional Plan */}
+            <div className="p-6 bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-xl border border-purple-500/30 backdrop-blur-sm hover:border-purple-400/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm px-4 py-1 rounded-full shadow-lg">
+                  Popular
+                </span>
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-purple-300 mb-3">{t('pricing.professional.title')}</h3>
+                <p className="text-sm text-gray-400 mb-4">{t('pricing.professional.description')}</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-white">{t('pricing.professional.price')}</span>
+                  <span className="text-lg text-gray-400">{t('pricing.professional.period')}</span>
+                </div>
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span className="text-gray-300">{t('pricing.professional.projects')}</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span className="text-gray-300">{t('pricing.professional.features')}</span>
+                  </div>
+                </div>
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white border-0 shadow-lg hover:shadow-purple-500/30 transition-all duration-300"
+                >
+                  {t('pricing.professional.button')}
+                </Button>
+              </div>
+            </div>
+            
+            {/* Enterprise Plan */}
+            <div className="p-6 bg-gradient-to-br from-pink-900/20 to-cyan-900/20 rounded-xl border border-pink-500/30 backdrop-blur-sm hover:border-pink-400/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(236,72,153,0.2)]">
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-pink-300 mb-3">{t('pricing.enterprise.title')}</h3>
+                <p className="text-sm text-gray-400 mb-4">{t('pricing.enterprise.description')}</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-white">{t('pricing.enterprise.price')}</span>
+                  <span className="text-lg text-gray-400">{t('pricing.enterprise.period')}</span>
+                </div>
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                    <span className="text-gray-300">{t('pricing.enterprise.projects')}</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                    <span className="text-gray-300">{t('pricing.enterprise.features')}</span>
+                  </div>
+                </div>
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-pink-500 to-cyan-600 hover:from-pink-400 hover:to-cyan-500 text-white border-0 shadow-lg hover:shadow-pink-500/30 transition-all duration-300"
+                >
+                  {t('pricing.enterprise.button')}
+                </Button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Usage Fees */}
+          <div className="mt-12 max-w-2xl mx-auto">
+            <div className="p-6 bg-gradient-to-r from-gray-900/20 to-slate-900/20 rounded-xl border border-gray-500/20 backdrop-blur-sm">
+              <div className="text-center">
+                <h4 className="text-lg font-semibold text-gray-300 mb-2">{t('pricing.usage.title')}</h4>
+                <p className="text-gray-400">{t('pricing.usage.description')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Enhanced Lead Capture Form */}
       <section className="py-12 bg-black/20 backdrop-blur-xl relative overflow-hidden">
         {/* Form background effects */}

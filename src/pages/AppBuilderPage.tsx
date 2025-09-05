@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PublicHeader } from "@/components/PublicHeader";
+import { InteractiveChatDemo } from "@/components/InteractiveChatDemo";
 import { ArrowRight, MessageSquare, FileText, Smartphone, DollarSign, CheckCircle, Zap, Clock, Shield } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -105,15 +106,13 @@ export const AppBuilderPage = () => {
               </p>
             </div>
 
-            {/* Process Flow */}
-            <div className="grid md:grid-cols-4 gap-6 mb-12">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
-                  <MessageSquare className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="font-semibold mb-2">Chat About Your Idea</h3>
-                <p className="text-sm text-muted-foreground">Tell us your app vision in plain English</p>
-              </div>
+            {/* Interactive Chat Demo */}
+            <div className="mb-12">
+              <InteractiveChatDemo />
+            </div>
+            
+            {/* Process Flow - Simplified */}
+            <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-3xl mx-auto">
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
                   <FileText className="h-8 w-8 text-white" />

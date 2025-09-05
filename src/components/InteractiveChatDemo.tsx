@@ -3,8 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Send, Bot, User, Sparkles, Zap, Maximize2, Minimize2, X } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Send, Bot, User, Sparkles, Zap, Maximize2, Minimize2, X, MoreHorizontal, Figma, Upload } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useChatWindow } from '@/contexts/ChatWindowContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface Message {
   id: string;
@@ -21,6 +24,8 @@ const DEMO_STARTED_KEY = 'demo_chat_started';
 const DEMO_STEP_KEY = 'demo_chat_step';
 
 export const InteractiveChatDemo = () => {
+  const { isChatExpanded, isChatMinimized, setIsChatExpanded, setIsChatMinimized } = useChatWindow();
+  const { toast } = useToast();
   const [isExpanded, setIsExpanded] = useState(() => {
     return sessionStorage.getItem(DEMO_EXPANDED_KEY) === 'true';
   });
@@ -52,6 +57,7 @@ export const InteractiveChatDemo = () => {
     return sessionStorage.getItem(DEMO_STARTED_KEY) === 'true';
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollPreventionActive = useRef(false);
 
   const conversationFlow = [
     {
@@ -127,7 +133,44 @@ export const InteractiveChatDemo = () => {
   }, [messages]);
 
   const handleToggleExpand = () => {
-    if (!isExpanded) {
+    // Since we removed the regular view, this should always expand to fullscreen
+    enableScrollPrevention();
+    setIsExpanded(true);
+    setIsChatExpanded(true);
+    setIsChatMinimized(false);
+  };
+
+  const handleMinimize = () => {
+    setIsExpanded(false);
+    setIsChatMinimized(true);
+    setIsChatExpanded(false);
+    disableScrollPrevention();
+  };
+
+  const handleRestore = () => {
+    setIsExpanded(true);
+    setIsChatMinimized(false);
+    setIsChatExpanded(true);
+    enableScrollPrevention();
+  };
+
+  const preventDefault = (e: Event) => {
+    // Only prevent scrolling if scroll prevention is active
+    if (scrollPreventionActive.current) {
+      e.preventDefault();
+    }
+  };
+
+  const preventArrowKeys = (e: KeyboardEvent) => {
+    // Only prevent arrow keys if scroll prevention is active
+    if (scrollPreventionActive.current && ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const enableScrollPrevention = () => {
+    if (!scrollPreventionActive.current) {
+      scrollPreventionActive.current = true;
       setSavedScrollPosition(window.scrollY);
       document.body.classList.add('chat-modal-open');
       document.body.style.position = 'fixed';
@@ -138,7 +181,12 @@ export const InteractiveChatDemo = () => {
       document.addEventListener('wheel', preventDefault, { passive: false });
       document.addEventListener('touchmove', preventDefault, { passive: false });
       document.addEventListener('keydown', preventArrowKeys, false);
-    } else {
+    }
+  };
+
+  const disableScrollPrevention = () => {
+    if (scrollPreventionActive.current) {
+      scrollPreventionActive.current = false;
       document.body.classList.remove('chat-modal-open');
       document.body.style.position = '';
       document.body.style.top = '';
@@ -149,66 +197,34 @@ export const InteractiveChatDemo = () => {
       document.removeEventListener('wheel', preventDefault);
       document.removeEventListener('touchmove', preventDefault);
       document.removeEventListener('keydown', preventArrowKeys);
-    }
-    setIsExpanded(!isExpanded);
-  };
-
-  const preventDefault = (e: Event) => {
-    e.preventDefault();
-  };
-
-  const preventArrowKeys = (e: KeyboardEvent) => {
-    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) {
-      e.preventDefault();
     }
   };
 
   const handleClose = () => {
-    if (isExpanded) {
-      document.body.classList.remove('chat-modal-open');
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      window.scrollTo(0, savedScrollPosition);
-      
-      document.removeEventListener('wheel', preventDefault);
-      document.removeEventListener('touchmove', preventDefault);
-      document.removeEventListener('keydown', preventArrowKeys);
-    }
+    disableScrollPrevention();
     setIsStarted(false);
     setIsExpanded(false);
+    setIsChatExpanded(false);
+    setIsChatMinimized(false);
   };
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (isExpanded) {
-        document.body.classList.remove('chat-modal-open');
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        document.removeEventListener('wheel', preventDefault);
-        document.removeEventListener('touchmove', preventDefault);
-        document.removeEventListener('keydown', preventArrowKeys);
-      }
+      disableScrollPrevention();
     };
-  }, [isExpanded]);
+  }, []);
+
+  // Ensure scroll prevention is properly managed based on chat state
+  useEffect(() => {
+    if (isChatExpanded && !isChatMinimized) {
+      enableScrollPrevention();
+    } else {
+      disableScrollPrevention();
+    }
+  }, [isChatExpanded, isChatMinimized]);
 
   const startDemo = () => {
-    // Immediately prevent scrolling before any animations
-    setSavedScrollPosition(window.scrollY);
-    document.body.classList.add('chat-modal-open');
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${window.scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
-    
-    document.addEventListener('wheel', preventDefault, { passive: false });
-    document.addEventListener('touchmove', preventDefault, { passive: false });
-    document.addEventListener('keydown', preventArrowKeys, false);
-    
     setIsStarted(true);
     const botMessage: Message = {
       id: '1',
@@ -221,6 +237,7 @@ export const InteractiveChatDemo = () => {
     
     // Expand to fullscreen immediately
     setIsExpanded(true);
+    setIsChatExpanded(true);
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -278,6 +295,14 @@ export const InteractiveChatDemo = () => {
     if (e.key === 'Enter') {
       handleSendMessage();
     }
+  };
+
+  const handleMenuAction = (action: 'figma' | 'upload') => {
+    toast({
+      title: "Demo Feature",
+      description: "This feature is only available for subscribed members. This is a demo version.",
+      variant: "default",
+    });
   };
 
   if (!isStarted) {
@@ -342,10 +367,72 @@ export const InteractiveChatDemo = () => {
     );
   }
 
-  if (isExpanded) {
+  // Minimized state - floating window bar
+  if (isChatMinimized) {
     return (
-      <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-sm">
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 shadow-2xl overflow-hidden chat-container border border-cyan-500/20">
+      <div className="fixed bottom-4 right-4 z-[9999] animate-slide-up">
+        <Card className="w-80 border-cyan-500/30 shadow-2xl bg-black/40 backdrop-blur-2xl overflow-hidden hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all duration-300">
+          <CardContent className="p-0">
+            <div className="border-b border-cyan-500/20 p-3 bg-gradient-to-r from-cyan-900/20 to-purple-900/20 relative">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)] animate-pulse">
+                    <Bot className="h-3 w-3 text-white drop-shadow-lg" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">AI App Builder</h4>
+                    <div className="flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full shadow-[0_0_6px_rgba(34,197,94,0.8)] animate-pulse" />
+                      <p className="text-xs text-gray-400">Minimized</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  <Button
+                    onClick={handleRestore}
+                    size="icon"
+                    variant="ghost"
+                    className="w-6 h-6 hover:bg-cyan-400/20 text-cyan-400 hover:text-cyan-300 transition-all duration-200"
+                    title="Restore"
+                  >
+                    <Maximize2 className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    onClick={handleClose}
+                    size="icon"
+                    variant="ghost"
+                    className="w-6 h-6 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-all duration-200"
+                    title="Close"
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-3 bg-gradient-to-r from-slate-900/20 to-slate-800/20">
+              <p className="text-xs text-gray-400 text-center">
+                Chat minimized - Click restore to continue
+              </p>
+              <div className="flex justify-center mt-2">
+                <div className="flex space-x-1">
+                  <div className="w-1 h-1 bg-cyan-400 rounded-full animate-bounce shadow-sm shadow-cyan-400/50" />
+                  <div className="w-1 h-1 bg-purple-400 rounded-full animate-bounce shadow-sm shadow-purple-400/50" style={{ animationDelay: '0.1s' }} />
+                  <div className="w-1 h-1 bg-pink-400 rounded-full animate-bounce shadow-sm shadow-pink-400/50" style={{ animationDelay: '0.2s' }} />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isChatExpanded) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-4 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 shadow-2xl overflow-hidden chat-container border border-cyan-500/20 rounded-xl animate-scale-in">
           <div className="flex flex-col h-full">
             {/* Modern Neon Header */}
             <div className="border-b border-cyan-500/30 p-4 bg-gradient-to-r from-slate-900/50 to-slate-800/50 relative flex items-center justify-between shadow-lg backdrop-blur-sm">
@@ -364,10 +451,10 @@ export const InteractiveChatDemo = () => {
               
               <div className="flex items-center gap-1">
                 <Button
-                  onClick={handleToggleExpand}
+                  onClick={handleMinimize}
                   size="icon"
                   variant="ghost"
-                  className="w-8 h-8 hover:bg-cyan-500/20 text-cyan-400 hover:text-cyan-300"
+                  className="w-8 h-8 hover:bg-yellow-500/20 text-yellow-400 hover:text-yellow-300 transition-all duration-200"
                   title="Minimize"
                 >
                   <Minimize2 className="w-4 h-4" />
@@ -376,7 +463,7 @@ export const InteractiveChatDemo = () => {
                   onClick={handleClose}
                   size="icon"
                   variant="ghost"
-                  className="w-8 h-8 hover:bg-red-500/20 text-red-400 hover:text-red-300"
+                  className="w-8 h-8 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-all duration-200"
                   title="Close"
                 >
                   <X className="w-4 h-4" />
@@ -460,6 +547,39 @@ export const InteractiveChatDemo = () => {
                   />
                 </div>
                 
+                {/* Menu Button */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="w-10 h-10 hover:bg-purple-500/20 text-purple-400 hover:text-purple-300 transition-all duration-300 border border-purple-500/30 hover:border-purple-400/50"
+                      title="More options"
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-56 bg-slate-800/90 border border-purple-500/30 backdrop-blur-xl shadow-2xl"
+                  >
+                    <DropdownMenuItem 
+                      onClick={() => handleMenuAction('figma')}
+                      className="text-gray-100 hover:bg-purple-500/20 hover:text-purple-300 focus:bg-purple-500/20 focus:text-purple-300 cursor-pointer"
+                    >
+                      <Figma className="mr-2 h-4 w-4 text-purple-400" />
+                      <span>Integrate with Figma</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleMenuAction('upload')}
+                      className="text-gray-100 hover:bg-purple-500/20 hover:text-purple-300 focus:bg-purple-500/20 focus:text-purple-300 cursor-pointer"
+                    >
+                      <Upload className="mr-2 h-4 w-4 text-purple-400" />
+                      <span>Upload File</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
                 <Button 
                   onClick={() => handleSendMessage()}
                   disabled={!inputValue.trim() || isTyping}
@@ -489,190 +609,6 @@ export const InteractiveChatDemo = () => {
     console.log('Demo chat memory cleared. Refresh to reset the demo.');
   };
 
-  return (
-    <Card className="w-full max-w-2xl mx-auto border-cyan-500/30 shadow-2xl bg-black/40 backdrop-blur-2xl overflow-hidden relative">
-      <CardContent className="p-0 relative">
-        {/* Animated background grid */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 animate-pulse" style={{
-            backgroundImage: `linear-gradient(cyan 1px, transparent 1px), linear-gradient(90deg, cyan 1px, transparent 1px)`,
-            backgroundSize: '30px 30px'
-          }} />
-        </div>
-        
-        {/* Chat Header */}
-        <div className="border-b border-cyan-500/20 p-4 bg-gradient-to-r from-cyan-900/20 to-purple-900/20 relative">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {/* Floating neon bot avatar */}
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.6)] animate-pulse">
-                  <Bot className="h-6 w-6 text-white drop-shadow-lg" />
-                </div>
-                <div className="absolute inset-0 border border-cyan-400/30 rounded-full animate-ping" />
-              </div>
-              <div>
-                <h4 className="font-semibold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">AI App Builder</h4>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_6px_rgba(34,197,94,0.8)] animate-pulse" />
-                  <p className="text-sm text-gray-400">Online now</p>
-                </div>
-              </div>
-              <Badge className="bg-gradient-to-r from-green-400/20 to-cyan-400/20 text-green-400 border border-green-400/30 shadow-[0_0_10px_rgba(34,197,94,0.3)]">
-                <Zap className="w-3 h-3 mr-1 animate-pulse" />
-                Live Demo
-              </Badge>
-            </div>
-            
-            {/* Expand button for regular chat */}
-            <Button
-              onClick={handleToggleExpand}
-              size="icon"
-              variant="ghost"
-              className="w-8 h-8 hover:bg-cyan-400/20 text-cyan-400"
-              title="Expand to fullscreen"
-            >
-              <Maximize2 className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          {/* Header glow line */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
-        </div>
-
-        {/* Messages */}
-        <div className="h-96 overflow-y-auto p-4 space-y-4 relative">
-          {messages.map((message, msgIndex) => (
-            <div key={message.id} className={`flex gap-3 ${message.sender === 'user' ? 'flex-row-reverse' : ''} animate-fade-in`} style={{ animationDelay: `${msgIndex * 0.1}s` }}>
-              {/* Floating neon avatars */}
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 relative animate-float ${
-                message.sender === 'bot' 
-                  ? 'bg-gradient-to-r from-cyan-400 to-purple-500 shadow-[0_0_15px_rgba(6,182,212,0.5)]' 
-                  : 'bg-gradient-to-r from-pink-400 to-orange-400 shadow-[0_0_15px_rgba(236,72,153,0.5)]'
-              }`} style={{ animationDelay: `${msgIndex * 0.2}s` }}>
-                {message.sender === 'bot' ? (
-                  <Bot className="h-4 w-4 text-white drop-shadow-lg" />
-                ) : (
-                  <User className="h-4 w-4 text-white drop-shadow-lg" />
-                )}
-                {/* Avatar glow ring */}
-                <div className={`absolute inset-0 rounded-full border opacity-30 animate-ping ${
-                  message.sender === 'bot' ? 'border-cyan-400' : 'border-pink-400'
-                }`} />
-              </div>
-              
-              <div className={`max-w-[80%] ${message.sender === 'user' ? 'text-right' : ''}`}>
-                {/* Glowing message bubbles */}
-                <div className={`inline-block p-4 rounded-2xl relative overflow-hidden backdrop-blur-sm ${
-                  message.sender === 'bot'
-                    ? 'bg-gradient-to-r from-cyan-900/30 to-purple-900/30 border border-cyan-400/20 shadow-[0_0_20px_rgba(6,182,212,0.2)] rounded-tl-sm'
-                    : 'bg-gradient-to-r from-pink-900/30 to-orange-900/30 border border-pink-400/20 shadow-[0_0_20px_rgba(236,72,153,0.2)] rounded-tr-sm'
-                }`}>
-                  {/* Message bubble inner glow */}
-                  <div className={`absolute inset-0 rounded-2xl opacity-10 ${
-                    message.sender === 'bot'
-                      ? 'bg-gradient-to-r from-cyan-400 to-purple-400'
-                      : 'bg-gradient-to-r from-pink-400 to-orange-400'
-                  }`} />
-                  
-                  <p className="text-sm leading-relaxed relative z-10 text-gray-100">{message.content}</p>
-                  
-                  {/* Message border glow */}
-                  <div className={`absolute inset-0 rounded-2xl border-2 opacity-20 ${
-                    message.sender === 'bot' ? 'border-cyan-400' : 'border-pink-400'
-                  }`} />
-                </div>
-                
-                {/* Neon suggestion buttons */}
-                {message.suggestions && message.sender === 'bot' && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {message.suggestions.map((suggestion, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs border-cyan-400/30 bg-cyan-900/20 text-cyan-300 hover:bg-cyan-400/20 hover:border-cyan-400/50 hover:text-cyan-200 shadow-[0_0_10px_rgba(6,182,212,0.2)] hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all duration-300 backdrop-blur-sm"
-                        onClick={() => handleSuggestionClick(suggestion)}
-                      >
-                        <span className="relative z-10">{suggestion}</span>
-                      </Button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-          
-          {/* Neon Typing Indicator */}
-          {isTyping && (
-            <div className="flex gap-3 animate-fade-in">
-              <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)] animate-pulse relative">
-                <Bot className="h-4 w-4 text-white drop-shadow-lg" />
-                <div className="absolute inset-0 border border-cyan-400/30 rounded-full animate-ping" />
-              </div>
-              <div className="bg-gradient-to-r from-cyan-900/30 to-purple-900/30 border border-cyan-400/20 p-4 rounded-2xl rounded-tl-sm shadow-[0_0_20px_rgba(6,182,212,0.2)] backdrop-blur-sm relative overflow-hidden">
-                {/* Typing bubble inner glow */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-purple-400/10 rounded-2xl" />
-                
-                <div className="flex space-x-1 relative z-10">
-                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
-                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce shadow-[0_0_8px_rgba(168,85,247,0.6)]" style={{ animationDelay: '0.1s' }} />
-                  <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce shadow-[0_0_8px_rgba(236,72,153,0.6)]" style={{ animationDelay: '0.2s' }} />
-                </div>
-                
-                {/* Typing indicator border glow */}
-                <div className="absolute inset-0 rounded-2xl border border-cyan-400/20" />
-              </div>
-            </div>
-          )}
-          
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Futuristic Input */}
-        <div className="border-t border-cyan-500/20 p-4 bg-gradient-to-r from-cyan-900/10 to-purple-900/10 relative">
-          {/* Input glow line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
-          
-          <div className="flex gap-3">
-            {/* Neon input field */}
-            <div className="flex-1 relative">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className="bg-black/40 border border-cyan-400/30 text-gray-100 placeholder:text-gray-500 focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20 shadow-[inset_0_0_10px_rgba(6,182,212,0.1)] backdrop-blur-sm transition-all duration-300 pr-4"
-                disabled={isTyping}
-              />
-              {/* Input field glow effect */}
-              <div className="absolute inset-0 rounded-md bg-gradient-to-r from-cyan-400/5 to-purple-400/5 pointer-events-none" />
-              {inputValue && (
-                <div className="absolute inset-0 rounded-md shadow-[0_0_15px_rgba(6,182,212,0.3)] pointer-events-none" />
-              )}
-            </div>
-            
-            {/* Neon send button */}
-            <Button 
-              onClick={() => handleSendMessage()}
-              disabled={!inputValue.trim() || isTyping}
-              size="icon"
-              className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 border-0 shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)] transition-all duration-300 relative overflow-hidden group"
-            >
-              {/* Button glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-purple-400/20 blur-sm group-hover:blur-md transition-all duration-300" />
-              <Send className="h-4 w-4 relative z-10 text-white drop-shadow-lg" />
-            </Button>
-          </div>
-          
-          {/* Help text with neon accent */}
-          <p className="text-xs text-gray-400 mt-3 text-center flex items-center justify-center gap-2">
-            <Sparkles className="w-3 h-3 text-cyan-400 animate-pulse" />
-            Try the suggestions above or type your own response
-            <Sparkles className="w-3 h-3 text-purple-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  // This should never be reached since we only have initial, expanded, and minimized states
+  return null;
 };

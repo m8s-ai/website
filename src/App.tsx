@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ChatWindowProvider } from "@/contexts/ChatWindowContext";
 import { HomePage } from "./pages/HomePage";
 import { Marketplace } from "./pages/Marketplace";
 import { AutomationDetail } from "./pages/AutomationDetail";
@@ -28,7 +29,8 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
-          <TooltipProvider>
+          <ChatWindowProvider>
+            <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -49,6 +51,7 @@ const App = () => {
         {/* I'm disabling the assistant button for now */}
         {/* <AssistantButton /> */}
           </TooltipProvider>
+          </ChatWindowProvider>
         </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>

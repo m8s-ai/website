@@ -3,15 +3,19 @@ import { Bot, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useChatWindow } from "@/contexts/ChatWindowContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const PublicHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t } = useLanguage();
+  const { isChatExpanded, isChatMinimized } = useChatWindow();
 
   return (
-    <header className="glass-card border-b border-border/20 backdrop-blur-md sticky top-0 z-50">
+    <header className={`glass-card border-b border-border/20 backdrop-blur-md sticky top-0 z-50 transition-all duration-500 ease-in-out ${
+      isChatExpanded ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
+    }`}>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}

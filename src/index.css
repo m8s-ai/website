@@ -319,4 +319,118 @@ All colors MUST be HSL.
   .neon-scrollbar::-webkit-scrollbar-thumb:hover {
     box-shadow: 0 0 15px rgba(6, 182, 212, 0.8);
   }
+
+  /* Full-screen modal utilities */
+  .modal-no-scroll {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  /* Prevent scroll on touch devices */
+  .modal-no-scroll,
+  .modal-no-scroll body {
+    touch-action: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Focus management for full-screen modals */
+  .modal-focus-trap {
+    position: relative;
+    z-index: 9999;
+  }
+
+  /* Enhanced chat animations */
+  @keyframes expandChat {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes minimizeChat {
+    from {
+      transform: scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  @keyframes expandChatToFullscreen {
+    from {
+      transform: scale(0.3) translate(200px, 150px);
+      opacity: 0.5;
+      border-radius: 16px;
+    }
+    50% {
+      transform: scale(0.8) translate(50px, 50px);
+      opacity: 0.8;
+      border-radius: 12px;
+    }
+    to {
+      transform: scale(1) translate(0px, 0px);
+      opacity: 1;
+      border-radius: 16px;
+    }
+  }
+
+  @keyframes minimizeChatFromFullscreen {
+    from {
+      transform: scale(1) translate(0px, 0px);
+      opacity: 1;
+      border-radius: 16px;
+    }
+    50% {
+      transform: scale(0.8) translate(50px, 50px);
+      opacity: 0.8;
+      border-radius: 12px;
+    }
+    to {
+      transform: scale(0.3) translate(200px, 150px);
+      opacity: 0.5;
+      border-radius: 16px;
+    }
+  }
+
+  .chat-expanded {
+    animation: expandChatToFullscreen 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  .chat-minimized {
+    animation: minimizeChatFromFullscreen 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  /* Prevent scrolling and selection when chat is expanded */
+  .chat-modal-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .chat-modal-open * {
+    pointer-events: none;
+  }
+
+  .chat-modal-open .chat-container,
+  .chat-modal-open .chat-container * {
+    pointer-events: auto;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
 }

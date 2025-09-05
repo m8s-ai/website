@@ -15,6 +15,8 @@ interface Message {
 interface AssistantChatProps {
   isOpen: boolean;
   onClose: () => void;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
 interface OnboardingModalProps {
@@ -106,20 +108,56 @@ const OnboardingSpeechBubble: React.FC<OnboardingModalProps> = ({ isOpen, onClos
   );
 };
 
-export const AssistantChat: React.FC<AssistantChatProps> = ({ isOpen, onClose }) => {
+// Session storage keys
+const CHAT_MESSAGES_KEY = 'mate_chat_messages';
+const CHAT_EXPANDED_KEY = 'mate_chat_expanded';
+
+export const AssistantChat: React.FC<AssistantChatProps> = ({ isOpen, onClose, isExpanded: propIsExpanded, onToggleExpand }) => {
   const { t } = useLanguage();
-  const [messages, setMessages] = useState<Message[]>([
-    {
+  const [isExpanded, setIsExpanded] = useState(() => {
+    return propIsExpanded !== undefined ? propIsExpanded : sessionStorage.getItem(CHAT_EXPANDED_KEY) === 'true';
+  });
+  
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Load messages from session storage
+    const savedMessages = sessionStorage.getItem(CHAT_MESSAGES_KEY);
+    if (savedMessages) {
+      try {
+        const parsed = JSON.parse(savedMessages);
+        return parsed.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+      } catch (e) {
+        console.warn('Failed to parse saved messages:', e);
+      }
+    }
+    // Default greeting message
+    return [{
       id: '1',
       text: t('assistant.greeting') || 'How can I help your business?',
       sender: 'assistant',
       timestamp: new Date()
-    }
-  ]);
+    }];
+  });
+  
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [savedScrollPosition, setSavedScrollPosition] = useState(0);
+
+  // Save messages to session storage whenever they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      sessionStorage.setItem(CHAT_MESSAGES_KEY, JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Save expanded state to session storage
+  useEffect(() => {
+    sessionStorage.setItem(CHAT_EXPANDED_KEY, isExpanded.toString());
+  }, [isExpanded]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -134,6 +172,52 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({ isOpen, onClose })
       inputRef.current.focus();
     }
   }, [isOpen]);
+
+  const handleToggleExpand = () => {
+    if (!isExpanded) {
+      // Save current scroll position when expanding
+      setSavedScrollPosition(window.scrollY);
+      // Prevent body scroll with enhanced CSS classes
+      document.body.classList.add('chat-modal-open');
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      
+      // Prevent wheel and touch events on document
+      document.addEventListener('wheel', preventDefault, { passive: false });
+      document.addEventListener('touchmove', preventDefault, { passive: false });
+      document.addEventListener('keydown', preventArrowKeys, false);
+    } else {
+      // Restore scroll when minimizing
+      document.body.classList.remove('chat-modal-open');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, savedScrollPosition);
+      
+      // Remove event listeners
+      document.removeEventListener('wheel', preventDefault);
+      document.removeEventListener('touchmove', preventDefault);
+      document.removeEventListener('keydown', preventArrowKeys);
+    }
+    
+    setIsExpanded(!isExpanded);
+    if (onToggleExpand) {
+      onToggleExpand();
+    }
+  };
+
+  const preventDefault = (e: Event) => {
+    e.preventDefault();
+  };
+
+  const preventArrowKeys = (e: KeyboardEvent) => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,92 +269,145 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({ isOpen, onClose })
     return t('assistant.default_response') || 'That\'s a great question! Our AI automation solutions can help with various business challenges. Could you tell me more about your specific needs so I can provide more targeted assistance?';
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md h-[600px] p-0 gap-0 glass-card border-primary/20 [&>*:last-child]:hidden">
-        <DialogHeader className="p-4 pb-0">
-          <DialogTitle className="flex items-center gap-3 text-lg">
-            <Button
-              onClick={onClose}
-              size="icon"
-              variant="ghost"
-              className="w-8 h-8 hover:bg-secondary/50"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-            <div className="flex items-center justify-center w-10 h-10 bg-gradient-primary rounded-full">
-              <WhiteRobotIcon size={20} />
-            </div>
-            <span className="bg-gradient-primary bg-clip-text text-transparent font-semibold">
-              AI Assistant
-            </span>
-          </DialogTitle>
-        </DialogHeader>
+  // Handle cleanup when chat is closed
+  useEffect(() => {
+    return () => {
+      if (isExpanded) {
+        // Restore scroll if component unmounts while expanded
+        document.body.classList.remove('chat-modal-open');
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        
+        // Remove event listeners
+        document.removeEventListener('wheel', preventDefault);
+        document.removeEventListener('touchmove', preventDefault);
+        document.removeEventListener('keydown', preventArrowKeys);
+      }
+    };
+  }, [isExpanded]);
 
-        {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                  message.sender === 'user'
-                    ? 'bg-gradient-primary text-white'
-                    : 'bg-secondary/50 text-foreground border border-border/50'
-                }`}
-              >
-                <p className="text-sm leading-relaxed">{message.text}</p>
-                <p className={`text-xs mt-1 ${
-                  message.sender === 'user' ? 'text-white/70' : 'text-muted-foreground'
-                }`}>
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </p>
+  if (!isOpen) return null;
+
+  return (
+    <div className={`fixed inset-0 z-50 transition-all duration-500 ease-in-out ${
+      isExpanded 
+        ? 'bg-black/50 backdrop-blur-sm' 
+        : 'bg-transparent pointer-events-none'
+    }`}>
+      <div className={`
+        fixed transition-all duration-500 ease-in-out glass-card border border-primary/20 chat-container
+        ${isExpanded 
+          ? 'inset-4 rounded-2xl shadow-2xl chat-expanded' 
+          : 'bottom-6 right-6 w-80 h-96 rounded-2xl shadow-xl chat-minimized'
+        }
+      `}>
+        <div className="flex flex-col h-full">
+          <div className="p-4 pb-0 bg-gradient-primary rounded-t-2xl">
+            <div className="flex items-center justify-between text-white">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-white/20 rounded-full">
+                  <WhiteRobotIcon size={20} />
+                </div>
+                <span className="text-white font-semibold">AI Assistant</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleToggleExpand}
+                  size="icon"
+                  variant="ghost"
+                  className="w-8 h-8 hover:bg-white/20 text-white"
+                  title={isExpanded ? "Minimize" : "Expand"}
+                >
+                  {isExpanded ? (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                  )}
+                </Button>
+                <Button
+                  onClick={onClose}
+                  size="icon"
+                  variant="ghost"
+                  className="w-8 h-8 hover:bg-white/20 text-white"
+                  title="Close"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
             </div>
-          ))}
-          
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="bg-secondary/50 text-foreground border border-border/50 rounded-lg px-3 py-2">
-                <div className="flex items-center space-x-1">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+
+          {/* Messages Container */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-background">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[80%] rounded-lg px-3 py-2 ${
+                    message.sender === 'user'
+                      ? 'bg-gradient-primary text-white'
+                      : 'bg-secondary/50 text-foreground border border-border/50'
+                  }`}
+                >
+                  <p className="text-sm leading-relaxed">{message.text}</p>
+                  <p className={`text-xs mt-1 ${
+                    message.sender === 'user' ? 'text-white/70' : 'text-muted-foreground'
+                  }`}>
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              </div>
+            ))}
+            
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="bg-secondary/50 text-foreground border border-border/50 rounded-lg px-3 py-2">
+                  <div className="flex items-center space-x-1">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Form */}
-        <form onSubmit={handleSendMessage} className="p-4 pt-0">
-          <div className="flex items-center space-x-2">
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder={t('assistant.input_placeholder') || 'Ask me about AI automation...'}
-              className="flex-1 px-3 py-2 bg-secondary/50 border border-border/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
-              disabled={isTyping}
-            />
-            <Button 
-              type="submit" 
-              size="icon" 
-              disabled={!inputValue.trim() || isTyping}
-              className="bg-gradient-primary hover:opacity-90 text-white shadow-glow"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
+            )}
+            <div ref={messagesEndRef} />
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+
+          {/* Input Form */}
+          <form onSubmit={handleSendMessage} className="p-4 pt-0 bg-background border-t border-border rounded-b-2xl">
+            <div className="flex items-center space-x-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder={t('assistant.input_placeholder') || 'Ask me about AI automation...'}
+                className="flex-1 px-3 py-2 bg-secondary/50 border border-border/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
+                disabled={isTyping}
+              />
+              <Button 
+                type="submit" 
+                size="icon" 
+                disabled={!inputValue.trim() || isTyping}
+                className="bg-gradient-primary hover:opacity-90 text-white shadow-glow"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -280,10 +417,18 @@ export const AssistantChat: React.FC<AssistantChatProps> = ({ isOpen, onClose })
   console.log('Mate assistant onboarding reset. Refresh the page to see it again.');
 };
 
+// Clear chat memory function for debugging
+(window as any).clearChatMemory = () => {
+  sessionStorage.removeItem(CHAT_MESSAGES_KEY);
+  sessionStorage.removeItem(CHAT_EXPANDED_KEY);
+  console.log('Chat memory cleared. Refresh to reset the chat.');
+};
+
 // Floating Assistant Button Component
 export const AssistantButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     // Check if onboarding has been shown before
@@ -300,29 +445,40 @@ export const AssistantButton: React.FC = () => {
   const handleStartChatFromOnboarding = () => {
     setIsOpen(true);
   };
+
+  const handleToggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
   
   return (
     <>
-      <Button
-        onClick={() => setIsOpen(true)}
-        size="icon"
-        className="fixed bottom-6 right-6 w-20 h-20 bg-gradient-primary hover:opacity-90 text-white shadow-glow rounded-full z-40 animate-float"
-        style={{
-          boxShadow: '0 8px 32px -8px hsl(260 85% 65% / 0.4), 0 0 0 1px hsl(260 85% 65% / 0.2)'
-        }}
-      >
-        <WhiteRobotIcon size={48} />
-      </Button>
+      {!isOpen && (
+        <Button
+          onClick={() => setIsOpen(true)}
+          size="icon"
+          className="fixed bottom-6 right-6 w-20 h-20 bg-gradient-primary hover:opacity-90 text-white shadow-glow rounded-full z-40 animate-float"
+          style={{
+            boxShadow: '0 8px 32px -8px hsl(260 85% 65% / 0.4), 0 0 0 1px hsl(260 85% 65% / 0.2)'
+          }}
+        >
+          <WhiteRobotIcon size={48} />
+        </Button>
+      )}
       
       <OnboardingSpeechBubble
-        isOpen={showOnboarding}
+        isOpen={showOnboarding && !isOpen}
         onClose={() => setShowOnboarding(false)}
         onStartChat={handleStartChatFromOnboarding}
       />
       
       <AssistantChat 
         isOpen={isOpen} 
-        onClose={() => setIsOpen(false)} 
+        onClose={() => {
+          setIsOpen(false);
+          setIsExpanded(false);
+        }}
+        isExpanded={isExpanded}
+        onToggleExpand={handleToggleExpand}
       />
     </>
   );

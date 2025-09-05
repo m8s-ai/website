@@ -17,7 +17,7 @@ import { ContactPage } from "./pages/ContactPage";
 import { AppBuilderPage } from "./pages/AppBuilderPage";
 import NotFound from "./pages/NotFound";
 import { Protected } from "./components/Protected";
-import { AssistantButton } from "./components/AssistantChat";
+
 
 
 const queryClient = new QueryClient();
@@ -46,7 +46,8 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-        <AssistantButton />
+        {/* I'm disabling the assistant button for now */}
+        {/* <AssistantButton /> */}
           </TooltipProvider>
         </LanguageProvider>
       </ThemeProvider>

@@ -100,19 +100,14 @@ export const AppBuilderPage = () => {
               </h1>
             </div>
 
-            <div className="animate-fade-in mb-8" style={{ animationDelay: '0.2s' }}>
+            <div className="animate-fade-in mb-12" style={{ animationDelay: '0.2s' }}>
               <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
                 {currentVariant.subtitle}
               </p>
             </div>
 
-            {/* Interactive Chat Demo */}
-            <div className="mb-12">
-              <InteractiveChatDemo />
-            </div>
-            
-            {/* Process Flow - Simplified */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-3xl mx-auto">
+            {/* Process Flow - Above Chat */}
+            <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.3s' }}>
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
                   <FileText className="h-8 w-8 text-white" />
@@ -134,6 +129,11 @@ export const AppBuilderPage = () => {
                 <h3 className="font-semibold mb-2">Get Accurate Quote & POC</h3>
                 <p className="text-sm text-muted-foreground">Know exactly what it costs AND see how it looks</p>
               </div>
+            </div>
+            
+            {/* Interactive Chat Demo */}
+            <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <InteractiveChatDemo />
             </div>
           </div>
         </div>

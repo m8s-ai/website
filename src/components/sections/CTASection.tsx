@@ -40,9 +40,9 @@ export const CTASection = () => {
             </Button>
             
             <Button asChild variant="outline" size="lg" className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10 border-primary/30">
-              <Link to="/app-builder" className="flex items-center gap-2">
+              <Link to="/services" className="flex items-center gap-2">
                 <Zap className="h-5 w-5" />
-                Try App Builder
+                View All Services
                 {isRTL ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
               </Link>
             </Button>

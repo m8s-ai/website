@@ -33,13 +33,13 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<AppBuilderPage />} />
             <Route path="/solutions" element={<SolutionsPage />} />
             <Route path="/industries" element={<IndustriesPage />} />
             <Route path="/resources" element={<ResourcesPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/app-builder" element={<AppBuilderPage />} />
+            <Route path="/services" element={<HomePage />} />
             <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
             <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -31,6 +31,9 @@ export const PublicHeader = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
+            <Link to="/services" className="text-foreground hover:text-primary transition-colors font-medium">
+              Services
+            </Link>
             <Link to="/solutions" className="text-foreground hover:text-primary transition-colors font-medium">
               {t('nav.solutions')}
             </Link>
@@ -75,6 +78,9 @@ export const PublicHeader = () => {
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-border/20">
             <nav className="flex flex-col space-y-4 pt-4">
+              <Link to="/services" className="text-foreground hover:text-primary transition-colors font-medium">
+                Services
+              </Link>
               <Link to="/solutions" className="text-foreground hover:text-primary transition-colors font-medium">
                 {t('nav.solutions')}
               </Link>

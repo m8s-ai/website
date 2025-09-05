@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { PublicHeader } from "@/components/PublicHeader";
 import { InteractiveChatDemo } from "@/components/InteractiveChatDemo";
-import { ArrowRight, MessageSquare, FileText, Smartphone, DollarSign, CheckCircle, Zap, Clock, Shield } from "lucide-react";
+import { ArrowRight, ArrowLeft, MessageSquare, FileText, Smartphone, DollarSign, CheckCircle, Zap, Clock, Shield } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export const AppBuilderPage = () => {
@@ -23,23 +23,23 @@ export const AppBuilderPage = () => {
   // A/B Test variants
   const variants = {
     A: {
-      title: "From Idea to Working App in 30 Minutes",
-      subtitle: "See your app come to life before you invest a penny",
+      title: t('app_builder.hero.title_a'),
+      subtitle: t('app_builder.hero.subtitle_a'),
       focus: "speed"
     },
     B: {
-      title: "See Your App Before You Build It",
-      subtitle: "Get a working prototype to test with users and investors",
+      title: t('app_builder.hero.title_b'),
+      subtitle: t('app_builder.hero.subtitle_b'),
       focus: "risk"
     },
     C: {
-      title: "Know Exactly What Your App Will Cost & Look Like",
-      subtitle: "Get accurate pricing, timeline, and a working prototype to test",
+      title: t('app_builder.hero.title_c'),
+      subtitle: t('app_builder.hero.subtitle_c'),
       focus: "cost"
     },
     D: {
-      title: "No Technical Knowledge Required",
-      subtitle: "Our AI handles the complex stuff, you focus on your vision",
+      title: t('app_builder.hero.title_d'),
+      subtitle: t('app_builder.hero.subtitle_d'),
       focus: "simplicity"
     }
   };
@@ -75,33 +75,41 @@ export const AppBuilderPage = () => {
       
       {/* Hero Section */}
       <section className="relative pt-24 md:pt-32 pb-12 overflow-hidden">
-        {/* Background Effects */}
+        {/* Enhanced Background Effects */}
         <div className="absolute inset-0 bg-gradient-hero opacity-30"></div>
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-primary/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-secondary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          {/* Floating neon orbs */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-cyan-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-pink-400/15 to-cyan-400/15 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          
+          {/* Subtle grid overlay */}
+          <div className="absolute inset-0 opacity-5" style={{
+            backgroundImage: `linear-gradient(rgba(6,182,212,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.5) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }} />
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center max-w-5xl mx-auto">
-            {/* Social Proof Badge */}
+            {/* Enhanced Social Proof Badge */}
             <div className="animate-fade-in mb-6">
-              <Badge className="bg-gradient-primary/10 border-primary/20 text-primary">
+              <Badge className="bg-gradient-to-r from-cyan-400/20 to-purple-400/20 border border-cyan-400/30 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)] backdrop-blur-sm">
                 ✨ Interactive Project Validation System
               </Badge>
             </div>
 
-            {/* Dynamic A/B Testing Headlines */}
+            {/* Enhanced Dynamic Headlines */}
             <div className="animate-slide-up mb-6">
               <h1 className="text-4xl md:text-6xl font-bold leading-tight font-display">
-                <span className="bg-gradient-primary bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg">
                   {currentVariant.title}
                 </span>
               </h1>
             </div>
 
             <div className="animate-fade-in mb-12" style={{ animationDelay: '0.2s' }}>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
                 {currentVariant.subtitle}
               </p>
             </div>
@@ -112,22 +120,22 @@ export const AppBuilderPage = () => {
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
                   <FileText className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="font-semibold mb-2">Get Professional Docs</h3>
-                <p className="text-sm text-muted-foreground">PRD, architecture & flow diagrams</p>
+                <h3 className="font-semibold mb-2">{t('app_builder.process.docs_title')}</h3>
+                <p className="text-sm text-muted-foreground">{t('app_builder.process.docs_description')}</p>
               </div>
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
                   <Smartphone className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="font-semibold mb-2">See Working Prototype</h3>
-                <p className="text-sm text-muted-foreground">Test your app in real-time</p>
+                <h3 className="font-semibold mb-2">{t('app_builder.process.prototype_title')}</h3>
+                <p className="text-sm text-muted-foreground">{t('app_builder.process.prototype_description')}</p>
               </div>
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
                   <DollarSign className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="font-semibold mb-2">Get Accurate Quote & POC</h3>
-                <p className="text-sm text-muted-foreground">Know exactly what it costs AND see how it looks</p>
+                <h3 className="font-semibold mb-2">{t('app_builder.process.quote_title')}</h3>
+                <p className="text-sm text-muted-foreground">{t('app_builder.process.quote_description')}</p>
               </div>
             </div>
             
@@ -139,32 +147,38 @@ export const AppBuilderPage = () => {
         </div>
       </section>
 
-      {/* Lead Capture Form */}
-      <section className="py-12 bg-muted/30">
-        <div className="container mx-auto px-6">
+      {/* Enhanced Lead Capture Form */}
+      <section className="py-12 bg-black/20 backdrop-blur-xl relative overflow-hidden">
+        {/* Form background effects */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-1/4 w-32 h-32 bg-cyan-400/20 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-purple-400/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+        
+        <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-2xl mx-auto">
-            <Card className="border-primary/20 shadow-xl">
+            <Card className="border-cyan-500/30 shadow-2xl bg-black/40 backdrop-blur-xl">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold">Get Your Complete App Package in 24 Hours</CardTitle>
-                <CardDescription className="text-lg">
-                  Professional docs + working prototype + accurate pricing - everything you need to move forward
+                <CardTitle className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">{t('app_builder.form.title')}</CardTitle>
+                <CardDescription className="text-lg text-gray-300">
+                  {t('app_builder.form.subtitle')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Full Name *</label>
+                      <label className="block text-sm font-medium mb-2">{t('app_builder.form.name_label')} *</label>
                       <Input
                         required
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="Your name"
+                        placeholder={t('app_builder.form.name_label')}
                         className="w-full"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Email Address *</label>
+                      <label className="block text-sm font-medium mb-2">{t('app_builder.form.email_label')} *</label>
                       <Input
                         type="email"
                         required
@@ -177,12 +191,12 @@ export const AppBuilderPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">Describe Your App Idea *</label>
+                    <label className="block text-sm font-medium mb-2">{t('app_builder.form.idea_label')} *</label>
                     <Textarea
                       required
                       value={formData.appIdea}
                       onChange={(e) => setFormData(prev => ({ ...prev, appIdea: e.target.value }))}
-                      placeholder="Tell us what your app should do, who it's for, and what problems it solves..."
+                      placeholder={t('app_builder.form.idea_placeholder')}
                       rows={4}
                       className="w-full"
                     />
@@ -190,20 +204,20 @@ export const AppBuilderPage = () => {
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Industry</label>
+                      <label className="block text-sm font-medium mb-2">{t('app_builder.form.industry_label')}</label>
                       <Input
                         value={formData.industry}
                         onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
-                        placeholder="e.g., Healthcare, Finance, E-commerce"
+                        placeholder={t('app_builder.form.industry_placeholder')}
                         className="w-full"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Desired Timeline</label>
+                      <label className="block text-sm font-medium mb-2">{t('app_builder.form.timeline_label')}</label>
                       <Input
                         value={formData.timeline}
                         onChange={(e) => setFormData(prev => ({ ...prev, timeline: e.target.value }))}
-                        placeholder="e.g., 3 months, ASAP, Q2 2025"
+                        placeholder={t('app_builder.form.timeline_placeholder')}
                         className="w-full"
                       />
                     </div>
@@ -214,11 +228,11 @@ export const AppBuilderPage = () => {
                     size="lg"
                     className="w-full bg-gradient-primary hover:scale-105 text-white shadow-glow py-6 text-xl font-bold transform transition-all duration-300"
                   >
-                    Get My Complete Package <ArrowRight className="ml-2 h-6 w-6" />
+                    {t('app_builder.form.submit')} {isRTL ? <ArrowLeft className="mr-2 h-6 w-6" /> : <ArrowRight className="ml-2 h-6 w-6" />}
                   </Button>
                   
                   <p className="text-center text-sm text-muted-foreground">
-                    No commitment required • See cost & prototype first • 24-hour delivery
+                    {t('app_builder.form.disclaimer')}
                   </p>
                 </form>
               </CardContent>
@@ -227,48 +241,60 @@ export const AppBuilderPage = () => {
         </div>
       </section>
 
-      {/* Trust & Features Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-6">
+      {/* Enhanced Trust & Features Section */}
+      <section className="py-16 relative overflow-hidden">
+        {/* Section background effects */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-1/4 right-0 w-96 h-96 bg-gradient-to-l from-cyan-400/10 to-transparent rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 left-0 w-96 h-96 bg-gradient-to-r from-purple-400/10 to-transparent rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why Smart Founders Choose Our <span className="bg-gradient-primary bg-clip-text text-transparent">Validation System</span>
+              {t('app_builder.trust.title').split(' Validation System')[0]} <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Validation System</span>
             </h2>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-primary/10 hover:border-primary/30 transition-colors">
+            <Card className="border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-300 bg-black/20 backdrop-blur-sm hover:shadow-[0_0_20px_rgba(6,182,212,0.1)] group">
               <CardContent className="pt-6">
                 <div className="flex items-center mb-4">
-                  <Zap className="h-8 w-8 text-primary mr-3" />
-                  <h3 className="text-xl font-semibold">Lightning Fast</h3>
+                  <div className="p-2 bg-gradient-to-r from-cyan-400/20 to-purple-400/20 rounded-lg mr-3 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300">
+                    <Zap className="h-6 w-6 text-cyan-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-100">{t('app_builder.features.speed_title')}</h3>
                 </div>
-                <p className="text-muted-foreground">
-                  Get your working prototype in 24 hours, not weeks. Perfect for investor meetings and user testing.
+                <p className="text-gray-400">
+                  {t('app_builder.features.speed_description')}
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-primary/10 hover:border-primary/30 transition-colors">
+            <Card className="border-purple-400/20 hover:border-purple-400/40 transition-all duration-300 bg-black/20 backdrop-blur-sm hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] group">
               <CardContent className="pt-6">
                 <div className="flex items-center mb-4">
-                  <Shield className="h-8 w-8 text-primary mr-3" />
-                  <h3 className="text-xl font-semibold">Risk-Free Validation</h3>
+                  <div className="p-2 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-lg mr-3 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-300">
+                    <Shield className="h-6 w-6 text-purple-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-100">{t('app_builder.features.risk_title')}</h3>
                 </div>
-                <p className="text-muted-foreground">
-                  See exactly what you're getting before investing in full development. No surprises, no regrets.
+                <p className="text-gray-400">
+                  {t('app_builder.features.risk_description')}
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-primary/10 hover:border-primary/30 transition-colors">
+            <Card className="border-pink-400/20 hover:border-pink-400/40 transition-all duration-300 bg-black/20 backdrop-blur-sm hover:shadow-[0_0_20px_rgba(236,72,153,0.1)] group">
               <CardContent className="pt-6">
                 <div className="flex items-center mb-4">
-                  <Clock className="h-8 w-8 text-primary mr-3" />
-                  <h3 className="text-xl font-semibold">Save Months</h3>
+                  <div className="p-2 bg-gradient-to-r from-pink-400/20 to-cyan-400/20 rounded-lg mr-3 group-hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] transition-all duration-300">
+                    <Clock className="h-6 w-6 text-pink-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-100">{t('app_builder.features.time_title')}</h3>
                 </div>
-                <p className="text-muted-foreground">
-                  Skip the traditional discovery phase. Our AI conversation extracts everything needed for accurate planning.
+                <p className="text-gray-400">
+                  {t('app_builder.features.time_description')}
                 </p>
               </CardContent>
             </Card>
@@ -276,19 +302,28 @@ export const AppBuilderPage = () => {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-12 bg-muted/30">
-        <div className="container mx-auto px-6 text-center">
+      {/* Enhanced Social Proof */}
+      <section className="py-12 bg-black/20 backdrop-blur-xl relative overflow-hidden">
+        {/* Social proof background effects */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent"></div>
+        </div>
+        
+        <div className="container mx-auto px-6 text-center relative z-10">
           <div className="flex items-center justify-center mb-8">
             {[...Array(5)].map((_, i) => (
-              <CheckCircle key={i} className="h-6 w-6 text-green-500 mx-1" />
+              <div key={i} className="mx-1 relative">
+                <CheckCircle className="h-6 w-6 text-green-400 drop-shadow-lg" />
+                <div className="absolute inset-0 rounded-full border border-green-400/30 animate-ping" style={{ animationDelay: `${i * 0.2}s` }} />
+              </div>
             ))}
           </div>
-          <p className="text-lg font-medium text-muted-foreground mb-4">
-            "This prototype helped us raise $2M in seed funding. Investors could actually see and test our vision."
+          <p className="text-lg font-medium text-gray-200 mb-4 max-w-2xl mx-auto">
+            "{t('app_builder.social_proof.quote')}"
           </p>
-          <p className="text-sm text-muted-foreground">
-            — Sarah Chen, CEO of TechStart (Y Combinator W23)
+          <p className="text-sm text-gray-400">
+            — <span className="text-cyan-400">{t('app_builder.social_proof.author')}</span>
           </p>
         </div>
       </section>

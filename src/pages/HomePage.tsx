@@ -184,14 +184,14 @@ export const HomePage = () => {
           {/* Close Button */}
           <div className="space-y-4 pt-4">
             <button
-              onClick={() => navigate('/app-builder')}
+              onClick={() => navigate('/terminal')}
               className="bg-transparent border-2 border-green-400 text-green-400 px-8 py-3 text-lg font-mono hover:bg-green-400 hover:text-black transition-colors duration-200"
             >
               EXPLORE MORE SOLUTIONS
             </button>
             
             <div className="text-gray-500 text-sm">
-              Continue to our full platform
+              Continue to our terminal interface
             </div>
           </div>
 

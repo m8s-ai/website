@@ -93,7 +93,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
         }
         setGreetingText(prev => prev + GREETING_MESSAGE[currentChar]);
         setCurrentChar(prev => prev + 1);
-      }, 50); // Fast typing effect
+      }, 20); // Ultra fast typing effect
       return () => clearTimeout(timer);
     }
   }, [showGreeting, currentChar, audioEnabled]);
@@ -103,7 +103,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
     if (showGreeting && currentChar >= GREETING_MESSAGE.length) {
       const timer = setTimeout(() => {
         setConversationStarted(true);
-      }, 2000);
+      }, 800);
       return () => clearTimeout(timer);
     }
   }, [showGreeting, currentChar]);

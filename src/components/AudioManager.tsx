@@ -14,6 +14,8 @@ export interface AudioManagerRef {
   stopBackgroundAmbient: () => void;
   playTransitionSound: () => Promise<void>;
   playCompletionSound: () => Promise<void>;
+  playGenerationAmbient: () => Promise<void>;
+  stopGenerationAmbient: () => void;
 }
 
 // Create synthetic audio using Web Audio API for fallback
@@ -48,6 +50,9 @@ export const useAudioManager = (props: AudioManagerProps = {}): AudioManagerRef 
   const audioContextRef = useRef<AudioContext | null>(null);
   const backgroundAudioRef = useRef<OscillatorNode | null>(null);
   const backgroundGainRef = useRef<GainNode | null>(null);
+  const generationAudioRef = useRef<OscillatorNode | null>(null);
+  const generationGainRef = useRef<GainNode | null>(null);
+  const generationNoiseRef = useRef<AudioBufferSourceNode | null>(null);
 
   useEffect(() => {
     if (isEnabled) {
@@ -166,6 +171,73 @@ export const useAudioManager = (props: AudioManagerProps = {}): AudioManagerRef 
     }, completionSequence.length * 200);
   };
 
+  const playGenerationAmbient = async (): Promise<void> => {
+    if (!isEnabled || !audioContextRef.current || generationAudioRef.current) return;
+    
+    try {
+      // Create Pip-Boy style background ambience with low frequency hum and static
+      const oscillator = audioContextRef.current.createOscillator();
+      const gainNode = audioContextRef.current.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContextRef.current.destination);
+      
+      // Low frequency hum similar to Pip-Boy radio static
+      oscillator.frequency.setValueAtTime(60, audioContextRef.current.currentTime);
+      oscillator.type = 'sawtooth'; // More authentic electronic sound
+      
+      gainNode.gain.setValueAtTime(0, audioContextRef.current.currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume * 0.04, audioContextRef.current.currentTime + 2);
+      
+      oscillator.start();
+      
+      generationAudioRef.current = oscillator;
+      generationGainRef.current = gainNode;
+      
+      // Add some static noise for authenticity
+      if (audioContextRef.current) {
+        const bufferSize = audioContextRef.current.sampleRate * 0.1; // 0.1 second of noise
+        const buffer = audioContextRef.current.createBuffer(1, bufferSize, audioContextRef.current.sampleRate);
+        const output = buffer.getChannelData(0);
+        
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = (Math.random() * 2 - 1) * 0.02; // Very quiet static
+        }
+        
+        const whiteNoise = audioContextRef.current.createBufferSource();
+        const noiseGain = audioContextRef.current.createGain();
+        
+        whiteNoise.buffer = buffer;
+        whiteNoise.loop = true;
+        noiseGain.gain.value = 0.03;
+        
+        whiteNoise.connect(noiseGain);
+        noiseGain.connect(audioContextRef.current.destination);
+        whiteNoise.start();
+        
+        generationNoiseRef.current = whiteNoise;
+      }
+    } catch (error) {
+      console.warn('Could not start generation ambient sound:', error);
+    }
+  };
+
+  const stopGenerationAmbient = (): void => {
+    if (generationAudioRef.current && generationGainRef.current) {
+      generationGainRef.current.gain.linearRampToValueAtTime(0, audioContextRef.current!.currentTime + 1);
+      setTimeout(() => {
+        generationAudioRef.current?.stop();
+        generationAudioRef.current = null;
+        generationGainRef.current = null;
+      }, 1000);
+    }
+    
+    if (generationNoiseRef.current) {
+      generationNoiseRef.current.stop();
+      generationNoiseRef.current = null;
+    }
+  };
+
   return {
     playBootSound,
     playTypingSound,
@@ -175,5 +247,7 @@ export const useAudioManager = (props: AudioManagerProps = {}): AudioManagerRef 
     stopBackgroundAmbient,
     playTransitionSound,
     playCompletionSound,
+    playGenerationAmbient,
+    stopGenerationAmbient,
   };
 };

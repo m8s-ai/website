@@ -302,6 +302,17 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     return () => clearInterval(interval);
   }, []);
 
+  // Background music effect for generation
+  useEffect(() => {
+    if (isGenerating) {
+      // Start Pip-Boy style generation ambient sound
+      audio.playGenerationAmbient();
+    } else {
+      // Stop generation ambient sound when complete
+      audio.stopGenerationAmbient();
+    }
+  }, [isGenerating, audio]);
+
   // Generation effect
   useEffect(() => {
     if (isGenerating && generationStep < GENERATION_STEPS.length) {

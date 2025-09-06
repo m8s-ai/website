@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAudioManager } from './AudioManager';
 
 // Conversation wave structure based on your methodology
@@ -258,6 +259,7 @@ const CONVERSATION_WAVES: Wave[] = [
 
 export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComplete }) => {
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
+  const navigate = useNavigate();
   
   const [currentWave, setCurrentWave] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -293,6 +295,17 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const playCompletionSound = useCallback(async () => {
     await audio.playCompletionSound();
   }, [audio]);
+
+  const handleAbort = useCallback(async () => {
+    await audio.playSelectionSound();
+    
+    // Show clearing message briefly
+    setValidationMessage('Clearing project...');
+    
+    setTimeout(() => {
+      navigate('/terminal');
+    }, 1500);
+  }, [audio, navigate]);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -474,10 +487,20 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     const totalTime = isDev ? '10 seconds' : '2-3 minutes';
     
     return (
-      <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
-        <div className="text-green-300 text-xl mb-4">
-          🚀 GENERATING YOUR PROJECT PACKAGE
-        </div>
+      <div className="relative min-h-screen">
+        {/* Abort button - always visible in bottom-left */}
+        <button
+          onClick={handleAbort}
+          className="fixed bottom-4 left-4 z-50 bg-transparent border border-red-400/30 text-red-400/60 px-3 py-2 text-xs font-mono hover:border-red-400 hover:text-red-400 transition-all duration-300 hover:bg-red-400/10"
+          title="Abort and return to website"
+        >
+          ⏸ ABORT
+        </button>
+
+        <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
+          <div className="text-green-300 text-xl mb-4">
+            🚀 GENERATING YOUR PROJECT PACKAGE
+          </div>
         
         <div className="text-amber-300 text-sm mb-8">
           This process typically takes {totalTime}. Please don't close this window.
@@ -518,6 +541,16 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         <div className="text-gray-500 text-xs mt-4">
           {isDev ? 'Development mode: Fast generation' : 'Creating comprehensive project package...'}
         </div>
+        
+        {/* Clearing message */}
+        {validationMessage === 'Clearing project...' && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
+            <div className="text-red-400 text-xl font-mono">
+              🗑️ CLEARING PROJECT...
+            </div>
+          </div>
+        )}
+      </div>
       </div>
     );
   }
@@ -618,11 +651,21 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   }
 
   return (
-    <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
-      {/* Wave indicator */}
-      <div className="text-green-300 text-sm">
-        {currentWave + 1}/4: {currentWaveData.name}
-      </div>
+    <div className="relative min-h-screen">
+      {/* Abort button - always visible in bottom-left */}
+      <button
+        onClick={handleAbort}
+        className="fixed bottom-4 left-4 z-50 bg-transparent border border-red-400/30 text-red-400/60 px-3 py-2 text-xs font-mono hover:border-red-400 hover:text-red-400 transition-all duration-300 hover:bg-red-400/10"
+        title="Abort and return to website"
+      >
+        ⏸ ABORT
+      </button>
+
+      <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
+        {/* Wave indicator */}
+        <div className="text-green-300 text-sm">
+          {currentWave + 1}/4: {currentWaveData.name}
+        </div>
 
       {/* Question */}
       <div className="text-amber-300 text-lg leading-relaxed">
@@ -858,6 +901,16 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           </div>
         </div>
       )}
+
+      {/* Clearing message */}
+      {validationMessage === 'Clearing project...' && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
+          <div className="text-red-400 text-xl font-mono">
+            🗑️ CLEARING PROJECT...
+          </div>
+        </div>
+      )}
+    </div>
     </div>
   );
 };

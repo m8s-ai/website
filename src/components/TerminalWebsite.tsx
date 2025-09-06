@@ -16,39 +16,39 @@ const NAVIGATION_SECTIONS = [
 const PRICING_TIERS = [
   {
     name: "STARTER PROTOCOL",
-    price: "$2,999",
-    period: "/project",
+    price: "$97",
+    period: "/month",
     features: [
-      "Basic project validation",
-      "Technical documentation", 
-      "Simple prototype",
-      "Cost estimation"
+      "5 projects per month",
+      "Basic POC prototypes", 
+      "Project validation reports",
+      "Email support"
     ],
     highlight: false
   },
   {
     name: "PROFESSIONAL MATRIX",
-    price: "$7,999", 
-    period: "/project",
+    price: "$297", 
+    period: "/month",
     features: [
-      "Advanced AI validation",
-      "Complete technical specs",
-      "Interactive prototype",
-      "Full cost breakdown",
-      "Launch strategy"
+      "25 projects per month",
+      "Advanced POC features",
+      "API access",
+      "Priority support",
+      "Custom integrations"
     ],
     highlight: true
   },
   {
     name: "ENTERPRISE NEXUS",
-    price: "Custom",
-    period: "/contact",
+    price: "$997",
+    period: "/month",
     features: [
-      "Full-scale validation",
-      "Enterprise architecture",
-      "Production-ready prototype",
-      "Team integration",
-      "Ongoing support"
+      "Unlimited projects",
+      "White-label solution",
+      "Custom integrations",
+      "Dedicated support",
+      "Enterprise SLA"
     ],
     highlight: false
   }
@@ -203,8 +203,8 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
                     {service.features.map((feature, fIndex) => (
-                      <div key={fIndex} className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <div key={fIndex} className="flex items-center">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mr-4"></div>
                         <span className="text-gray-300">{feature}</span>
                       </div>
                     ))}
@@ -220,10 +220,13 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
           <div className="space-y-8" dir="ltr">
             <div className="text-center">
               <div className="text-2xl md:text-3xl font-mono text-green-300 mb-4">
-                SERVICE COSTS
+                POC VALIDATION SUBSCRIPTIONS
               </div>
-              <div className="text-amber-300">
-                Mission pricing matrix
+              <div className="text-amber-300 mb-2">
+                Monthly access to project validation & POC generation
+              </div>
+              <div className="text-gray-400 text-sm mb-6">
+                * Full project development pricing available after POC validation - contact for quote
               </div>
             </div>
             
@@ -231,7 +234,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
               {PRICING_TIERS.map((tier, index) => (
                 <div 
                   key={index} 
-                  className={`bg-black/40 border ${tier.highlight ? 'border-amber-400/50 shadow-[0_0_20px_rgba(255,176,0,0.2)]' : 'border-green-400/30'} p-6 rounded relative`}
+                  className={`bg-black/40 border ${tier.highlight ? 'border-amber-400/50 shadow-[0_0_20px_rgba(255,176,0,0.2)]' : 'border-green-400/30'} p-6 rounded relative flex flex-col h-full`}
                 >
                   {tier.highlight && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -241,7 +244,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                     </div>
                   )}
                   
-                  <div className="text-center">
+                  <div className="text-center flex flex-col h-full">
                     <div className={`font-mono text-lg mb-2 ${tier.highlight ? 'text-amber-300' : 'text-green-300'}`}>
                       {tier.name}
                     </div>
@@ -250,17 +253,17 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                       <span className="text-gray-400 font-mono">{tier.period}</span>
                     </div>
                     
-                    <div className="space-y-3 mb-6">
+                    <div className="space-y-3 mb-6 flex-grow">
                       {tier.features.map((feature, fIndex) => (
-                        <div key={fIndex} className="flex items-center space-x-3">
-                          <div className={`w-2 h-2 rounded-full ${tier.highlight ? 'bg-amber-400' : 'bg-green-400'}`}></div>
+                        <div key={fIndex} className="flex items-center">
+                          <div className={`w-2 h-2 rounded-full mr-4 ${tier.highlight ? 'bg-amber-400' : 'bg-green-400'}`}></div>
                           <span className="text-gray-300 text-sm">{feature}</span>
                         </div>
                       ))}
                     </div>
                     
                     <button 
-                      className={`w-full py-3 px-4 border font-mono transition-all duration-300 ${
+                      className={`w-full py-3 px-4 border font-mono transition-all duration-300 mt-auto ${
                         tier.highlight 
                           ? 'border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-black' 
                           : 'border-green-400 text-green-400 hover:bg-green-400 hover:text-black'
@@ -272,6 +275,56 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                   </div>
                 </div>
               ))}
+            </div>
+            
+            {/* Full Development Notice */}
+            <div className="max-w-4xl mx-auto mt-12">
+              <div className="bg-amber-900/20 border border-amber-400/30 p-6 rounded">
+                <div className="text-center">
+                  <div className="text-amber-300 font-mono text-xl mb-4">🚀 FULL PROJECT DEVELOPMENT</div>
+                  <div className="text-amber-200 mb-4">
+                    After POC validation, we provide custom quotes for complete project development including:
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4 text-left">
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                        <span className="text-gray-300">Full-stack development</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                        <span className="text-gray-300">Database architecture</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                        <span className="text-gray-300">API integrations</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                        <span className="text-gray-300">Production deployment</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                        <span className="text-gray-300">Ongoing maintenance</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                        <span className="text-gray-300">Team training</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <button 
+                      className="bg-transparent border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-black font-mono px-6 py-3 transition-all duration-300"
+                      onClick={() => handleNavigation('contact')}
+                    >
+                      REQUEST DEVELOPMENT QUOTE
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );

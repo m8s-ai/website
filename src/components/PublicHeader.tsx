@@ -1,13 +1,17 @@
 import { Link } from "react-router-dom";
 import { Bot, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useChatWindow } from "@/contexts/ChatWindowContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-export const PublicHeader = () => {
+interface PublicHeaderProps {
+  children?: ReactNode;
+}
+
+export const PublicHeader: React.FC<PublicHeaderProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t } = useLanguage();
   const { isChatExpanded, isChatMinimized } = useChatWindow();
@@ -57,6 +61,7 @@ export const PublicHeader = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            {children}
             <ThemeToggle />
             <LanguageSwitcher />
             <Button variant="ghost" asChild>

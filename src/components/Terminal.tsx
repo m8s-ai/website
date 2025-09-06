@@ -220,8 +220,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
                   className="bg-transparent border border-green-400 text-green-400 px-6 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200 font-mono"
                   style={{
                     textShadow: '0 0 8px rgba(34, 197, 94, 0.6), 0 0 16px rgba(34, 197, 94, 0.4)',
-                    boxShadow: '0 0 15px rgba(34, 197, 94, 0.3)',
-                    borderShadow: '0 0 10px rgba(34, 197, 94, 0.5)'
+                    boxShadow: '0 0 15px rgba(34, 197, 94, 0.3)'
                   }}
                 >
                   🚀 LET'S VALIDATE MY IDEA!

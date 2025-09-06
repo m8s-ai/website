@@ -19,6 +19,7 @@ import { AppBuilderPage } from "./pages/AppBuilderPage";
 import NotFound from "./pages/NotFound";
 import { Protected } from "./components/Protected";
 import { TerminalWebsite } from "./components/TerminalWebsite";
+import { CompletionSummaryPage } from "./pages/CompletionSummaryPage";
 
 
 
@@ -44,7 +45,8 @@ const App = () => {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/services" element={<AppBuilderPage />} />
-            <Route path="/terminal" element={<TerminalWebsite />} />
+            <Route path="/home" element={<TerminalWebsite />} />
+            <Route path="/completion-summary" element={<CompletionSummaryPage />} />
             <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
             <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

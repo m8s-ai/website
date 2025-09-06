@@ -303,7 +303,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     setValidationMessage('Clearing project...');
     
     setTimeout(() => {
-      navigate('/terminal');
+      navigate('/home');
     }, 1500);
   }, [audio, navigate]);
 
@@ -341,12 +341,29 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       // Generation complete, play completion sound, show final state, then redirect
       const timer = setTimeout(() => {
         playCompletionSound();
-        setIsComplete(true);
         
-        // After showing completion screen for 3 seconds, automatically redirect
-        setTimeout(() => {
-          completeConversation();
-        }, 3000);
+        // Navigate to completion summary page with data
+        const completionData = {
+          responses,
+          waveData: {
+            wave1: {},
+            wave2: {},
+            wave3: {},
+            wave4: {}
+          }
+        };
+        
+        // Fill waveData with organized responses
+        CONVERSATION_WAVES.forEach((wave, waveIndex) => {
+          const waveKey = `wave${waveIndex + 1}` as keyof typeof completionData.waveData;
+          wave.questions.forEach(question => {
+            if (responses[question.id]) {
+              completionData.waveData[waveKey][question.id] = responses[question.id];
+            }
+          });
+        });
+        
+        navigate('/completion-summary', { state: completionData });
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -497,7 +514,8 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           ⏸ ABORT
         </button>
 
-        <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
           <div className="text-green-300 text-xl mb-4">
             🚀 GENERATING YOUR PROJECT PACKAGE
           </div>
@@ -550,6 +568,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
             </div>
           </div>
         )}
+        </div>
       </div>
       </div>
     );
@@ -559,7 +578,18 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     const userEmail = responses['email'] || 'your email';
     
     return (
-      <div className="space-y-8 text-center max-w-4xl mx-auto" dir="ltr">
+      <div className="relative min-h-screen">
+        {/* Abort button - always visible in bottom-left */}
+        <button
+          onClick={handleAbort}
+          className="fixed bottom-4 left-4 z-50 bg-transparent border border-red-400/30 text-red-400/60 px-3 py-2 text-xs font-mono hover:border-red-400 hover:text-red-400 transition-all duration-300 hover:bg-red-400/10"
+          title="Abort and return to website"
+        >
+          ⏸ ABORT
+        </button>
+
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="space-y-8 text-center max-w-4xl mx-auto" dir="ltr">
         {/* Success Header */}
         <div className="space-y-4">
           <div className="text-green-300 text-2xl font-mono">
@@ -646,6 +676,8 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         <div className="text-green-400 text-xs font-mono opacity-60 border-t border-green-400/20 pt-4">
           m8s.ai • AI Project Validation System • Session Complete
         </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -661,11 +693,12 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         ⏸ ABORT
       </button>
 
-      <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
-        {/* Wave indicator */}
-        <div className="text-green-300 text-sm">
-          {currentWave + 1}/4: {currentWaveData.name}
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
+          {/* Wave indicator */}
+          <div className="text-green-300 text-sm">
+            {currentWave + 1}/4: {currentWaveData.name}
+          </div>
 
       {/* Question */}
       <div className="text-amber-300 text-lg leading-relaxed">
@@ -910,7 +943,8 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           </div>
         </div>
       )}
-    </div>
+        </div>
+      </div>
     </div>
   );
 };

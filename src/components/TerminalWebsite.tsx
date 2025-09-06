@@ -164,16 +164,16 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
             
             <div className="grid md:grid-cols-3 gap-6 mt-12">
               <div className="bg-green-900/20 border border-green-400/30 p-6 rounded">
-                <div className="text-green-300 font-mono text-lg mb-2">⚡ RAPID VALIDATION</div>
-                <div className="text-amber-200">Deploy AI-powered analysis in under 24 hours</div>
+                <div className="text-green-300 font-mono text-lg mb-2">⚡ RAPID POC CREATION</div>
+                <div className="text-amber-200">Create amazing proof-of-concepts in minutes, not months</div>
               </div>
               <div className="bg-green-900/20 border border-green-400/30 p-6 rounded">
-                <div className="text-green-300 font-mono text-lg mb-2">🎯 PRECISION TARGETING</div>
-                <div className="text-amber-200">99.7% accuracy in project feasibility assessment</div>
+                <div className="text-green-300 font-mono text-lg mb-2">📧 INSTANT DELIVERY</div>
+                <div className="text-amber-200">PRD, documentation & samples delivered to your email</div>
               </div>
               <div className="bg-green-900/20 border border-green-400/30 p-6 rounded">
-                <div className="text-green-300 font-mono text-lg mb-2">🚀 MISSION SUCCESS</div>
-                <div className="text-amber-200">Complete project packages delivered on target</div>
+                <div className="text-green-300 font-mono text-lg mb-2">🚀 FULL DEVELOPMENT</div>
+                <div className="text-amber-200">Contact us for complete development cycles (optional)</div>
               </div>
             </div>
           </div>

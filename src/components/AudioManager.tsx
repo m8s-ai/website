@@ -13,6 +13,7 @@ export interface AudioManagerRef {
   playBackgroundAmbient: () => Promise<void>;
   stopBackgroundAmbient: () => void;
   playTransitionSound: () => Promise<void>;
+  playCompletionSound: () => Promise<void>;
 }
 
 // Create synthetic audio using Web Audio API for fallback
@@ -148,6 +149,23 @@ export const useAudioManager = (props: AudioManagerProps = {}): AudioManagerRef 
     }
   };
 
+  const playCompletionSound = async (): Promise<void> => {
+    if (!isEnabled || !audioContextRef.current) return;
+    
+    // Success completion sound - ascending triumphant tones
+    const completionSequence = [400, 500, 600, 800, 1000];
+    for (let i = 0; i < completionSequence.length; i++) {
+      setTimeout(async () => {
+        await createSyntheticSound(audioContextRef.current!, completionSequence[i], 0.3, 'sine');
+      }, i * 200);
+    }
+    
+    // Final sustained tone
+    setTimeout(async () => {
+      await createSyntheticSound(audioContextRef.current!, 1200, 0.6, 'sine');
+    }, completionSequence.length * 200);
+  };
+
   return {
     playBootSound,
     playTypingSound,
@@ -156,5 +174,6 @@ export const useAudioManager = (props: AudioManagerProps = {}): AudioManagerRef 
     playBackgroundAmbient,
     stopBackgroundAmbient,
     playTransitionSound,
+    playCompletionSound,
   };
 };

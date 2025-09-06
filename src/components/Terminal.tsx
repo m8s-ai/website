@@ -114,15 +114,12 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       await audio.playSelectionSound();
     }
     
-    // For now, simulate conversation completion after a short delay
-    setTimeout(() => {
-      if (onComplete) {
-        onComplete();
-      }
-    }, 3000);
+    // Trigger completion immediately to transition to conversation
+    if (onComplete) {
+      onComplete();
+    }
     
     console.log('Starting conversation...');
-    // TODO: Connect to n8n automation
   }, [audioEnabled, audio, onComplete]);
 
   // Handle Enter key press
@@ -165,19 +162,18 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       <div 
         ref={terminalRef}
         className="relative z-10 p-8 h-full flex flex-col justify-center items-center max-w-4xl mx-auto text-center"
-        dir="ltr"
       >
         {/* Boot sequence */}
         {!bootComplete && bootStarted && (
-          <div className="space-y-4">
+          <div className="space-y-4" dir="ltr">
             {BOOT_SEQUENCE.slice(0, currentBootLine).map((line, index) => (
-              <div key={index} className="flex items-center justify-center space-x-4">
+              <div key={index} className="flex items-center justify-center space-x-4" dir="ltr">
                 <span className="text-amber-400">{line}</span>
                 <span className="text-green-300">✓</span>
               </div>
             ))}
             {currentBootLine < BOOT_SEQUENCE.length && (
-              <div className="flex items-center justify-center space-x-2">
+              <div className="flex items-center justify-center space-x-2" dir="ltr">
                 <span className="text-amber-400">{BOOT_SEQUENCE[currentBootLine]}</span>
                 <div className="w-3 h-5 inline-block ml-2">
                   {showCursor && <div className="bg-green-400 w-full h-full"></div>}
@@ -189,7 +185,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
 
         {/* Greeting section */}
         {showGreeting && (
-          <div className="mt-8 space-y-4 text-center">
+          <div className="mt-8 space-y-4 text-center" dir="ltr">
             <div className="text-amber-300 leading-relaxed whitespace-pre-line">
               {greetingText}
               <span className="w-3 h-5 inline-block ml-1">
@@ -201,7 +197,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
             
             {/* Conversation starter */}
             {conversationStarted && (
-              <div className="mt-8">
+              <div className="mt-8" dir="ltr">
                 <div className="mb-4 text-green-300">
                   [PRESS ENTER TO START VALIDATION]
                 </div>

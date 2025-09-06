@@ -279,8 +279,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     'CREATING TECHNICAL ARCHITECTURE DIAGRAMS...',
     'BUILDING WORKING PROTOTYPE...',
     'CALCULATING DEVELOPMENT COSTS...',
-    'PREPARING PROJECT PACKAGE...',
-    'READY FOR DELIVERY...'
+    'PREPARING PROJECT PACKAGE...'
   ];
 
   const playNavigationSound = useCallback(async (direction: 'up' | 'down') => {
@@ -289,6 +288,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
 
   const playSelectionSound = useCallback(async () => {
     await audio.playSelectionSound();
+  }, [audio]);
+
+  const playCompletionSound = useCallback(async () => {
+    await audio.playCompletionSound();
   }, [audio]);
 
   // Cursor blinking effect
@@ -302,18 +305,28 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   // Generation effect
   useEffect(() => {
     if (isGenerating && generationStep < GENERATION_STEPS.length) {
+      // In development: 10 seconds total, in production: 2-3 minutes total
+      const isDev = process.env.NODE_ENV === 'development';
+      const stepDuration = isDev ? 1000 : 20000; // 1s dev, 20s production per step
+      
       const timer = setTimeout(() => {
         setGenerationStep(prev => prev + 1);
-      }, 1500);
+      }, stepDuration);
       return () => clearTimeout(timer);
-    } else if (isGenerating && generationStep >= GENERATION_STEPS.length) {
-      // Generation complete, show final completion
-      setTimeout(() => {
+    } else if (isGenerating && generationStep >= GENERATION_STEPS.length && !isComplete) {
+      // Generation complete, play completion sound, show final state, then redirect
+      const timer = setTimeout(() => {
+        playCompletionSound();
         setIsComplete(true);
-        completeConversation();
+        
+        // After showing completion screen for 3 seconds, automatically redirect
+        setTimeout(() => {
+          completeConversation();
+        }, 3000);
       }, 1000);
+      return () => clearTimeout(timer);
     }
-  }, [isGenerating, generationStep]);
+  }, [isGenerating, generationStep, isComplete]);
 
   // Handle keyboard navigation for multiple choice
   useEffect(() => {
@@ -446,10 +459,17 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   };
 
   if (isGenerating) {
+    const isDev = process.env.NODE_ENV === 'development';
+    const totalTime = isDev ? '10 seconds' : '2-3 minutes';
+    
     return (
       <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
-        <div className="text-green-300 text-xl mb-8">
+        <div className="text-green-300 text-xl mb-4">
           🚀 GENERATING YOUR PROJECT PACKAGE
+        </div>
+        
+        <div className="text-amber-300 text-sm mb-8">
+          This process typically takes {totalTime}. Please don't close this window.
         </div>
         
         <div className="space-y-4">
@@ -468,26 +488,119 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
               </div>
             </div>
           )}
+          
+          {generationStep >= GENERATION_STEPS.length && (
+            <div className="flex items-center justify-center space-x-4">
+              <span className="text-green-400 font-mono">READY FOR DELIVERY...</span>
+              <span className="text-green-300">✓</span>
+            </div>
+          )}
         </div>
         
         <div className="text-gray-400 text-sm mt-8">
-          Step {generationStep + 1}/{GENERATION_STEPS.length}
+          {generationStep < GENERATION_STEPS.length 
+            ? `Step ${generationStep + 1}/${GENERATION_STEPS.length}`
+            : `Step ${GENERATION_STEPS.length}/${GENERATION_STEPS.length}`
+          }
+        </div>
+        
+        <div className="text-gray-500 text-xs mt-4">
+          {isDev ? 'Development mode: Fast generation' : 'Creating comprehensive project package...'}
         </div>
       </div>
     );
   }
 
   if (isComplete) {
+    const userEmail = responses['email'] || 'your email';
+    
     return (
-      <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
-        <div className="text-green-300 text-xl">
-          🎉 PROJECT PACKAGE READY!
+      <div className="space-y-8 text-center max-w-4xl mx-auto" dir="ltr">
+        {/* Success Header */}
+        <div className="space-y-4">
+          <div className="text-green-300 text-2xl font-mono">
+            🎉 PROJECT PACKAGE COMPLETE!
+          </div>
+          <div className="text-amber-300 text-lg">
+            MISSION ACCOMPLISHED • PACKAGE DELIVERED
+          </div>
         </div>
-        <div className="text-amber-300">
-          Your complete project package has been generated and will be delivered to your email within 24 hours.
+
+        {/* Detailed completion message */}
+        <div className="space-y-6 text-left bg-green-900/20 border border-green-400/30 p-6 rounded">
+          <div className="text-green-300 text-lg font-mono mb-4">
+            📦 DELIVERY CONFIRMATION
+          </div>
+          
+          <div className="space-y-3 text-amber-200">
+            <div className="flex items-center space-x-3">
+              <span className="text-green-300">✓</span>
+              <span>Project Requirements Document (PRD) generated</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-green-300">✓</span>
+              <span>Technical architecture diagrams created</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-green-300">✓</span>
+              <span>Working prototype built and tested</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-green-300">✓</span>
+              <span>UI/UX design mockups generated</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-green-300">✓</span>
+              <span>Development cost estimates calculated</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-green-300">✓</span>
+              <span>Complete project package prepared</span>
+            </div>
+          </div>
         </div>
-        <div className="text-gray-400 text-sm">
-          Check your inbox for the ZIP file containing prototypes, docs, and cost estimates.
+
+        {/* Email delivery info */}
+        <div className="bg-amber-900/20 border border-amber-400/30 p-4 rounded">
+          <div className="text-amber-300 font-mono text-lg mb-2">
+            📧 DELIVERY STATUS
+          </div>
+          <div className="text-amber-200">
+            Your complete project package has been sent to: <strong>{userEmail}</strong>
+          </div>
+          <div className="text-gray-400 text-sm mt-2">
+            Expected delivery: Within 24 hours • Check spam folder if not received
+          </div>
+        </div>
+
+        {/* Close button */}
+        <div className="space-y-4">
+          <button
+            onClick={() => {
+              // Call the onComplete callback to redirect
+              onComplete({
+                responses,
+                waveData: {
+                  wave1: {},
+                  wave2: {},
+                  wave3: {},
+                  wave4: {}
+                }
+              });
+            }}
+            className="bg-transparent border-2 border-green-400 text-green-400 px-8 py-3 text-lg font-mono hover:bg-green-400 hover:text-black transition-colors duration-200"
+          >
+            CLOSE TERMINAL
+          </button>
+          
+          <div className="text-gray-500 text-sm">
+            You will be redirected to our main application
+          </div>
+        </div>
+
+        {/* Terminal-style footer */}
+        <div className="text-green-400 text-xs font-mono opacity-60 border-t border-green-400/20 pt-4">
+          m8s.ai • AI Project Validation System • Session Complete
         </div>
       </div>
     );
@@ -532,14 +645,50 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                   </span>
                 </div>
               ))}
+              
+              {/* Mobile navigation buttons */}
+              <div className="flex justify-center space-x-4 mt-4 md:hidden">
+                <button
+                  onClick={() => {
+                    if (selectedOption > 0) {
+                      setSelectedOption(selectedOption - 1);
+                      playNavigationSound('up');
+                    }
+                  }}
+                  disabled={selectedOption === 0}
+                  className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() => {
+                    if (selectedOption < (currentQuestionData.options?.length || 0) - 1) {
+                      setSelectedOption(selectedOption + 1);
+                      playNavigationSound('down');
+                    }
+                  }}
+                  disabled={selectedOption === (currentQuestionData.options?.length || 0) - 1}
+                  className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
+                >
+                  ↓
+                </button>
+                <button
+                  onClick={handleSubmitAnswer}
+                  className="bg-transparent border border-green-400 text-green-400 px-4 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200"
+                >
+                  ENTER
+                </button>
+              </div>
+              
               <div className="text-gray-400 text-sm mt-4">
-                Use ↑↓ arrows to navigate, Enter to select
+                <span className="hidden md:inline">Use ↑↓ arrows to navigate, Enter to select</span>
+                <span className="md:hidden">Use buttons below or tap options to navigate</span>
               </div>
             </div>
           )}
 
           {currentQuestionData.type === 'text' && (
-            <div className="space-y-4 relative">
+            <div className="space-y-4 relative px-4 md:px-0">
               <div className="w-full p-4 bg-transparent text-green-300 min-h-[60px] flex items-center justify-start border border-green-400/30 rounded">
                 <div className="flex items-center w-full">
                   <span className="whitespace-pre-wrap text-lg font-mono leading-relaxed">{userInput}</span>
@@ -617,8 +766,44 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                   </span>
                 </div>
               ))}
+              
+              {/* Mobile navigation buttons */}
+              <div className="flex justify-center space-x-4 mt-4 md:hidden">
+                <button
+                  onClick={() => {
+                    if (selectedOption > 0) {
+                      setSelectedOption(selectedOption - 1);
+                      playNavigationSound('up');
+                    }
+                  }}
+                  disabled={selectedOption === 0}
+                  className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() => {
+                    if (selectedOption < 1) {
+                      setSelectedOption(selectedOption + 1);
+                      playNavigationSound('down');
+                    }
+                  }}
+                  disabled={selectedOption === 1}
+                  className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
+                >
+                  ↓
+                </button>
+                <button
+                  onClick={handleSubmitAnswer}
+                  className="bg-transparent border border-green-400 text-green-400 px-4 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200"
+                >
+                  ENTER
+                </button>
+              </div>
+              
               <div className="text-gray-400 text-sm mt-4">
-                Use ↑↓ arrows to navigate, Enter to select
+                <span className="hidden md:inline">Use ↑↓ arrows to navigate, Enter to select</span>
+                <span className="md:hidden">Use buttons below or tap options to navigate</span>
               </div>
             </div>
           )}
@@ -629,6 +814,39 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       <div className="text-gray-400 text-sm">
         Question {currentQuestion + 1}/{currentWaveData.questions.length}
       </div>
+
+      {/* Dev only: Skip to generation button */}
+      {process.env.NODE_ENV === 'development' && !showingFollowUp && (
+        <div className="mt-4">
+          <button
+            onClick={() => {
+              setIsGenerating(true);
+              setGenerationStep(0);
+            }}
+            className="bg-transparent border border-red-400 text-red-400 px-4 py-2 text-xs font-mono hover:bg-red-400 hover:text-black transition-colors duration-200"
+          >
+            DEV: SKIP TO GENERATION
+          </button>
+        </div>
+      )}
+
+      {/* Skip button - show after wave 2, only on selection questions */}
+      {currentWave >= 2 && currentQuestionData && (currentQuestionData.type === 'multiple-choice' || currentQuestionData.type === 'yes-no') && !showingFollowUp && (
+        <div className="mt-8">
+          <button
+            onClick={() => {
+              setIsGenerating(true);
+              setGenerationStep(0);
+            }}
+            className="bg-transparent border border-amber-400 text-amber-400 px-6 py-3 text-lg font-mono hover:bg-amber-400 hover:text-black transition-colors duration-200"
+          >
+            ⚡ SKIP & GENERATE
+          </button>
+          <div className="text-gray-500 text-xs mt-2 text-center">
+            Skip remaining questions and generate project package now
+          </div>
+        </div>
+      )}
     </div>
   );
 };

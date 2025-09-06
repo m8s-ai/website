@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAudioManager } from './AudioManager';
 
@@ -14,9 +14,13 @@ const BOOT_SEQUENCE = [
   'READY FOR DEEP ANALYSIS...'
 ];
 
-const GREETING_MESSAGE = `System ready. I am the m8s Validation Matrix.
-I will analyze your project concept through systematic interrogation.
-State your project vision.`;
+const GREETING_MESSAGE = `Hello, I'm ARIA! 🚀
+
+Your AI-powered project validation bot. Let's turn your idea into reality!
+
+I'll ask you a few smart questions to understand your vision, then generate a complete project package with working prototypes, technical docs, and cost estimates.
+
+Ready to validate your amazing idea?`;
 
 export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
@@ -104,7 +108,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
     }
   }, [showGreeting, currentChar]);
 
-  const handleStartConversation = async () => {
+  const handleStartConversation = useCallback(async () => {
     // Play selection sound
     if (audioEnabled) {
       await audio.playSelectionSound();
@@ -119,7 +123,21 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
     
     console.log('Starting conversation...');
     // TODO: Connect to n8n automation
-  };
+  }, [audioEnabled, audio, onComplete]);
+
+  // Handle Enter key press
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Enter' && conversationStarted) {
+        handleStartConversation();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [conversationStarted, handleStartConversation]);
 
   console.log('Terminal render:', { bootStarted, bootComplete, currentBootLine, showGreeting, conversationStarted, audioEnabled });
 
@@ -185,13 +203,13 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
             {conversationStarted && (
               <div className="mt-8">
                 <div className="mb-4 text-green-300">
-                  [PRESS ENTER TO BEGIN PROJECT ANALYSIS]
+                  [PRESS ENTER TO START VALIDATION]
                 </div>
                 <button
                   onClick={handleStartConversation}
                   className="bg-transparent border border-green-400 text-green-400 px-6 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200 font-mono"
                 >
-                  &gt; BEGIN ANALYSIS
+                  🚀 LET'S VALIDATE MY IDEA!
                 </button>
               </div>
             )}

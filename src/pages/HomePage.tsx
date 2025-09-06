@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { ServicesSection } from "@/components/sections/ServicesSection";
 import { OutcomesSection } from "@/components/sections/OutcomesSection";
@@ -13,6 +14,7 @@ import { LaunchButton } from "@/components/LaunchButton";
 const STORAGE_KEY = "site_authenticated";
 
 export const HomePage = () => {
+  const navigate = useNavigate();
   const [showTerminal, setShowTerminal] = useState(() => {
     // FORCE TERMINAL FOR TESTING - Show terminal for ALL visitors
     if (typeof window === "undefined") return true; // Server-side default
@@ -37,10 +39,10 @@ export const HomePage = () => {
   });
 
   const handleTerminalComplete = () => {
-    // Terminal experience complete, show main website
-    setShowTerminal(false);
-    // Mark as experienced for future visits
+    // Terminal experience complete, redirect to app-builder
+    console.log('Terminal complete, redirecting to /app-builder');
     sessionStorage.setItem("terminal_experienced", "true");
+    navigate('/app-builder');
   };
 
   // Debug logging

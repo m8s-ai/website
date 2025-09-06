@@ -241,6 +241,16 @@ const CONVERSATION_WAVES: Wave[] = [
           'Scaling and maintenance'
         ],
         followUp: 'Let\'s address this concern directly in our project plan.'
+      },
+      {
+        id: 'email',
+        text: 'What\'s your email address? We\'ll send you the complete project package with working prototypes, technical docs, and cost estimates.',
+        type: 'text',
+        followUp: 'Perfect! Your project package will be delivered within 24 hours.',
+        validation: (answer: string) => {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(answer.trim());
+        }
       }
     ]
   }
@@ -256,9 +266,22 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const [userInput, setUserInput] = useState('');
   const [selectedOption, setSelectedOption] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [showCursor, setShowCursor] = useState(true); // New state for cursor
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStep, setGenerationStep] = useState(0);
+  const [validationMessage, setValidationMessage] = useState('');
 
   const currentWaveData = CONVERSATION_WAVES[currentWave];
   const currentQuestionData = currentWaveData?.questions[currentQuestion];
+
+  const GENERATION_STEPS = [
+    'GENERATING PROJECT REQUIREMENTS DOCUMENT...',
+    'CREATING TECHNICAL ARCHITECTURE DIAGRAMS...',
+    'BUILDING WORKING PROTOTYPE...',
+    'CALCULATING DEVELOPMENT COSTS...',
+    'PREPARING PROJECT PACKAGE...',
+    'READY FOR DELIVERY...'
+  ];
 
   const playNavigationSound = useCallback(async (direction: 'up' | 'down') => {
     await audio.playNavigationSound(direction);
@@ -267,6 +290,30 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const playSelectionSound = useCallback(async () => {
     await audio.playSelectionSound();
   }, [audio]);
+
+  // Cursor blinking effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowCursor(prev => !prev);
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Generation effect
+  useEffect(() => {
+    if (isGenerating && generationStep < GENERATION_STEPS.length) {
+      const timer = setTimeout(() => {
+        setGenerationStep(prev => prev + 1);
+      }, 1500);
+      return () => clearTimeout(timer);
+    } else if (isGenerating && generationStep >= GENERATION_STEPS.length) {
+      // Generation complete, show final completion
+      setTimeout(() => {
+        setIsComplete(true);
+        completeConversation();
+      }, 1000);
+    }
+  }, [isGenerating, generationStep]);
 
   // Handle keyboard navigation for multiple choice
   useEffect(() => {
@@ -296,16 +343,40 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     if (!currentQuestionData) return;
 
     let answer = '';
+    let isValid = true;
+    let message = '';
     
     if (currentQuestionData.type === 'multiple-choice') {
       answer = currentQuestionData.options?.[selectedOption] || '';
     } else if (currentQuestionData.type === 'text') {
       answer = userInput.trim();
-      if (currentQuestionData.validation && !currentQuestionData.validation(answer)) {
-        return; // Don't proceed if validation fails
+      if (!answer) {
+        isValid = false;
+        message = 'Please enter your answer before submitting.';
+      } else if (currentQuestionData.validation && !currentQuestionData.validation(answer)) {
+        isValid = false;
+        if (currentQuestionData.id === 'email') {
+          message = 'Please enter a valid email address.';
+        } else if (currentQuestionData.id === 'main_problem') {
+          message = 'Please provide a more detailed description (at least 10 characters).';
+        } else if (currentQuestionData.id === 'unique_approach') {
+          message = 'Please provide a more detailed explanation (at least 15 characters).';
+        } else if (currentQuestionData.id === 'core_features') {
+          message = 'Please list your features (use numbers or bullet points).';
+        } else if (currentQuestionData.id === 'user_workflow') {
+          message = 'Please provide a more detailed workflow description (at least 20 characters).';
+        } else {
+          message = 'Please provide a more detailed answer.';
+        }
       }
     } else if (currentQuestionData.type === 'yes-no') {
       answer = selectedOption === 0 ? 'Yes' : 'No';
+    }
+
+    if (!isValid) {
+      setValidationMessage(message);
+      setTimeout(() => setValidationMessage(''), 3000);
+      return;
     }
 
     if (!answer) return;
@@ -332,6 +403,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     // Reset input
     setUserInput('');
     setSelectedOption(0);
+    setValidationMessage('');
   }, [currentQuestionData, selectedOption, userInput, playSelectionSound]);
 
   const proceedToNextQuestion = () => {
@@ -343,9 +415,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       setCurrentWave(prev => prev + 1);
       setCurrentQuestion(0);
     } else {
-      // Conversation complete
-      setIsComplete(true);
-      completeConversation();
+      // All questions complete, start generation
+      setIsGenerating(true);
+      setGenerationStep(0);
     }
   };
 
@@ -373,24 +445,59 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     });
   };
 
+  if (isGenerating) {
+    return (
+      <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
+        <div className="text-green-300 text-xl mb-8">
+          🚀 GENERATING YOUR PROJECT PACKAGE
+        </div>
+        
+        <div className="space-y-4">
+          {GENERATION_STEPS.slice(0, generationStep).map((step, index) => (
+            <div key={index} className="flex items-center justify-center space-x-4">
+              <span className="text-amber-400 font-mono">{step}</span>
+              <span className="text-green-300">✓</span>
+            </div>
+          ))}
+          
+          {generationStep < GENERATION_STEPS.length && (
+            <div className="flex items-center justify-center space-x-2">
+              <span className="text-amber-400 font-mono">{GENERATION_STEPS[generationStep]}</span>
+              <div className="w-3 h-5 inline-block ml-2">
+                {showCursor && <div className="bg-green-400 w-full h-full"></div>}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className="text-gray-400 text-sm mt-8">
+          Step {generationStep + 1}/{GENERATION_STEPS.length}
+        </div>
+      </div>
+    );
+  }
+
   if (isComplete) {
     return (
-      <div className="space-y-6 text-center">
+      <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
         <div className="text-green-300 text-xl">
-          🎉 Analysis Complete!
+          🎉 PROJECT PACKAGE READY!
         </div>
         <div className="text-amber-300">
-          Generating your personalized project package...
+          Your complete project package has been generated and will be delivered to your email within 24 hours.
+        </div>
+        <div className="text-gray-400 text-sm">
+          Check your inbox for the ZIP file containing prototypes, docs, and cost estimates.
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 text-center max-w-3xl">
+    <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
       {/* Wave indicator */}
       <div className="text-green-300 text-sm">
-        Wave {currentWave + 1}/4: {currentWaveData.name}
+        {currentWave + 1}/4: {currentWaveData.name}
       </div>
 
       {/* Question */}
@@ -432,19 +539,61 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           )}
 
           {currentQuestionData.type === 'text' && (
-            <div className="space-y-4">
+            <div className="space-y-4 relative">
+              <div className="w-full p-4 bg-transparent text-green-300 min-h-[60px] flex items-center justify-start border border-green-400/30 rounded">
+                <div className="flex items-center w-full">
+                  <span className="whitespace-pre-wrap text-lg font-mono leading-relaxed">{userInput}</span>
+                  <span className="inline-block w-4 h-6 ml-0 flex-shrink-0">
+                    {showCursor && <div className="bg-green-400 w-full h-full"></div>}
+                  </span>
+                </div>
+              </div>
               <input
                 type="text"
                 value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                className="w-full p-3 bg-transparent border-2 border-green-400 text-green-300 focus:outline-none focus:border-green-300"
-                placeholder="Type your answer here..."
+                onChange={(e) => {
+                  setUserInput(e.target.value);
+                  setValidationMessage(''); // Clear validation message when typing
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (e.altKey) {
+                      // Alt+Enter: Add new line and move cursor to start of new line
+                      e.preventDefault();
+                      const input = e.target as HTMLInputElement;
+                      const cursorPosition = input.selectionStart || 0;
+                      const beforeCursor = userInput.substring(0, cursorPosition);
+                      const afterCursor = userInput.substring(cursorPosition);
+                      const newText = beforeCursor + '\n' + afterCursor;
+                      setUserInput(newText);
+                      
+                      // Move cursor to start of new line (after the \n)
+                      setTimeout(() => {
+                        input.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
+                      }, 0);
+                    } else if (userInput.trim()) {
+                      // Enter: Submit answer
+                      handleSubmitAnswer();
+                    }
+                  }
+                }}
+                className="absolute top-0 left-0 w-full h-[60px] opacity-0 cursor-text z-10 font-mono text-lg"
                 autoFocus
               />
+              {validationMessage && (
+                <div className="text-red-400 text-sm font-mono text-center">
+                  ⚠️ {validationMessage}
+                </div>
+              )}
               <button
-                onClick={handleSubmitAnswer}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Button clicked!', { userInput: userInput.trim() });
+                  handleSubmitAnswer();
+                }}
                 disabled={!userInput.trim()}
-                className="bg-transparent border border-green-400 text-green-400 px-6 py-2 hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200"
+                className="bg-transparent border border-green-400 text-green-400 px-6 py-3 text-lg font-mono hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200 touch-manipulation relative z-20"
               >
                 Submit Answer
               </button>
@@ -478,7 +627,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
 
       {/* Progress indicator */}
       <div className="text-gray-400 text-sm">
-        Question {currentQuestion + 1}/{currentWaveData.questions.length} in this wave
+        Question {currentQuestion + 1}/{currentWaveData.questions.length}
       </div>
     </div>
   );

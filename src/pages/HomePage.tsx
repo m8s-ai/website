@@ -9,6 +9,7 @@ import { TrustSection } from "@/components/sections/TrustSection";
 import { CTASection } from "@/components/sections/CTASection";
 import { PublicHeader } from "@/components/PublicHeader";
 import { TerminalExperience } from "@/components/TerminalExperience";
+import { ConversationEngine } from "@/components/ConversationEngine";
 import { LaunchButton } from "@/components/LaunchButton";
 
 const STORAGE_KEY = "site_authenticated";
@@ -34,28 +35,40 @@ export const HomePage = () => {
     return true; // Always show terminal for testing
   });
 
+  const [showConversation, setShowConversation] = useState(false);
+
   const [isAuthenticated] = useState(() => {
     return typeof window !== "undefined" && sessionStorage.getItem(STORAGE_KEY) === "true";
   });
 
   const handleTerminalComplete = () => {
-    // Terminal experience complete, redirect to app-builder
-    console.log('Terminal complete, redirecting to /app-builder');
+    // Terminal experience complete, stop navigating to app-builder and show conversation
+    console.log('Terminal complete, showing conversation component');
     sessionStorage.setItem("terminal_experienced", "true");
-    navigate('/app-builder');
+    setShowTerminal(false); // Hide terminal
+    setShowConversation(true); // Show conversation
   };
 
   // Debug logging
-  console.log('HomePage render:', { showTerminal, isAuthenticated });
+  console.log('HomePage render:', { showTerminal, isAuthenticated, showConversation });
 
   // Show terminal for new visitors
   if (showTerminal) {
     console.log('Rendering terminal experience');
     return (
-      <TerminalExperience 
-        onComplete={handleTerminalComplete}
-        isLoggedIn={isAuthenticated}
-      />
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <TerminalExperience 
+          onComplete={handleTerminalComplete}
+          isLoggedIn={isAuthenticated}
+        />
+      </div>
+    );
+  } else if (showConversation) {
+    console.log('Rendering conversation engine');
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <ConversationEngine onComplete={() => console.log("Conversation completed!")} />
+      </div>
     );
   }
 

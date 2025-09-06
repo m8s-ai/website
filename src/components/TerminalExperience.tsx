@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Terminal } from './Terminal';
+import { ConversationEngine } from './ConversationEngine'; // Import ConversationEngine
 import { useAudioManager } from './AudioManager';
 
 interface TerminalExperienceProps {
@@ -13,28 +14,27 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
 }) => {
   const [showTransition, setShowTransition] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState('');
+  const [showConversationEngine, setShowConversationEngine] = useState(false); // New state for ConversationEngine
   const audio = useAudioManager({ isEnabled: true, volume: 0.2 });
 
   const handleTerminalComplete = async () => {
-    // Play transition sound
     await audio.playTransitionSound();
     
-    // Start the transition sequence
-    setTransitionMessage('Generating your complete project package...');
+    // Start the transition sequence for ConversationEngine
+    setTransitionMessage('Loading AI Conversation Engine...');
     setShowTransition(true);
     
-    // Simulate transition delay
     setTimeout(() => {
-      setTransitionMessage('Compiling analysis results...');
+      setTransitionMessage('Calibrating AI response models...');
     }, 1500);
 
     setTimeout(() => {
-      setTransitionMessage('Preparing your development roadmap...');
+      setTransitionMessage('Engaging natural language interface...');
     }, 3000);
 
-    // Complete transition and show website
     setTimeout(() => {
-      onComplete();
+      setShowConversationEngine(true); // Show ConversationEngine after transition
+      setShowTransition(false); // Hide transition screen
     }, 4500);
   };
 
@@ -45,9 +45,9 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
 
   return (
     <div className="relative">
-      {!showTransition ? (
+      {!showTransition && !showConversationEngine ? ( // Render Terminal if no transition and no ConversationEngine
         <Terminal onComplete={handleTerminalComplete} />
-      ) : (
+      ) : showTransition ? (
         /* Transition screen */
         <div className="fixed inset-0 bg-black text-green-400 font-mono flex items-center justify-center">
           <div className="text-center">
@@ -68,6 +68,8 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
             </div>
           </div>
         </div>
+      ) : (
+        <ConversationEngine onComplete={onComplete} /> // Render ConversationEngine and pass onComplete
       )}
     </div>
   );

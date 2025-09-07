@@ -287,14 +287,14 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       questionData: currentQuestionData
     });
     return (
-      <div className="relative min-h-screen bg-black text-white flex items-center justify-center p-4">
+      <div className="relative min-h-screen bg-black text-white flex items-center justify-center p-4 retro-scanlines">
         <div className="text-center space-y-4">
-          <div className="text-red-400 text-xl font-mono">⚠️ DEBUG MODE</div>
-          <div className="text-yellow-400 text-lg">ConversationEngine Component Loaded</div>
-          <div className="text-gray-400 text-sm">
+          <div className="text-red-400 text-4xl font-retro-xl retro-glow-green">⚠️ DEBUG MODE</div>
+          <div className="text-yellow-400 text-2xl font-retro-large">ConversationEngine Component Loaded</div>
+          <div className="text-gray-400 text-sm font-mono">
             Wave: {currentWave} / Question: {currentQuestion}
           </div>
-          <div className="text-gray-400 text-sm">
+          <div className="text-gray-400 text-sm font-mono">
             Total Waves: {CONVERSATION_WAVES.length}
           </div>
           <button 
@@ -303,11 +303,11 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
               setCurrentWave(0);
               setCurrentQuestion(0);
             }}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-mono transition-colors"
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-retro-xl text-2xl transition-colors retro-glow-green"
           >
             RESET & START CONVERSATION
           </button>
-          <div className="text-gray-500 text-xs mt-4">
+          <div className="text-gray-500 text-xs mt-4 font-mono">
             If you can see this, the component is mounting correctly.
           </div>
         </div>
@@ -395,7 +395,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       answer = currentQuestionData.options?.[selectedOption] || '';
     } else if (currentQuestionData.type === 'text') {
       answer = userInput.trim();
-      if (!answer) {
+      if (!answer && currentQuestionData.validation && !currentQuestionData.validation('')) {
         isValid = false;
         message = 'Please enter your answer before submitting.';
       } else if (currentQuestionData.validation && !currentQuestionData.validation(answer)) {
@@ -514,37 +514,37 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           ⏸ ABORT
         </button>
 
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center retro-scanlines">
           <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
-          <div className="text-green-300 text-xl mb-4">
+          <div className="text-green-300 text-4xl mb-4 font-retro-xl retro-glow-green">
             🚀 GENERATING YOUR PROJECT PACKAGE
           </div>
         
-        <div className="text-amber-300 text-sm mb-8">
+        <div className="text-amber-300 text-xl mb-8 font-retro-light">
           This process typically takes {totalTime}. Please don't close this window.
         </div>
         
         <div className="space-y-4">
           {GENERATION_STEPS.slice(0, generationStep).map((step, index) => (
             <div key={index} className="flex items-center justify-center space-x-4">
-              <span className="text-amber-400 font-mono">{step}</span>
-              <span className="text-green-300">✓</span>
+              <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{step}</span>
+              <span className="text-green-300 retro-glow-green">✓</span>
             </div>
           ))}
           
           {generationStep < GENERATION_STEPS.length && (
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-amber-400 font-mono">{GENERATION_STEPS[generationStep]}</span>
+              <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{GENERATION_STEPS[generationStep]}</span>
               <div className="w-3 h-5 inline-block ml-2">
-                {showCursor && <div className="bg-green-400 w-full h-full"></div>}
+                {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
               </div>
             </div>
           )}
           
           {generationStep >= GENERATION_STEPS.length && (
             <div className="flex items-center justify-center space-x-4">
-              <span className="text-green-400 font-mono">READY FOR DELIVERY...</span>
-              <span className="text-green-300">✓</span>
+              <span className="text-green-400 font-retro-light text-xl retro-glow-green">READY FOR DELIVERY...</span>
+              <span className="text-green-300 retro-glow-green">✓</span>
             </div>
           )}
         </div>
@@ -693,10 +693,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         ⏸ ABORT
       </button>
 
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 retro-scanlines">
         <div className="w-full max-w-4xl mx-auto space-y-6" dir="ltr">
           {/* Wave indicator */}
-          <div className="text-green-300 text-sm text-center">
+          <div className="text-green-300 text-2xl text-center font-retro-xl retro-glow-green">
             {currentWave + 1}/4: {currentWaveData.name}
           </div>
 
@@ -717,10 +717,11 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                 {/* Chat bubble tail */}
                 <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
                 
-                <div className="text-amber-300 text-lg leading-relaxed font-mono">
+                <div className="text-amber-300 text-2xl leading-relaxed font-retro-light retro-glow-amber whitespace-pre-line">
                   {isTyping ? (
-                    <span className="text-gray-400">
+                    <span className="text-gray-400 font-retro text-lg">
                       Aria is typing{typingDots}
+                      <span className="retro-cursor">█</span>
                     </span>
                   ) : (
                     currentQuestionData.text
@@ -748,7 +749,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                   {/* Chat bubble tail */}
                   <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
                   
-                  <div className="text-green-300 italic font-mono">
+                  <div className="text-green-300 text-xl italic font-retro-light retro-glow-green whitespace-pre-line">
                     {currentQuestionData.followUp}
                   </div>
                 </div>
@@ -766,12 +767,12 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                   key={index}
                   className={`p-3 border-2 cursor-pointer transition-all ${
                     selectedOption === index 
-                      ? 'border-green-400 bg-green-400/10' 
+                      ? 'border-green-400 bg-green-400/10 retro-glow-green' 
                       : 'border-gray-600 hover:border-green-300'
                   }`}
                   onClick={() => setSelectedOption(index)}
                 >
-                  <span className={selectedOption === index ? 'text-green-300' : 'text-gray-300'}>
+                  <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`}>
                     {selectedOption === index ? '> ' : '  '}{option}
                   </span>
                 </div>
@@ -811,9 +812,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                 </button>
               </div>
               
-              <div className="text-gray-400 text-sm mt-4">
-                <span className="hidden md:inline">Use ↑↓ arrows to navigate, Enter to select</span>
-                <span className="md:hidden">Use buttons below or tap options to navigate</span>
+              <div className="text-gray-400 text-lg mt-4 font-retro">
+                <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
+                <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
               </div>
             </div>
           )}
@@ -822,9 +823,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
             <div className="space-y-4 relative px-4 md:px-0">
               <div className="w-full p-4 bg-transparent text-green-300 min-h-[60px] flex items-center justify-start border border-green-400/30 rounded">
                 <div className="flex items-center w-full">
-                  <span className="whitespace-pre-wrap text-lg font-mono leading-relaxed">{userInput}</span>
+                  <span className="whitespace-pre-wrap text-2xl font-retro-light leading-relaxed">{userInput}</span>
                   <span className="inline-block w-4 h-6 ml-0 flex-shrink-0">
-                    {showCursor && <div className="bg-green-400 w-full h-full"></div>}
+                    {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
                   </span>
                 </div>
               </div>
@@ -857,11 +858,11 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                     }
                   }
                 }}
-                className="absolute top-0 left-0 w-full h-[60px] opacity-0 cursor-text z-10 font-mono text-lg"
+                className="absolute top-0 left-0 w-full h-[60px] opacity-0 cursor-text z-10 font-retro-light text-2xl"
                 autoFocus
               />
               {validationMessage && (
-                <div className="text-red-400 text-sm font-mono text-center">
+                <div className="text-red-400 text-lg font-retro text-center">
                   ⚠️ {validationMessage}
                 </div>
               )}
@@ -872,8 +873,8 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                   console.log('Button clicked!', { userInput: userInput.trim() });
                   handleSubmitAnswer();
                 }}
-                disabled={!userInput.trim()}
-                className="bg-transparent border border-green-400 text-green-400 px-6 py-3 text-lg font-mono hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200 touch-manipulation relative z-20"
+                disabled={!userInput.trim() && currentQuestionData.validation && !currentQuestionData.validation('')}
+                className="bg-transparent border border-green-400 text-green-400 px-6 py-3 text-2xl font-retro retro-glow-green hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200 touch-manipulation relative z-20"
               >
                 Submit Answer
               </button>
@@ -932,9 +933,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                 </button>
               </div>
               
-              <div className="text-gray-400 text-sm mt-4">
-                <span className="hidden md:inline">Use ↑↓ arrows to navigate, Enter to select</span>
-                <span className="md:hidden">Use buttons below or tap options to navigate</span>
+              <div className="text-gray-400 text-lg mt-4 font-retro">
+                <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
+                <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
               </div>
             </div>
             )}
@@ -943,7 +944,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
 
           {/* Progress indicator */}
           {!isTyping && (
-            <div className="text-gray-400 text-sm text-center">
+            <div className="text-gray-400 text-xl text-center font-retro">
               Question {currentQuestion + 1}/{currentWaveData.questions.length}
             </div>
           )}
@@ -956,30 +957,13 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                   setIsGenerating(true);
                   setGenerationStep(0);
                 }}
-                className="bg-transparent border border-red-400 text-red-400 px-4 py-2 text-xs font-mono hover:bg-red-400 hover:text-black transition-colors duration-200"
+                className="bg-transparent border border-red-400 text-red-400 px-4 py-2 text-xl font-retro hover:bg-red-400 hover:text-black transition-colors duration-200"
               >
                 DEV: SKIP TO GENERATION
               </button>
             </div>
           )}
 
-          {/* Skip button - show after wave 2, only on selection questions */}
-          {currentWave >= 2 && currentQuestionData && (currentQuestionData.type === 'multiple-choice' || currentQuestionData.type === 'yes-no') && !showingFollowUp && !isTyping && (
-            <div className="mt-8 text-center">
-              <button
-                onClick={() => {
-                  setIsGenerating(true);
-                  setGenerationStep(0);
-                }}
-                className="bg-transparent border border-amber-400 text-amber-400 px-6 py-3 text-lg font-mono hover:bg-amber-400 hover:text-black transition-colors duration-200"
-              >
-                ⚡ SKIP & GENERATE
-              </button>
-              <div className="text-gray-500 text-xs mt-2">
-                Skip remaining questions and generate project package now
-              </div>
-            </div>
-          )}
 
           {/* Clearing message */}
           {validationMessage === 'Clearing project...' && (

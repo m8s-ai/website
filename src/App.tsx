@@ -33,29 +33,29 @@ const App = () => {
         <LanguageProvider>
           <ChatWindowProvider>
             <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/app-builder" element={<AppBuilderPage />} />
-            <Route path="/solutions" element={<SolutionsPage />} />
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/home" element={<TerminalWebsite />} />
+                  <Route path="/completion-summary" element={<CompletionSummaryPage />} />
+                  <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
+                  <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
+                  {/* <Route path="/app-builder" element={<AppBuilderPage />} /> */}
+                  {/* <Route path="/solutions" element={<SolutionsPage />} />/
             <Route path="/industries" element={<IndustriesPage />} />
             <Route path="/resources" element={<ResourcesPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/services" element={<AppBuilderPage />} />
-            <Route path="/home" element={<TerminalWebsite />} />
-            <Route path="/completion-summary" element={<CompletionSummaryPage />} />
-            <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
-            <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-        {/* I'm disabling the assistant button for now */}
-        {/* <AssistantButton /> */}
-          </TooltipProvider>
+            <Route path="/services" element={<AppBuilderPage />} /> */}
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+              {/* I'm disabling the assistant button for now */}
+              {/* <AssistantButton /> */}
+            </TooltipProvider>
           </ChatWindowProvider>
         </LanguageProvider>
       </ThemeProvider>

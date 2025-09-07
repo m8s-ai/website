@@ -156,24 +156,105 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                 {isTyping ? headerText : "WELCOME TO M8S SYSTEMS"}
                 <TerminalCursor show={showCursor} />
               </div>
-              <div className="text-amber-300 text-lg max-w-3xl mx-auto leading-relaxed">
-                Advanced AI-powered project validation and development platform.
-                Transform your ideas into reality with military-grade precision.
+              <div className="text-amber-300 text-lg max-w-4xl mx-auto leading-relaxed">
+                A Full AI Team, Led by Elite Human Architects, Building Your Next Big Thing.
+              </div>
+              <div className="text-gray-300 max-w-5xl mx-auto leading-relaxed">
+                From automations for small businesses to enterprise-scale systems, our AI m8s deliver solutions faster, smarter, and with uncompromising quality — all under the guidance of architects with startup, freelancing, and Unit 8200 intelligence experience.
+              </div>
+            </div>
+
+            {/* Interactive Welcome Chat */}
+            <div className="max-w-4xl mx-auto mt-12">
+              <div className="bg-green-900/20 border border-green-400/30 p-6 rounded">
+                <div className="text-green-300 font-mono text-xl mb-4">💬 Interactive Welcome</div>
+                <div className="text-amber-200 mb-4">
+                  "Hi, I'm Aria — your Analyst M8. I'll be your guide today. Want to see how our team builds world-class projects?"
+                </div>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <button className="bg-black/40 border border-amber-400/30 p-3 rounded text-amber-300 hover:bg-amber-400/10 transition-all">
+                    "Show me how it works"
+                  </button>
+                  <button className="bg-black/40 border border-amber-400/30 p-3 rounded text-amber-300 hover:bg-amber-400/10 transition-all">
+                    "Start a project now"
+                  </button>
+                  <button className="bg-black/40 border border-amber-400/30 p-3 rounded text-amber-300 hover:bg-amber-400/10 transition-all">
+                    "Explore past work"
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* What We Do */}
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-green-900/20 border border-green-400/30 p-6 rounded">
+                <div className="text-green-300 font-mono text-xl mb-4">💼 What We Do</div>
+                <div className="text-amber-200">
+                  We build AI-powered solutions for everyone — from solo entrepreneurs to global enterprises. Whatever your size, you get a full team of experts to make it happen.
+                </div>
               </div>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-6 mt-12">
+            {/* For Different User Types */}
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Small Businesses */}
               <div className="bg-green-900/20 border border-green-400/30 p-6 rounded">
-                <div className="text-green-300 font-mono text-lg mb-2">⚡ RAPID POC CREATION</div>
-                <div className="text-amber-200">Create amazing proof-of-concepts in minutes, not months</div>
+                <div className="text-green-300 font-mono text-lg mb-4">🌱 For Small Businesses</div>
+                <div className="text-amber-200 mb-4">Stop wasting hours on admin — focus on what you really do best.</div>
+                <div className="text-gray-300 text-sm mb-4">We design smart systems that:</div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3 mt-2"></div>
+                    <span className="text-gray-300">Manage clients & patients seamlessly</span>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3 mt-2"></div>
+                    <span className="text-gray-300">Automate bookings, invoices, and forms</span>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3 mt-2"></div>
+                    <span className="text-gray-300">Integrate WhatsApp, email, and AI bots</span>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3 mt-2"></div>
+                    <span className="text-gray-300">Generate ideas, content, and marketing</span>
+                  </div>
+                </div>
+                <div className="text-amber-400 font-mono text-sm mt-4">👉 Save time, cut costs, work like 10x your size</div>
               </div>
+
+              {/* Individuals */}
               <div className="bg-green-900/20 border border-green-400/30 p-6 rounded">
-                <div className="text-green-300 font-mono text-lg mb-2">📧 INSTANT DELIVERY</div>
-                <div className="text-amber-200">PRD, documentation & samples delivered to your email</div>
+                <div className="text-green-300 font-mono text-lg mb-4">🙋 For Individuals</div>
+                <div className="text-amber-200 mb-4">Got an idea? We bring it to life.</div>
+                <div className="text-gray-300 text-sm mb-4">From personal branding apps to web & mobile projects, we make sure your vision doesn't stay just a dream.</div>
+                <div className="text-amber-400 font-mono text-sm mt-8">👉 You bring the spark. The M8s build the fire.</div>
               </div>
+
+              {/* Companies */}
               <div className="bg-green-900/20 border border-green-400/30 p-6 rounded">
-                <div className="text-green-300 font-mono text-lg mb-2">🚀 FULL DEVELOPMENT</div>
-                <div className="text-amber-200">Contact us for complete development cycles (optional)</div>
+                <div className="text-green-300 font-mono text-lg mb-4">🏢 For Companies</div>
+                <div className="text-amber-200 mb-4">Need serious tech at startup speed?</div>
+                <div className="text-gray-300 text-sm mb-4">We specialize in:</div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3 mt-2"></div>
+                    <span className="text-gray-300">Fast proof-of-concepts to validate ideas</span>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3 mt-2"></div>
+                    <span className="text-gray-300">Clean, scalable code for production</span>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3 mt-2"></div>
+                    <span className="text-gray-300">Agile delivery (step by step)</span>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3 mt-2"></div>
+                    <span className="text-gray-300">End-to-end quality (analyst → QA)</span>
+                  </div>
+                </div>
+                <div className="text-amber-400 font-mono text-sm mt-4">👉 Move faster, test smarter, launch stronger</div>
               </div>
             </div>
           </div>

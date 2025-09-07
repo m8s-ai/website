@@ -33,225 +33,148 @@ interface ConversationData {
   };
 }
 
-// Ultra-smart conversation waves
+// Aria's conversational flow - simplified and friendly
 const CONVERSATION_WAVES: Wave[] = [
   {
     id: 'wave1',
-    name: 'Project Vision & Core Value',
-    description: 'Understanding your main idea and target audience',
+    name: 'Welcome & Path Selection',
+    description: 'Aria introduces herself and the team',
     questions: [
       {
-        id: 'project_type',
-        text: 'What type of digital solution are you envisioning?',
+        id: 'welcome',
+        text: 'Hi, I\'m Aria 👋 your Analyst M8. My job is to help you understand what we do and, if you\'d like, start defining your project.\n\nWould you like me to…',
         type: 'multiple-choice',
         options: [
-          'Mobile app (iOS/Android)',
-          'Web application',
-          'Desktop software',
-          'AI/ML solution',
-          'E-commerce platform',
-          'Something else entirely'
+          'Learn more first',
+          'Start my project'
         ],
-        followUp: 'Great choice! This helps me understand the technical scope.'
-      },
-      {
-        id: 'main_problem',
-        text: 'What specific problem does your solution solve? (Be as specific as possible)',
-        type: 'text',
-        followUp: 'Excellent! Specific problems lead to focused solutions.',
-        validation: (answer: string) => answer.length > 10
-      },
-      {
-        id: 'target_audience',
-        text: 'Who experiences this problem most acutely?',
-        type: 'multiple-choice',
-        options: [
-          'Business professionals',
-          'Small business owners',
-          'Students/Educators',
-          'Healthcare workers',
-          'Creative professionals',
-          'General consumers',
-          'Technical users/Developers',
-          'Multiple specific groups'
-        ],
-        followUp: 'Perfect! Understanding your audience shapes everything we build.'
-      },
-      {
-        id: 'urgency',
-        text: 'How urgently do people need this solution?',
-        type: 'multiple-choice',
-        options: [
-          'Critical - People lose money/time daily without it',
-          'Important - Significant pain point in their workflow',
-          'Convenient - Would make their life easier',
-          'Nice-to-have - Occasional frustration'
-        ],
-        followUp: 'This urgency level will guide our MVP strategy.'
+        followUp: 'Great choice! Let me guide you through this.'
       }
     ]
   },
   {
     id: 'wave2',
-    name: 'Business Logic & Value Proposition',
-    description: 'Diving deep into how your solution works',
+    name: 'Learn More Path',
+    description: 'Educational content about M8s team',
     questions: [
       {
-        id: 'unique_approach',
-        text: 'What makes your approach different from existing solutions?',
-        type: 'text',
-        followUp: 'Brilliant! This differentiation is your competitive advantage.',
-        validation: (answer: string) => answer.length > 15
-      },
-      {
-        id: 'core_features',
-        text: 'If you could only build 3 features, what would they be? (List them)',
-        type: 'text',
-        followUp: 'Perfect! These core features will be our MVP foundation.',
-        validation: (answer: string) => answer.includes('1') || answer.includes('-')
-      },
-      {
-        id: 'user_workflow',
-        text: 'Walk me through a typical user\'s workflow with your solution:',
-        type: 'text',
-        followUp: 'Excellent workflow thinking! This maps to our technical architecture.',
-        validation: (answer: string) => answer.length > 20
-      },
-      {
-        id: 'success_metric',
-        text: 'How will users know your solution is working for them?',
+        id: 'learn_more',
+        text: 'Perfect! Here\'s the big picture:\n• We\'re not just one developer. We\'re a full AI-powered team: analyst, PM, architect, UX, developers, QA.\n• Behind us, human architects oversee everything. They\'re elite AI professionals with startup, freelancing, and Unit 8200 experience.\n• Together, we build everything from small business automations to enterprise systems, always with world-class quality.\n\nWhat would you like to know more about?',
         type: 'multiple-choice',
         options: [
-          'They save time (measurable hours/minutes)',
-          'They make more money',
-          'They feel less stressed/frustrated',
-          'They accomplish goals faster',
-          'They get better results/outcomes',
-          'Multiple measurable benefits'
+          'How does it work?',
+          'Who are the human architects?',
+          'Okay, let\'s start my project'
         ],
-        followUp: 'Great! Measurable success drives user retention.'
+        followUp: 'I\'m excited to share more details with you!'
+      },
+      {
+        id: 'how_it_works',
+        text: 'We follow a simple, proven process:\n1️⃣ Define your idea with me\n2️⃣ Meet our human architects to refine scope & get a quote\n3️⃣ M8s build, design & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you don\'t just get a developer — you get a whole team working for you.',
+        type: 'multiple-choice',
+        options: [
+          'Sounds good, start my project',
+          'Tell me more about the architects'
+        ],
+        followUp: 'I love how our process keeps everything organized!'
+      },
+      {
+        id: 'about_architects',
+        text: 'Our architects are AI pros with experience delivering hundreds of projects — from startups to enterprise systems. Many come from the elite intelligence unit 8200, bringing top expertise in software, AI, and security.\n\nThey make sure everything the M8s deliver is production-ready, scalable, and secure.',
+        type: 'multiple-choice',
+        options: [
+          'Great, start my project',
+          'Show me how it works again'
+        ],
+        followUp: 'Our architects are truly amazing - you\'ll love working with them!'
       }
     ]
   },
   {
     id: 'wave3',
-    name: 'Technical Requirements & Constraints',
-    description: 'Understanding technical needs and limitations',
+    name: 'Project Definition',
+    description: 'Defining your project with Aria',
     questions: [
       {
-        id: 'platform_priority',
-        text: 'Which platform should we prioritize for launch?',
-        type: 'multiple-choice',
-        options: [
-          'Web first (accessible everywhere)',
-          'Mobile first (iOS priority)',
-          'Mobile first (Android priority)',
-          'Desktop first (Windows/Mac)',
-          'Cross-platform simultaneously'
-        ],
-        followUp: 'Smart prioritization! This affects our development timeline.'
+        id: 'project_idea',
+        text: 'Awesome 🚀 Let\'s get your idea down clearly.\n\nIn a few words, tell me what you\'d like us to build or automate.',
+        type: 'text',
+        followUp: 'Got it ✅ Let\'s refine it a bit together.',
+        validation: (answer: string) => answer.length > 5
       },
       {
-        id: 'data_requirements',
-        text: 'What data will your solution need to store or access?',
+        id: 'project_scale',
+        text: 'Would you say this is more like…',
         type: 'multiple-choice',
         options: [
-          'User profiles & preferences',
-          'Business/transaction data',
-          'Files & documents',
-          'Real-time activity data',
-          'External API integrations',
-          'Minimal data storage'
+          'A small proof-of-concept (just to test an idea quickly)',
+          'A full project (production-ready, high quality)',
+          'Not sure yet — guide me'
         ],
-        followUp: 'Understanding data needs helps us design the right architecture.'
-      },
-      {
-        id: 'user_accounts',
-        text: 'Do users need individual accounts and login?',
-        type: 'yes-no',
-        followUp: 'This impacts our authentication and data privacy approach.'
-      },
-      {
-        id: 'offline_capability',
-        text: 'Should your solution work offline or always require internet?',
-        type: 'multiple-choice',
-        options: [
-          'Must work offline (critical)',
-          'Offline nice-to-have',
-          'Always online is fine',
-          'Hybrid (some features offline)'
-        ],
-        followUp: 'Offline requirements significantly affect our technical stack.'
+        followUp: 'Perfect choice! This helps me understand the scope.'
       }
     ]
   },
   {
     id: 'wave4',
-    name: 'Validation & Launch Strategy',
-    description: 'Planning your path to market',
+    name: 'Process & Next Steps',
+    description: 'Explaining the process and leading to meeting',
     questions: [
       {
-        id: 'timeline_urgency',
-        text: 'What\'s driving your timeline for this project?',
+        id: 'process_explanation',
+        text: 'Here\'s how we build every project:\n\n1️⃣ Define your idea clearly\n2️⃣ Architects refine & align with you\n3️⃣ M8s design, code & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you get the speed of AI + the quality of elite human architects.\n\nReady for the next step?',
         type: 'multiple-choice',
         options: [
-          'Market opportunity (competitors moving)',
-          'Business need (current solution failing)',
-          'Investment/funding timeline',
-          'Personal/career milestone',
-          'No urgent deadline'
+          'Yes, next step!'
         ],
-        followUp: 'Timeline drivers help us prioritize features vs. speed.'
+        followUp: 'Excellent! Let\'s connect you with our architects.'
       },
       {
-        id: 'mvp_validation',
-        text: 'How will you validate your MVP with real users?',
+        id: 'schedule_meeting',
+        text: 'The next step is to meet one of our human architects. They\'ll refine your idea with you, agree on the scope, and provide a clear quote.\n\nWould you like me to schedule a meeting?',
         type: 'multiple-choice',
         options: [
-          'I have potential users ready to test',
-          'I\'ll find beta users through my network',
-          'I\'ll use online communities/forums',
-          'I\'ll run ads to find early adopters',
-          'I need help planning user validation'
+          'Yes, schedule a meeting',
+          'Tell me more first',
+          'Not now'
         ],
-        followUp: 'User validation is crucial - this shapes our launch strategy.'
+        followUp: 'Perfect! Let me get your details.'
       },
       {
-        id: 'budget_range',
-        text: 'What\'s your target budget range for the initial version?',
-        type: 'multiple-choice',
-        options: [
-          'Under $10K (lean MVP)',
-          '$10K - $25K (solid foundation)',
-          '$25K - $50K (comprehensive solution)',
-          '$50K+ (full-featured platform)',
-          'I need help understanding costs'
-        ],
-        followUp: 'Budget helps us scope the perfect MVP for your goals.'
-      },
-      {
-        id: 'biggest_concern',
-        text: 'What\'s your biggest concern about building this solution?',
-        type: 'multiple-choice',
-        options: [
-          'Technical complexity',
-          'Finding the right development team',
-          'Budget and timeline',
-          'Market competition',
-          'User adoption',
-          'Scaling and maintenance'
-        ],
-        followUp: 'Let\'s address this concern directly in our project plan.'
+        id: 'contact_info',
+        text: 'Great! I\'ll need a few details to set up your session.\n\nWhat\'s your name?',
+        type: 'text',
+        followUp: 'Nice to meet you! Now I need your email.',
+        validation: (answer: string) => answer.length > 1
       },
       {
         id: 'email',
-        text: 'What\'s your email address? We\'ll send you the complete project package with working prototypes, technical docs, and cost estimates.',
+        text: 'What\'s your email address?',
         type: 'text',
-        followUp: 'Perfect! Your project package will be delivered within 24 hours.',
+        followUp: 'Perfect! One of our architects will contact you shortly.',
         validation: (answer: string) => {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return emailRegex.test(answer.trim());
         }
+      },
+      {
+        id: 'company_optional',
+        text: 'Company name? (Optional)',
+        type: 'text',
+        followUp: 'Got it! Thanks for that info.',
+        validation: () => true
+      },
+      {
+        id: 'preferred_time',
+        text: 'When would you prefer to meet?',
+        type: 'multiple-choice',
+        options: [
+          'This week',
+          'Next week',
+          'Within 2 weeks',
+          'I\'m flexible'
+        ],
+        followUp: 'Thanks! You\'re all set. One of our architects will meet you soon. You\'ll get an invite shortly 📅.\n\nExcited to start building with you 🚀'
       }
     ]
   }
@@ -272,16 +195,21 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
   const [validationMessage, setValidationMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(true); // Bot typing indicator
+  const [typingDots, setTypingDots] = useState('');
+  
 
   const currentWaveData = CONVERSATION_WAVES[currentWave];
   const currentQuestionData = currentWaveData?.questions[currentQuestion];
 
+  // Debug: Log the current state (removed to prevent infinite loops)
+
   const GENERATION_STEPS = [
-    'GENERATING PROJECT REQUIREMENTS DOCUMENT...',
-    'CREATING TECHNICAL ARCHITECTURE DIAGRAMS...',
-    'BUILDING WORKING PROTOTYPE...',
-    'CALCULATING DEVELOPMENT COSTS...',
-    'PREPARING PROJECT PACKAGE...'
+    'ANALYZING YOUR PROJECT REQUIREMENTS...',
+    'ASSEMBLING THE PERFECT BOT TEAM...',
+    'GENERATING TECHNICAL SCOPE DOCUMENT...',
+    'PREPARING CUSTOM QUOTE & TIMELINE...',
+    'READY TO MEET & DISCUSS! 🚀'
   ];
 
   const playNavigationSound = useCallback(async (direction: 'up' | 'down') => {
@@ -315,6 +243,69 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     return () => clearInterval(interval);
   }, []);
 
+  // Typing indicator animation
+  useEffect(() => {
+    if (isTyping) {
+      const interval = setInterval(() => {
+        setTypingDots(prev => {
+          if (prev === '...') return '';
+          return prev + '.';
+        });
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [isTyping]);
+
+  // Bot typing simulation - show typing for 2 seconds then reveal message
+  useEffect(() => {
+    setIsTyping(true);
+    setTypingDots('');
+    
+    const timer = setTimeout(() => {
+      setIsTyping(false);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, [currentQuestionData?.id]); // Trigger when question changes
+
+  // Early return if no valid data (but allow generation and completion states)
+  if ((!currentWaveData || !currentQuestionData) && !isGenerating && !isComplete) {
+    console.error('ConversationEngine Error: Missing wave or question data', {
+      currentWave,
+      currentQuestion,
+      totalWaves: CONVERSATION_WAVES.length,
+      waveData: currentWaveData,
+      questionData: currentQuestionData
+    });
+    return (
+      <div className="relative min-h-screen bg-black text-white flex items-center justify-center p-4 retro-scanlines">
+        <div className="text-center space-y-4">
+          <div className="text-red-400 text-4xl font-retro-xl retro-glow-green">⚠️ DEBUG MODE</div>
+          <div className="text-yellow-400 text-2xl font-retro-large">ConversationEngine Component Loaded</div>
+          <div className="text-gray-400 text-sm font-mono">
+            Wave: {currentWave} / Question: {currentQuestion}
+          </div>
+          <div className="text-gray-400 text-sm font-mono">
+            Total Waves: {CONVERSATION_WAVES.length}
+          </div>
+          <button 
+            onClick={() => {
+              console.log('Resetting conversation...');
+              setCurrentWave(0);
+              setCurrentQuestion(0);
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-retro-xl text-2xl transition-colors retro-glow-green"
+          >
+            RESET & START CONVERSATION
+          </button>
+          <div className="text-gray-500 text-xs mt-4 font-mono">
+            If you can see this, the component is mounting correctly.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Background music effect for generation - DISABLED
   // useEffect(() => {
   //   if (isGenerating) {
@@ -326,72 +317,75 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   //   }
   // }, [isGenerating, audio]);
 
-  // Generation effect
+  // Simple generation timer with setInterval
   useEffect(() => {
-    if (isGenerating && generationStep < GENERATION_STEPS.length) {
-      // In development: 10 seconds total, in production: 2-3 minutes total
-      const isDev = process.env.NODE_ENV === 'development';
-      const stepDuration = isDev ? 1000 : 20000; // 1s dev, 20s production per step
-      
-      const timer = setTimeout(() => {
-        setGenerationStep(prev => prev + 1);
-      }, stepDuration);
-      return () => clearTimeout(timer);
-    } else if (isGenerating && generationStep >= GENERATION_STEPS.length && !isComplete) {
-      // Generation complete, play completion sound, show final state, then redirect
-      const timer = setTimeout(() => {
-        playCompletionSound();
-        
-        // Navigate to completion summary page with data
-        const completionData = {
-          responses,
-          waveData: {
-            wave1: {},
-            wave2: {},
-            wave3: {},
-            wave4: {}
-          }
-        };
-        
-        // Fill waveData with organized responses
-        CONVERSATION_WAVES.forEach((wave, waveIndex) => {
-          const waveKey = `wave${waveIndex + 1}` as keyof typeof completionData.waveData;
-          wave.questions.forEach(question => {
-            if (responses[question.id]) {
-              completionData.waveData[waveKey][question.id] = responses[question.id];
-            }
-          });
-        });
-        
-        navigate('/completion-summary', { state: completionData });
-      }, 1000);
-      return () => clearTimeout(timer);
+    if (!isGenerating) {
+      return;
     }
-  }, [isGenerating, generationStep, isComplete]);
 
-  // Handle keyboard navigation for multiple choice
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (!currentQuestionData || showingFollowUp) return;
-
-      if (currentQuestionData.type === 'multiple-choice') {
-        if (event.key === 'ArrowUp' && selectedOption > 0) {
-          setSelectedOption(prev => prev - 1);
-          playNavigationSound('up');
-        } else if (event.key === 'ArrowDown' && selectedOption < (currentQuestionData.options?.length || 0) - 1) {
-          setSelectedOption(prev => prev + 1);
-          playNavigationSound('down');
-        } else if (event.key === 'Enter') {
-          handleSubmitAnswer();
-        }
-      } else if (event.key === 'Enter' && currentQuestionData.type !== 'text') {
-        handleSubmitAnswer();
+    // Start from step 0 and progress through all steps
+    let currentStep = 0;
+    const isDev = process.env.NODE_ENV === 'development';
+    const stepDuration = isDev ? 2000 : 20000; // 2s dev, 20s production
+    
+    // Set initial step
+    setGenerationStep(0);
+    
+    const interval = setInterval(() => {
+      currentStep++;
+      setGenerationStep(currentStep);
+      
+      // When we reach the end of generation steps
+      if (currentStep >= GENERATION_STEPS.length) {
+        clearInterval(interval);
+        
+        // Complete generation and navigate
+        setTimeout(() => {
+          playCompletionSound();
+          
+          // Navigate to completion summary page with data
+          const completionData = {
+            responses,
+            waveData: {
+              wave1: {},
+              wave2: {},
+              wave3: {},
+              wave4: {}
+            }
+          };
+          
+          // Fill waveData with organized responses
+          CONVERSATION_WAVES.forEach((wave, waveIndex) => {
+            const waveKey = `wave${waveIndex + 1}` as keyof typeof completionData.waveData;
+            wave.questions.forEach(question => {
+              if (responses[question.id]) {
+                completionData.waveData[waveKey][question.id] = responses[question.id];
+              }
+            });
+          });
+          
+          navigate('/completion-summary', { state: completionData });
+        }, 1000);
       }
-    };
+    }, stepDuration);
+    
+    return () => clearInterval(interval);
+  }, [isGenerating]);
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentQuestionData, selectedOption, showingFollowUp, playNavigationSound]);
+  const proceedToNextQuestion = useCallback(() => {
+    if (currentQuestion < currentWaveData.questions.length - 1) {
+      // Next question in current wave
+      setCurrentQuestion(prev => prev + 1);
+    } else if (currentWave < CONVERSATION_WAVES.length - 1) {
+      // Next wave
+      setCurrentWave(prev => prev + 1);
+      setCurrentQuestion(0);
+    } else {
+      // All questions complete, start generation
+      setIsGenerating(true);
+      setGenerationStep(0);
+    }
+  }, [currentQuestion, currentWaveData.questions.length, currentWave]);
 
   const handleSubmitAnswer = useCallback(async () => {
     if (!currentQuestionData) return;
@@ -404,7 +398,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       answer = currentQuestionData.options?.[selectedOption] || '';
     } else if (currentQuestionData.type === 'text') {
       answer = userInput.trim();
-      if (!answer) {
+      if (!answer && currentQuestionData.validation && !currentQuestionData.validation('')) {
         isValid = false;
         message = 'Please enter your answer before submitting.';
       } else if (currentQuestionData.validation && !currentQuestionData.validation(answer)) {
@@ -458,22 +452,31 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     setUserInput('');
     setSelectedOption(0);
     setValidationMessage('');
-  }, [currentQuestionData, selectedOption, userInput, playSelectionSound]);
+  }, [currentQuestionData, selectedOption, userInput, playSelectionSound, proceedToNextQuestion]);
 
-  const proceedToNextQuestion = () => {
-    if (currentQuestion < currentWaveData.questions.length - 1) {
-      // Next question in current wave
-      setCurrentQuestion(prev => prev + 1);
-    } else if (currentWave < CONVERSATION_WAVES.length - 1) {
-      // Next wave
-      setCurrentWave(prev => prev + 1);
-      setCurrentQuestion(0);
-    } else {
-      // All questions complete, start generation
-      setIsGenerating(true);
-      setGenerationStep(0);
-    }
-  };
+  // Handle keyboard navigation for multiple choice - moved after handleSubmitAnswer
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (!currentQuestionData || showingFollowUp) return;
+
+      if (currentQuestionData.type === 'multiple-choice') {
+        if (event.key === 'ArrowUp' && selectedOption > 0) {
+          setSelectedOption(prev => prev - 1);
+          playNavigationSound('up');
+        } else if (event.key === 'ArrowDown' && selectedOption < (currentQuestionData.options?.length || 0) - 1) {
+          setSelectedOption(prev => prev + 1);
+          playNavigationSound('down');
+        } else if (event.key === 'Enter') {
+          handleSubmitAnswer();
+        }
+      } else if (event.key === 'Enter' && currentQuestionData.type !== 'text') {
+        handleSubmitAnswer();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentQuestionData, selectedOption, showingFollowUp, playNavigationSound, handleSubmitAnswer]);
 
   const completeConversation = () => {
     const waveData = {
@@ -504,7 +507,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     const totalTime = isDev ? '10 seconds' : '2-3 minutes';
     
     return (
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen bg-black text-white">
         {/* Abort button - always visible in bottom-left */}
         <button
           onClick={handleAbort}
@@ -514,50 +517,57 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           ⏸ ABORT
         </button>
 
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center retro-scanlines">
           <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
-          <div className="text-green-300 text-xl mb-4">
-            🚀 GENERATING YOUR PROJECT PACKAGE
+          <div className="text-green-300 text-4xl mb-4 font-retro-xl retro-glow-green">
+            ⚡ PROCESSING YOUR PROJECT
           </div>
         
-        <div className="text-amber-300 text-sm mb-8">
-          This process typically takes {totalTime}. Please don't close this window.
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <img 
+            src="/robot-favicon.svg" 
+            alt="Fellow Bot" 
+            className="w-8 h-8 animate-pulse"
+          />
+          <div className="text-amber-300 text-xl font-retro-light">
+            My fellow bots are reviewing your requirements... ({totalTime} estimated)
+          </div>
         </div>
         
         <div className="space-y-4">
           {GENERATION_STEPS.slice(0, generationStep).map((step, index) => (
             <div key={index} className="flex items-center justify-center space-x-4">
-              <span className="text-amber-400 font-mono">{step}</span>
-              <span className="text-green-300">✓</span>
+              <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{step}</span>
+              <span className="text-green-300 retro-glow-green">✓</span>
             </div>
           ))}
           
           {generationStep < GENERATION_STEPS.length && (
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-amber-400 font-mono">{GENERATION_STEPS[generationStep]}</span>
+              <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{GENERATION_STEPS[generationStep]}</span>
               <div className="w-3 h-5 inline-block ml-2">
-                {showCursor && <div className="bg-green-400 w-full h-full"></div>}
+                {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
               </div>
             </div>
           )}
           
           {generationStep >= GENERATION_STEPS.length && (
             <div className="flex items-center justify-center space-x-4">
-              <span className="text-green-400 font-mono">READY FOR DELIVERY...</span>
-              <span className="text-green-300">✓</span>
+              <span className="text-green-400 font-retro-light text-xl retro-glow-green">BOT ANALYSIS COMPLETE - SCHEDULING MEETING...</span>
+              <span className="text-green-300 retro-glow-green">✓</span>
             </div>
           )}
         </div>
         
-        <div className="text-gray-400 text-sm mt-8">
+        <div className="text-gray-400 text-sm mt-8 font-retro">
           {generationStep < GENERATION_STEPS.length 
-            ? `Step ${generationStep + 1}/${GENERATION_STEPS.length}`
-            : `Step ${GENERATION_STEPS.length}/${GENERATION_STEPS.length}`
+            ? `Phase ${generationStep + 1} of ${GENERATION_STEPS.length}`
+            : `Analysis Complete`
           }
         </div>
         
-        <div className="text-gray-500 text-xs mt-4">
-          {isDev ? 'Development mode: Fast generation' : 'Creating comprehensive project package...'}
+        <div className="text-gray-500 text-xs mt-4 font-retro">
+          {isDev ? 'Development mode: Fast bot analysis' : 'Bot team analyzing & preparing your custom solution...'}
         </div>
         
         {/* Clearing message */}
@@ -578,7 +588,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     const userEmail = responses['email'] || 'your email';
     
     return (
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen bg-black text-white">
         {/* Abort button - always visible in bottom-left */}
         <button
           onClick={handleAbort}
@@ -683,7 +693,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-black text-white">
       {/* Abort button - always visible in bottom-left */}
       <button
         onClick={handleAbort}
@@ -693,28 +703,73 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         ⏸ ABORT
       </button>
 
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
+      <div className="min-h-screen flex items-center justify-center p-4 retro-scanlines">
+        <div className="w-full max-w-4xl mx-auto space-y-6" dir="ltr">
           {/* Wave indicator */}
-          <div className="text-green-300 text-sm">
+          <div className="text-green-300 text-2xl text-center font-retro-xl retro-glow-green">
             {currentWave + 1}/4: {currentWaveData.name}
           </div>
 
-      {/* Question */}
-      <div className="text-amber-300 text-lg leading-relaxed">
-        {currentQuestionData.text}
-      </div>
+          {/* Bot Message with Avatar */}
+          <div className="flex items-start gap-4 w-full max-w-3xl mx-auto">
+            {/* Bot Avatar */}
+            <div className="flex-shrink-0 mt-1">
+              <img 
+                src="/robot-favicon-white.svg" 
+                alt="Aria Bot" 
+                className="w-12 h-12 rounded-full border-2 border-green-400/30 bg-black/20 p-2"
+              />
+            </div>
+            
+            {/* Bot Message Bubble */}
+            <div className="flex-1">
+              <div className="relative bg-black/40 border border-green-400/30 rounded-lg rounded-tl-none p-6 backdrop-blur-sm">
+                {/* Chat bubble tail */}
+                <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
+                
+                <div className="text-amber-300 text-2xl leading-relaxed font-retro-light retro-glow-amber whitespace-pre-line">
+                  {isTyping ? (
+                    <span className="text-gray-400 font-retro text-lg">
+                      Aria is typing{typingDots}
+                      <span className="retro-cursor">█</span>
+                    </span>
+                  ) : (
+                    currentQuestionData.text
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* Follow-up message */}
-      {showingFollowUp && (
-        <div className="text-green-300 italic">
-          {currentQuestionData.followUp}
-        </div>
-      )}
+          {/* Follow-up message */}
+          {showingFollowUp && (
+            <div className="flex items-start gap-4 w-full max-w-3xl mx-auto">
+              {/* Bot Avatar */}
+              <div className="flex-shrink-0 mt-1">
+                <img 
+                  src="/robot-favicon-white.svg" 
+                  alt="Aria Bot" 
+                  className="w-12 h-12 rounded-full border-2 border-green-400/30 bg-black/20 p-2"
+                />
+              </div>
+              
+              {/* Follow-up Message Bubble */}
+              <div className="flex-1">
+                <div className="relative bg-black/40 border border-green-400/30 rounded-lg rounded-tl-none p-4 backdrop-blur-sm">
+                  {/* Chat bubble tail */}
+                  <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
+                  
+                  <div className="text-green-300 text-xl italic font-retro-light retro-glow-green whitespace-pre-line">
+                    {currentQuestionData.followUp}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-      {/* Answer interface */}
-      {!showingFollowUp && (
-        <div className="space-y-4">
+          {/* Answer interface */}
+          {!showingFollowUp && !isTyping && (
+            <div className="space-y-4 w-full max-w-3xl mx-auto">
           {currentQuestionData.type === 'multiple-choice' && (
             <div className="space-y-2">
               {currentQuestionData.options?.map((option, index) => (
@@ -722,12 +777,12 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                   key={index}
                   className={`p-3 border-2 cursor-pointer transition-all ${
                     selectedOption === index 
-                      ? 'border-green-400 bg-green-400/10' 
+                      ? 'border-green-400 bg-green-400/10 retro-glow-green' 
                       : 'border-gray-600 hover:border-green-300'
                   }`}
                   onClick={() => setSelectedOption(index)}
                 >
-                  <span className={selectedOption === index ? 'text-green-300' : 'text-gray-300'}>
+                  <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`}>
                     {selectedOption === index ? '> ' : '  '}{option}
                   </span>
                 </div>
@@ -767,9 +822,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                 </button>
               </div>
               
-              <div className="text-gray-400 text-sm mt-4">
-                <span className="hidden md:inline">Use ↑↓ arrows to navigate, Enter to select</span>
-                <span className="md:hidden">Use buttons below or tap options to navigate</span>
+              <div className="text-gray-400 text-lg mt-4 font-retro">
+                <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
+                <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
               </div>
             </div>
           )}
@@ -778,9 +833,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
             <div className="space-y-4 relative px-4 md:px-0">
               <div className="w-full p-4 bg-transparent text-green-300 min-h-[60px] flex items-center justify-start border border-green-400/30 rounded">
                 <div className="flex items-center w-full">
-                  <span className="whitespace-pre-wrap text-lg font-mono leading-relaxed">{userInput}</span>
+                  <span className="whitespace-pre-wrap text-2xl font-retro-light leading-relaxed">{userInput}</span>
                   <span className="inline-block w-4 h-6 ml-0 flex-shrink-0">
-                    {showCursor && <div className="bg-green-400 w-full h-full"></div>}
+                    {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
                   </span>
                 </div>
               </div>
@@ -813,11 +868,11 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                     }
                   }
                 }}
-                className="absolute top-0 left-0 w-full h-[60px] opacity-0 cursor-text z-10 font-mono text-lg"
+                className="absolute top-0 left-0 w-full h-[60px] opacity-0 cursor-text z-10 font-retro-light text-2xl"
                 autoFocus
               />
               {validationMessage && (
-                <div className="text-red-400 text-sm font-mono text-center">
+                <div className="text-red-400 text-lg font-retro text-center">
                   ⚠️ {validationMessage}
                 </div>
               )}
@@ -828,8 +883,8 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                   console.log('Button clicked!', { userInput: userInput.trim() });
                   handleSubmitAnswer();
                 }}
-                disabled={!userInput.trim()}
-                className="bg-transparent border border-green-400 text-green-400 px-6 py-3 text-lg font-mono hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200 touch-manipulation relative z-20"
+                disabled={!userInput.trim() && currentQuestionData.validation && !currentQuestionData.validation('')}
+                className="bg-transparent border border-green-400 text-green-400 px-6 py-3 text-2xl font-retro retro-glow-green hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200 touch-manipulation relative z-20"
               >
                 Submit Answer
               </button>
@@ -888,61 +943,46 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                 </button>
               </div>
               
-              <div className="text-gray-400 text-sm mt-4">
-                <span className="hidden md:inline">Use ↑↓ arrows to navigate, Enter to select</span>
-                <span className="md:hidden">Use buttons below or tap options to navigate</span>
+              <div className="text-gray-400 text-lg mt-4 font-retro">
+                <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
+                <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
+              </div>
+            </div>
+            )}
+            </div>
+          )}
+
+          {/* Progress indicator */}
+          {!isTyping && (
+            <div className="text-gray-400 text-xl text-center font-retro">
+              Question {currentQuestion + 1}/{currentWaveData.questions.length}
+            </div>
+          )}
+
+          {/* Dev only: Skip to generation button */}
+          {process.env.NODE_ENV === 'development' && !showingFollowUp && !isTyping && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => {
+                  setIsGenerating(true);
+                  setGenerationStep(0);
+                }}
+                className="bg-transparent border border-red-400 text-red-400 px-4 py-2 text-xl font-retro hover:bg-red-400 hover:text-black transition-colors duration-200"
+              >
+                DEV: SKIP TO GENERATION
+              </button>
+            </div>
+          )}
+
+
+          {/* Clearing message */}
+          {validationMessage === 'Clearing project...' && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
+              <div className="text-red-400 text-xl font-mono">
+                🗑️ CLEARING PROJECT...
               </div>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Progress indicator */}
-      <div className="text-gray-400 text-sm">
-        Question {currentQuestion + 1}/{currentWaveData.questions.length}
-      </div>
-
-      {/* Dev only: Skip to generation button */}
-      {process.env.NODE_ENV === 'development' && !showingFollowUp && (
-        <div className="mt-4">
-          <button
-            onClick={() => {
-              setIsGenerating(true);
-              setGenerationStep(0);
-            }}
-            className="bg-transparent border border-red-400 text-red-400 px-4 py-2 text-xs font-mono hover:bg-red-400 hover:text-black transition-colors duration-200"
-          >
-            DEV: SKIP TO GENERATION
-          </button>
-        </div>
-      )}
-
-      {/* Skip button - show after wave 2, only on selection questions */}
-      {currentWave >= 2 && currentQuestionData && (currentQuestionData.type === 'multiple-choice' || currentQuestionData.type === 'yes-no') && !showingFollowUp && (
-        <div className="mt-8">
-          <button
-            onClick={() => {
-              setIsGenerating(true);
-              setGenerationStep(0);
-            }}
-            className="bg-transparent border border-amber-400 text-amber-400 px-6 py-3 text-lg font-mono hover:bg-amber-400 hover:text-black transition-colors duration-200"
-          >
-            ⚡ SKIP & GENERATE
-          </button>
-          <div className="text-gray-500 text-xs mt-2 text-center">
-            Skip remaining questions and generate project package now
-          </div>
-        </div>
-      )}
-
-      {/* Clearing message */}
-      {validationMessage === 'Clearing project...' && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
-          <div className="text-red-400 text-xl font-mono">
-            🗑️ CLEARING PROJECT...
-          </div>
-        </div>
-      )}
         </div>
       </div>
     </div>

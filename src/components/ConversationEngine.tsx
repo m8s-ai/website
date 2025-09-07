@@ -33,225 +33,148 @@ interface ConversationData {
   };
 }
 
-// Ultra-smart conversation waves
+// Aria's conversational flow - simplified and friendly
 const CONVERSATION_WAVES: Wave[] = [
   {
     id: 'wave1',
-    name: 'Project Vision & Core Value',
-    description: 'Understanding your main idea and target audience',
+    name: 'Welcome & Path Selection',
+    description: 'Aria introduces herself and the team',
     questions: [
       {
-        id: 'project_type',
-        text: 'What type of digital solution are you envisioning?',
+        id: 'welcome',
+        text: 'Hi, I\'m Aria 👋 your Analyst M8. My job is to help you understand what we do and, if you\'d like, start defining your project.\n\nWould you like me to…',
         type: 'multiple-choice',
         options: [
-          'Mobile app (iOS/Android)',
-          'Web application',
-          'Desktop software',
-          'AI/ML solution',
-          'E-commerce platform',
-          'Something else entirely'
+          'Learn more first',
+          'Start my project'
         ],
-        followUp: 'Great choice! This helps me understand the technical scope.'
-      },
-      {
-        id: 'main_problem',
-        text: 'What specific problem does your solution solve? (Be as specific as possible)',
-        type: 'text',
-        followUp: 'Excellent! Specific problems lead to focused solutions.',
-        validation: (answer: string) => answer.length > 10
-      },
-      {
-        id: 'target_audience',
-        text: 'Who experiences this problem most acutely?',
-        type: 'multiple-choice',
-        options: [
-          'Business professionals',
-          'Small business owners',
-          'Students/Educators',
-          'Healthcare workers',
-          'Creative professionals',
-          'General consumers',
-          'Technical users/Developers',
-          'Multiple specific groups'
-        ],
-        followUp: 'Perfect! Understanding your audience shapes everything we build.'
-      },
-      {
-        id: 'urgency',
-        text: 'How urgently do people need this solution?',
-        type: 'multiple-choice',
-        options: [
-          'Critical - People lose money/time daily without it',
-          'Important - Significant pain point in their workflow',
-          'Convenient - Would make their life easier',
-          'Nice-to-have - Occasional frustration'
-        ],
-        followUp: 'This urgency level will guide our MVP strategy.'
+        followUp: 'Great choice! Let me guide you through this.'
       }
     ]
   },
   {
     id: 'wave2',
-    name: 'Business Logic & Value Proposition',
-    description: 'Diving deep into how your solution works',
+    name: 'Learn More Path',
+    description: 'Educational content about M8s team',
     questions: [
       {
-        id: 'unique_approach',
-        text: 'What makes your approach different from existing solutions?',
-        type: 'text',
-        followUp: 'Brilliant! This differentiation is your competitive advantage.',
-        validation: (answer: string) => answer.length > 15
-      },
-      {
-        id: 'core_features',
-        text: 'If you could only build 3 features, what would they be? (List them)',
-        type: 'text',
-        followUp: 'Perfect! These core features will be our MVP foundation.',
-        validation: (answer: string) => answer.includes('1') || answer.includes('-')
-      },
-      {
-        id: 'user_workflow',
-        text: 'Walk me through a typical user\'s workflow with your solution:',
-        type: 'text',
-        followUp: 'Excellent workflow thinking! This maps to our technical architecture.',
-        validation: (answer: string) => answer.length > 20
-      },
-      {
-        id: 'success_metric',
-        text: 'How will users know your solution is working for them?',
+        id: 'learn_more',
+        text: 'Perfect! Here\'s the big picture:\n• We\'re not just one developer. We\'re a full AI-powered team: analyst, PM, architect, UX, developers, QA.\n• Behind us, human architects oversee everything. They\'re elite AI professionals with startup, freelancing, and Unit 8200 experience.\n• Together, we build everything from small business automations to enterprise systems, always with world-class quality.\n\nWhat would you like to know more about?',
         type: 'multiple-choice',
         options: [
-          'They save time (measurable hours/minutes)',
-          'They make more money',
-          'They feel less stressed/frustrated',
-          'They accomplish goals faster',
-          'They get better results/outcomes',
-          'Multiple measurable benefits'
+          'How does it work?',
+          'Who are the human architects?',
+          'Okay, let\'s start my project'
         ],
-        followUp: 'Great! Measurable success drives user retention.'
+        followUp: 'I\'m excited to share more details with you!'
+      },
+      {
+        id: 'how_it_works',
+        text: 'We follow a simple, proven process:\n1️⃣ Define your idea with me\n2️⃣ Meet our human architects to refine scope & get a quote\n3️⃣ M8s build, design & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you don\'t just get a developer — you get a whole team working for you.',
+        type: 'multiple-choice',
+        options: [
+          'Sounds good, start my project',
+          'Tell me more about the architects'
+        ],
+        followUp: 'I love how our process keeps everything organized!'
+      },
+      {
+        id: 'about_architects',
+        text: 'Our architects are AI pros with experience delivering hundreds of projects — from startups to enterprise systems. Many come from the elite intelligence unit 8200, bringing top expertise in software, AI, and security.\n\nThey make sure everything the M8s deliver is production-ready, scalable, and secure.',
+        type: 'multiple-choice',
+        options: [
+          'Great, start my project',
+          'Show me how it works again'
+        ],
+        followUp: 'Our architects are truly amazing - you\'ll love working with them!'
       }
     ]
   },
   {
     id: 'wave3',
-    name: 'Technical Requirements & Constraints',
-    description: 'Understanding technical needs and limitations',
+    name: 'Project Definition',
+    description: 'Defining your project with Aria',
     questions: [
       {
-        id: 'platform_priority',
-        text: 'Which platform should we prioritize for launch?',
-        type: 'multiple-choice',
-        options: [
-          'Web first (accessible everywhere)',
-          'Mobile first (iOS priority)',
-          'Mobile first (Android priority)',
-          'Desktop first (Windows/Mac)',
-          'Cross-platform simultaneously'
-        ],
-        followUp: 'Smart prioritization! This affects our development timeline.'
+        id: 'project_idea',
+        text: 'Awesome 🚀 Let\'s get your idea down clearly.\n\nIn a few words, tell me what you\'d like us to build or automate.',
+        type: 'text',
+        followUp: 'Got it ✅ Let\'s refine it a bit together.',
+        validation: (answer: string) => answer.length > 5
       },
       {
-        id: 'data_requirements',
-        text: 'What data will your solution need to store or access?',
+        id: 'project_scale',
+        text: 'Would you say this is more like…',
         type: 'multiple-choice',
         options: [
-          'User profiles & preferences',
-          'Business/transaction data',
-          'Files & documents',
-          'Real-time activity data',
-          'External API integrations',
-          'Minimal data storage'
+          'A small proof-of-concept (just to test an idea quickly)',
+          'A full project (production-ready, high quality)',
+          'Not sure yet — guide me'
         ],
-        followUp: 'Understanding data needs helps us design the right architecture.'
-      },
-      {
-        id: 'user_accounts',
-        text: 'Do users need individual accounts and login?',
-        type: 'yes-no',
-        followUp: 'This impacts our authentication and data privacy approach.'
-      },
-      {
-        id: 'offline_capability',
-        text: 'Should your solution work offline or always require internet?',
-        type: 'multiple-choice',
-        options: [
-          'Must work offline (critical)',
-          'Offline nice-to-have',
-          'Always online is fine',
-          'Hybrid (some features offline)'
-        ],
-        followUp: 'Offline requirements significantly affect our technical stack.'
+        followUp: 'Perfect choice! This helps me understand the scope.'
       }
     ]
   },
   {
     id: 'wave4',
-    name: 'Validation & Launch Strategy',
-    description: 'Planning your path to market',
+    name: 'Process & Next Steps',
+    description: 'Explaining the process and leading to meeting',
     questions: [
       {
-        id: 'timeline_urgency',
-        text: 'What\'s driving your timeline for this project?',
+        id: 'process_explanation',
+        text: 'Here\'s how we build every project:\n\n1️⃣ Define your idea clearly\n2️⃣ Architects refine & align with you\n3️⃣ M8s design, code & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you get the speed of AI + the quality of elite human architects.\n\nReady for the next step?',
         type: 'multiple-choice',
         options: [
-          'Market opportunity (competitors moving)',
-          'Business need (current solution failing)',
-          'Investment/funding timeline',
-          'Personal/career milestone',
-          'No urgent deadline'
+          'Yes, next step!'
         ],
-        followUp: 'Timeline drivers help us prioritize features vs. speed.'
+        followUp: 'Excellent! Let\'s connect you with our architects.'
       },
       {
-        id: 'mvp_validation',
-        text: 'How will you validate your MVP with real users?',
+        id: 'schedule_meeting',
+        text: 'The next step is to meet one of our human architects. They\'ll refine your idea with you, agree on the scope, and provide a clear quote.\n\nWould you like me to schedule a meeting?',
         type: 'multiple-choice',
         options: [
-          'I have potential users ready to test',
-          'I\'ll find beta users through my network',
-          'I\'ll use online communities/forums',
-          'I\'ll run ads to find early adopters',
-          'I need help planning user validation'
+          'Yes, schedule a meeting',
+          'Tell me more first',
+          'Not now'
         ],
-        followUp: 'User validation is crucial - this shapes our launch strategy.'
+        followUp: 'Perfect! Let me get your details.'
       },
       {
-        id: 'budget_range',
-        text: 'What\'s your target budget range for the initial version?',
-        type: 'multiple-choice',
-        options: [
-          'Under $10K (lean MVP)',
-          '$10K - $25K (solid foundation)',
-          '$25K - $50K (comprehensive solution)',
-          '$50K+ (full-featured platform)',
-          'I need help understanding costs'
-        ],
-        followUp: 'Budget helps us scope the perfect MVP for your goals.'
-      },
-      {
-        id: 'biggest_concern',
-        text: 'What\'s your biggest concern about building this solution?',
-        type: 'multiple-choice',
-        options: [
-          'Technical complexity',
-          'Finding the right development team',
-          'Budget and timeline',
-          'Market competition',
-          'User adoption',
-          'Scaling and maintenance'
-        ],
-        followUp: 'Let\'s address this concern directly in our project plan.'
+        id: 'contact_info',
+        text: 'Great! I\'ll need a few details to set up your session.\n\nWhat\'s your name?',
+        type: 'text',
+        followUp: 'Nice to meet you! Now I need your email.',
+        validation: (answer: string) => answer.length > 1
       },
       {
         id: 'email',
-        text: 'What\'s your email address? We\'ll send you the complete project package with working prototypes, technical docs, and cost estimates.',
+        text: 'What\'s your email address?',
         type: 'text',
-        followUp: 'Perfect! Your project package will be delivered within 24 hours.',
+        followUp: 'Perfect! One of our architects will contact you shortly.',
         validation: (answer: string) => {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return emailRegex.test(answer.trim());
         }
+      },
+      {
+        id: 'company_optional',
+        text: 'Company name? (Optional)',
+        type: 'text',
+        followUp: 'Got it! Thanks for that info.',
+        validation: () => true
+      },
+      {
+        id: 'preferred_time',
+        text: 'When would you prefer to meet?',
+        type: 'multiple-choice',
+        options: [
+          'This week',
+          'Next week',
+          'Within 2 weeks',
+          'I\'m flexible'
+        ],
+        followUp: 'Thanks! You\'re all set. One of our architects will meet you soon. You\'ll get an invite shortly 📅.\n\nExcited to start building with you 🚀'
       }
     ]
   }
@@ -277,11 +200,11 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const currentQuestionData = currentWaveData?.questions[currentQuestion];
 
   const GENERATION_STEPS = [
-    'GENERATING PROJECT REQUIREMENTS DOCUMENT...',
-    'CREATING TECHNICAL ARCHITECTURE DIAGRAMS...',
-    'BUILDING WORKING PROTOTYPE...',
-    'CALCULATING DEVELOPMENT COSTS...',
-    'PREPARING PROJECT PACKAGE...'
+    'CONNECTING TO ARCHITECT TEAM...',
+    'PREPARING PROJECT SUMMARY...',
+    'SCHEDULING MEETING SLOT...',
+    'SENDING MEETING INVITE...',
+    'READY TO START BUILDING! 🚀'
   ];
 
   const playNavigationSound = useCallback(async (direction: 'up' | 'down') => {

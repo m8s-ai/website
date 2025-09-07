@@ -181,7 +181,6 @@ const CONVERSATION_WAVES: Wave[] = [
 ];
 
 export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComplete }) => {
-  console.log('ConversationEngine: Component mounting');
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const navigate = useNavigate();
   
@@ -198,27 +197,19 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const [validationMessage, setValidationMessage] = useState('');
   const [isTyping, setIsTyping] = useState(true); // Bot typing indicator
   const [typingDots, setTypingDots] = useState('');
+  
 
   const currentWaveData = CONVERSATION_WAVES[currentWave];
   const currentQuestionData = currentWaveData?.questions[currentQuestion];
 
-  // Debug: Log the current state
-  console.log('ConversationEngine Debug:', {
-    currentWave,
-    currentQuestion,
-    currentWaveData: currentWaveData?.name,
-    currentQuestionData: currentQuestionData?.id,
-    isTyping,
-    isGenerating,
-    isComplete
-  });
+  // Debug: Log the current state (removed to prevent infinite loops)
 
   const GENERATION_STEPS = [
-    'CONNECTING TO ARCHITECT TEAM...',
-    'PREPARING PROJECT SUMMARY...',
-    'SCHEDULING MEETING SLOT...',
-    'SENDING MEETING INVITE...',
-    'READY TO START BUILDING! 🚀'
+    'ANALYZING YOUR PROJECT REQUIREMENTS...',
+    'ASSEMBLING THE PERFECT BOT TEAM...',
+    'GENERATING TECHNICAL SCOPE DOCUMENT...',
+    'PREPARING CUSTOM QUOTE & TIMELINE...',
+    'READY TO MEET & DISCUSS! 🚀'
   ];
 
   const playNavigationSound = useCallback(async (direction: 'up' | 'down') => {
@@ -277,8 +268,8 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     return () => clearTimeout(timer);
   }, [currentQuestionData?.id]); // Trigger when question changes
 
-  // Early return if no valid data
-  if (!currentWaveData || !currentQuestionData) {
+  // Early return if no valid data (but allow generation and completion states)
+  if ((!currentWaveData || !currentQuestionData) && !isGenerating && !isComplete) {
     console.error('ConversationEngine Error: Missing wave or question data', {
       currentWave,
       currentQuestion,
@@ -326,48 +317,60 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   //   }
   // }, [isGenerating, audio]);
 
-  // Generation effect
+  // Simple generation timer with setInterval
   useEffect(() => {
-    if (isGenerating && generationStep < GENERATION_STEPS.length) {
-      // In development: 10 seconds total, in production: 2-3 minutes total
-      const isDev = process.env.NODE_ENV === 'development';
-      const stepDuration = isDev ? 1000 : 20000; // 1s dev, 20s production per step
-      
-      const timer = setTimeout(() => {
-        setGenerationStep(prev => prev + 1);
-      }, stepDuration);
-      return () => clearTimeout(timer);
-    } else if (isGenerating && generationStep >= GENERATION_STEPS.length && !isComplete) {
-      // Generation complete, play completion sound, show final state, then redirect
-      const timer = setTimeout(() => {
-        playCompletionSound();
-        
-        // Navigate to completion summary page with data
-        const completionData = {
-          responses,
-          waveData: {
-            wave1: {},
-            wave2: {},
-            wave3: {},
-            wave4: {}
-          }
-        };
-        
-        // Fill waveData with organized responses
-        CONVERSATION_WAVES.forEach((wave, waveIndex) => {
-          const waveKey = `wave${waveIndex + 1}` as keyof typeof completionData.waveData;
-          wave.questions.forEach(question => {
-            if (responses[question.id]) {
-              completionData.waveData[waveKey][question.id] = responses[question.id];
-            }
-          });
-        });
-        
-        navigate('/completion-summary', { state: completionData });
-      }, 1000);
-      return () => clearTimeout(timer);
+    if (!isGenerating) {
+      return;
     }
-  }, [isGenerating, generationStep, isComplete, playCompletionSound, responses, navigate, GENERATION_STEPS.length]);
+
+    // Start from step 0 and progress through all steps
+    let currentStep = 0;
+    const isDev = process.env.NODE_ENV === 'development';
+    const stepDuration = isDev ? 2000 : 20000; // 2s dev, 20s production
+    
+    // Set initial step
+    setGenerationStep(0);
+    
+    const interval = setInterval(() => {
+      currentStep++;
+      setGenerationStep(currentStep);
+      
+      // When we reach the end of generation steps
+      if (currentStep >= GENERATION_STEPS.length) {
+        clearInterval(interval);
+        
+        // Complete generation and navigate
+        setTimeout(() => {
+          playCompletionSound();
+          
+          // Navigate to completion summary page with data
+          const completionData = {
+            responses,
+            waveData: {
+              wave1: {},
+              wave2: {},
+              wave3: {},
+              wave4: {}
+            }
+          };
+          
+          // Fill waveData with organized responses
+          CONVERSATION_WAVES.forEach((wave, waveIndex) => {
+            const waveKey = `wave${waveIndex + 1}` as keyof typeof completionData.waveData;
+            wave.questions.forEach(question => {
+              if (responses[question.id]) {
+                completionData.waveData[waveKey][question.id] = responses[question.id];
+              }
+            });
+          });
+          
+          navigate('/completion-summary', { state: completionData });
+        }, 1000);
+      }
+    }, stepDuration);
+    
+    return () => clearInterval(interval);
+  }, [isGenerating]);
 
   const proceedToNextQuestion = useCallback(() => {
     if (currentQuestion < currentWaveData.questions.length - 1) {
@@ -517,11 +520,18 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         <div className="min-h-screen flex items-center justify-center retro-scanlines">
           <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
           <div className="text-green-300 text-4xl mb-4 font-retro-xl retro-glow-green">
-            🚀 GENERATING YOUR PROJECT PACKAGE
+            ⚡ PROCESSING YOUR PROJECT
           </div>
         
-        <div className="text-amber-300 text-xl mb-8 font-retro-light">
-          This process typically takes {totalTime}. Please don't close this window.
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <img 
+            src="/robot-favicon.svg" 
+            alt="Fellow Bot" 
+            className="w-8 h-8 animate-pulse"
+          />
+          <div className="text-amber-300 text-xl font-retro-light">
+            My fellow bots are reviewing your requirements... ({totalTime} estimated)
+          </div>
         </div>
         
         <div className="space-y-4">
@@ -543,21 +553,21 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           
           {generationStep >= GENERATION_STEPS.length && (
             <div className="flex items-center justify-center space-x-4">
-              <span className="text-green-400 font-retro-light text-xl retro-glow-green">READY FOR DELIVERY...</span>
+              <span className="text-green-400 font-retro-light text-xl retro-glow-green">BOT ANALYSIS COMPLETE - SCHEDULING MEETING...</span>
               <span className="text-green-300 retro-glow-green">✓</span>
             </div>
           )}
         </div>
         
-        <div className="text-gray-400 text-sm mt-8">
+        <div className="text-gray-400 text-sm mt-8 font-retro">
           {generationStep < GENERATION_STEPS.length 
-            ? `Step ${generationStep + 1}/${GENERATION_STEPS.length}`
-            : `Step ${GENERATION_STEPS.length}/${GENERATION_STEPS.length}`
+            ? `Phase ${generationStep + 1} of ${GENERATION_STEPS.length}`
+            : `Analysis Complete`
           }
         </div>
         
-        <div className="text-gray-500 text-xs mt-4">
-          {isDev ? 'Development mode: Fast generation' : 'Creating comprehensive project package...'}
+        <div className="text-gray-500 text-xs mt-4 font-retro">
+          {isDev ? 'Development mode: Fast bot analysis' : 'Bot team analyzing & preparing your custom solution...'}
         </div>
         
         {/* Clearing message */}

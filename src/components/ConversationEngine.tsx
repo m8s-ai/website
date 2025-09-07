@@ -181,6 +181,7 @@ const CONVERSATION_WAVES: Wave[] = [
 ];
 
 export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComplete }) => {
+  console.log('ConversationEngine: Component mounting');
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const navigate = useNavigate();
   
@@ -195,9 +196,22 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
   const [validationMessage, setValidationMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(true); // Bot typing indicator
+  const [typingDots, setTypingDots] = useState('');
 
   const currentWaveData = CONVERSATION_WAVES[currentWave];
   const currentQuestionData = currentWaveData?.questions[currentQuestion];
+
+  // Debug: Log the current state
+  console.log('ConversationEngine Debug:', {
+    currentWave,
+    currentQuestion,
+    currentWaveData: currentWaveData?.name,
+    currentQuestionData: currentQuestionData?.id,
+    isTyping,
+    isGenerating,
+    isComplete
+  });
 
   const GENERATION_STEPS = [
     'CONNECTING TO ARCHITECT TEAM...',
@@ -237,6 +251,69 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     }, 500);
     return () => clearInterval(interval);
   }, []);
+
+  // Typing indicator animation
+  useEffect(() => {
+    if (isTyping) {
+      const interval = setInterval(() => {
+        setTypingDots(prev => {
+          if (prev === '...') return '';
+          return prev + '.';
+        });
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [isTyping]);
+
+  // Bot typing simulation - show typing for 2 seconds then reveal message
+  useEffect(() => {
+    setIsTyping(true);
+    setTypingDots('');
+    
+    const timer = setTimeout(() => {
+      setIsTyping(false);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, [currentQuestionData?.id]); // Trigger when question changes
+
+  // Early return if no valid data
+  if (!currentWaveData || !currentQuestionData) {
+    console.error('ConversationEngine Error: Missing wave or question data', {
+      currentWave,
+      currentQuestion,
+      totalWaves: CONVERSATION_WAVES.length,
+      waveData: currentWaveData,
+      questionData: currentQuestionData
+    });
+    return (
+      <div className="relative min-h-screen bg-black text-white flex items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <div className="text-red-400 text-xl font-mono">⚠️ DEBUG MODE</div>
+          <div className="text-yellow-400 text-lg">ConversationEngine Component Loaded</div>
+          <div className="text-gray-400 text-sm">
+            Wave: {currentWave} / Question: {currentQuestion}
+          </div>
+          <div className="text-gray-400 text-sm">
+            Total Waves: {CONVERSATION_WAVES.length}
+          </div>
+          <button 
+            onClick={() => {
+              console.log('Resetting conversation...');
+              setCurrentWave(0);
+              setCurrentQuestion(0);
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-mono transition-colors"
+          >
+            RESET & START CONVERSATION
+          </button>
+          <div className="text-gray-500 text-xs mt-4">
+            If you can see this, the component is mounting correctly.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Background music effect for generation - DISABLED
   // useEffect(() => {
@@ -290,31 +367,22 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [isGenerating, generationStep, isComplete]);
+  }, [isGenerating, generationStep, isComplete, playCompletionSound, responses, navigate, GENERATION_STEPS.length]);
 
-  // Handle keyboard navigation for multiple choice
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (!currentQuestionData || showingFollowUp) return;
-
-      if (currentQuestionData.type === 'multiple-choice') {
-        if (event.key === 'ArrowUp' && selectedOption > 0) {
-          setSelectedOption(prev => prev - 1);
-          playNavigationSound('up');
-        } else if (event.key === 'ArrowDown' && selectedOption < (currentQuestionData.options?.length || 0) - 1) {
-          setSelectedOption(prev => prev + 1);
-          playNavigationSound('down');
-        } else if (event.key === 'Enter') {
-          handleSubmitAnswer();
-        }
-      } else if (event.key === 'Enter' && currentQuestionData.type !== 'text') {
-        handleSubmitAnswer();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentQuestionData, selectedOption, showingFollowUp, playNavigationSound]);
+  const proceedToNextQuestion = useCallback(() => {
+    if (currentQuestion < currentWaveData.questions.length - 1) {
+      // Next question in current wave
+      setCurrentQuestion(prev => prev + 1);
+    } else if (currentWave < CONVERSATION_WAVES.length - 1) {
+      // Next wave
+      setCurrentWave(prev => prev + 1);
+      setCurrentQuestion(0);
+    } else {
+      // All questions complete, start generation
+      setIsGenerating(true);
+      setGenerationStep(0);
+    }
+  }, [currentQuestion, currentWaveData.questions.length, currentWave]);
 
   const handleSubmitAnswer = useCallback(async () => {
     if (!currentQuestionData) return;
@@ -381,22 +449,31 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     setUserInput('');
     setSelectedOption(0);
     setValidationMessage('');
-  }, [currentQuestionData, selectedOption, userInput, playSelectionSound]);
+  }, [currentQuestionData, selectedOption, userInput, playSelectionSound, proceedToNextQuestion]);
 
-  const proceedToNextQuestion = () => {
-    if (currentQuestion < currentWaveData.questions.length - 1) {
-      // Next question in current wave
-      setCurrentQuestion(prev => prev + 1);
-    } else if (currentWave < CONVERSATION_WAVES.length - 1) {
-      // Next wave
-      setCurrentWave(prev => prev + 1);
-      setCurrentQuestion(0);
-    } else {
-      // All questions complete, start generation
-      setIsGenerating(true);
-      setGenerationStep(0);
-    }
-  };
+  // Handle keyboard navigation for multiple choice - moved after handleSubmitAnswer
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (!currentQuestionData || showingFollowUp) return;
+
+      if (currentQuestionData.type === 'multiple-choice') {
+        if (event.key === 'ArrowUp' && selectedOption > 0) {
+          setSelectedOption(prev => prev - 1);
+          playNavigationSound('up');
+        } else if (event.key === 'ArrowDown' && selectedOption < (currentQuestionData.options?.length || 0) - 1) {
+          setSelectedOption(prev => prev + 1);
+          playNavigationSound('down');
+        } else if (event.key === 'Enter') {
+          handleSubmitAnswer();
+        }
+      } else if (event.key === 'Enter' && currentQuestionData.type !== 'text') {
+        handleSubmitAnswer();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentQuestionData, selectedOption, showingFollowUp, playNavigationSound, handleSubmitAnswer]);
 
   const completeConversation = () => {
     const waveData = {
@@ -427,7 +504,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     const totalTime = isDev ? '10 seconds' : '2-3 minutes';
     
     return (
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen bg-black text-white">
         {/* Abort button - always visible in bottom-left */}
         <button
           onClick={handleAbort}
@@ -501,7 +578,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     const userEmail = responses['email'] || 'your email';
     
     return (
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen bg-black text-white">
         {/* Abort button - always visible in bottom-left */}
         <button
           onClick={handleAbort}
@@ -606,7 +683,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-black text-white">
       {/* Abort button - always visible in bottom-left */}
       <button
         onClick={handleAbort}
@@ -616,28 +693,72 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         ⏸ ABORT
       </button>
 
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl mx-auto space-y-6" dir="ltr">
           {/* Wave indicator */}
-          <div className="text-green-300 text-sm">
+          <div className="text-green-300 text-sm text-center">
             {currentWave + 1}/4: {currentWaveData.name}
           </div>
 
-      {/* Question */}
-      <div className="text-amber-300 text-lg leading-relaxed">
-        {currentQuestionData.text}
-      </div>
+          {/* Bot Message with Avatar */}
+          <div className="flex items-start gap-4 w-full max-w-3xl mx-auto">
+            {/* Bot Avatar */}
+            <div className="flex-shrink-0 mt-1">
+              <img 
+                src="/robot-favicon-white.svg" 
+                alt="Aria Bot" 
+                className="w-12 h-12 rounded-full border-2 border-green-400/30 bg-black/20 p-2"
+              />
+            </div>
+            
+            {/* Bot Message Bubble */}
+            <div className="flex-1">
+              <div className="relative bg-black/40 border border-green-400/30 rounded-lg rounded-tl-none p-6 backdrop-blur-sm">
+                {/* Chat bubble tail */}
+                <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
+                
+                <div className="text-amber-300 text-lg leading-relaxed font-mono">
+                  {isTyping ? (
+                    <span className="text-gray-400">
+                      Aria is typing{typingDots}
+                    </span>
+                  ) : (
+                    currentQuestionData.text
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* Follow-up message */}
-      {showingFollowUp && (
-        <div className="text-green-300 italic">
-          {currentQuestionData.followUp}
-        </div>
-      )}
+          {/* Follow-up message */}
+          {showingFollowUp && (
+            <div className="flex items-start gap-4 w-full max-w-3xl mx-auto">
+              {/* Bot Avatar */}
+              <div className="flex-shrink-0 mt-1">
+                <img 
+                  src="/robot-favicon-white.svg" 
+                  alt="Aria Bot" 
+                  className="w-12 h-12 rounded-full border-2 border-green-400/30 bg-black/20 p-2"
+                />
+              </div>
+              
+              {/* Follow-up Message Bubble */}
+              <div className="flex-1">
+                <div className="relative bg-black/40 border border-green-400/30 rounded-lg rounded-tl-none p-4 backdrop-blur-sm">
+                  {/* Chat bubble tail */}
+                  <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
+                  
+                  <div className="text-green-300 italic font-mono">
+                    {currentQuestionData.followUp}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-      {/* Answer interface */}
-      {!showingFollowUp && (
-        <div className="space-y-4">
+          {/* Answer interface */}
+          {!showingFollowUp && !isTyping && (
+            <div className="space-y-4 w-full max-w-3xl mx-auto">
           {currentQuestionData.type === 'multiple-choice' && (
             <div className="space-y-2">
               {currentQuestionData.options?.map((option, index) => (
@@ -816,56 +937,58 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                 <span className="md:hidden">Use buttons below or tap options to navigate</span>
               </div>
             </div>
+            )}
+            </div>
           )}
-        </div>
-      )}
 
-      {/* Progress indicator */}
-      <div className="text-gray-400 text-sm">
-        Question {currentQuestion + 1}/{currentWaveData.questions.length}
-      </div>
+          {/* Progress indicator */}
+          {!isTyping && (
+            <div className="text-gray-400 text-sm text-center">
+              Question {currentQuestion + 1}/{currentWaveData.questions.length}
+            </div>
+          )}
 
-      {/* Dev only: Skip to generation button */}
-      {process.env.NODE_ENV === 'development' && !showingFollowUp && (
-        <div className="mt-4">
-          <button
-            onClick={() => {
-              setIsGenerating(true);
-              setGenerationStep(0);
-            }}
-            className="bg-transparent border border-red-400 text-red-400 px-4 py-2 text-xs font-mono hover:bg-red-400 hover:text-black transition-colors duration-200"
-          >
-            DEV: SKIP TO GENERATION
-          </button>
-        </div>
-      )}
+          {/* Dev only: Skip to generation button */}
+          {process.env.NODE_ENV === 'development' && !showingFollowUp && !isTyping && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => {
+                  setIsGenerating(true);
+                  setGenerationStep(0);
+                }}
+                className="bg-transparent border border-red-400 text-red-400 px-4 py-2 text-xs font-mono hover:bg-red-400 hover:text-black transition-colors duration-200"
+              >
+                DEV: SKIP TO GENERATION
+              </button>
+            </div>
+          )}
 
-      {/* Skip button - show after wave 2, only on selection questions */}
-      {currentWave >= 2 && currentQuestionData && (currentQuestionData.type === 'multiple-choice' || currentQuestionData.type === 'yes-no') && !showingFollowUp && (
-        <div className="mt-8">
-          <button
-            onClick={() => {
-              setIsGenerating(true);
-              setGenerationStep(0);
-            }}
-            className="bg-transparent border border-amber-400 text-amber-400 px-6 py-3 text-lg font-mono hover:bg-amber-400 hover:text-black transition-colors duration-200"
-          >
-            ⚡ SKIP & GENERATE
-          </button>
-          <div className="text-gray-500 text-xs mt-2 text-center">
-            Skip remaining questions and generate project package now
-          </div>
-        </div>
-      )}
+          {/* Skip button - show after wave 2, only on selection questions */}
+          {currentWave >= 2 && currentQuestionData && (currentQuestionData.type === 'multiple-choice' || currentQuestionData.type === 'yes-no') && !showingFollowUp && !isTyping && (
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => {
+                  setIsGenerating(true);
+                  setGenerationStep(0);
+                }}
+                className="bg-transparent border border-amber-400 text-amber-400 px-6 py-3 text-lg font-mono hover:bg-amber-400 hover:text-black transition-colors duration-200"
+              >
+                ⚡ SKIP & GENERATE
+              </button>
+              <div className="text-gray-500 text-xs mt-2">
+                Skip remaining questions and generate project package now
+              </div>
+            </div>
+          )}
 
-      {/* Clearing message */}
-      {validationMessage === 'Clearing project...' && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
-          <div className="text-red-400 text-xl font-mono">
-            🗑️ CLEARING PROJECT...
-          </div>
-        </div>
-      )}
+          {/* Clearing message */}
+          {validationMessage === 'Clearing project...' && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
+              <div className="text-red-400 text-xl font-mono">
+                🗑️ CLEARING PROJECT...
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -665,7 +665,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
             <div className="flex items-center justify-between px-4 py-3 bg-gray-800/80 border-b border-gray-600/50 rounded-t-xl">
               <div className="flex items-center space-x-3">
                 {/* Traffic Light Buttons */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center">
                   <button
                     onClick={handleTerminalOverlayClose}
                     className="w-3 h-3 bg-red-500 rounded-full hover:bg-red-400 transition-colors"

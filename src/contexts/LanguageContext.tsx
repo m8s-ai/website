@@ -729,6 +729,8 @@ const translations = {
     'nav.about': 'About',
 
     // Terminal Preview
+    'terminal_preview.title': 'Plan Your POC with ARIA',
+    'terminal_preview.description': 'Meet ARIA, your AI project validation bot. Click to start planning your proof-of-concept through our interactive terminal interface',
     'terminal_preview.start_planning_aria': 'Start Planning with ARIA',
 
     // Common
@@ -1456,6 +1458,8 @@ const translations = {
     'nav.about': 'אודות',
 
     // Terminal Preview
+    'terminal_preview.title': 'תכננו את ה-POC שלכם עם ARIA',
+    'terminal_preview.description': 'הכירו את ARIA, בוט אימות הפרויקטים של הבינה המלאכותית שלנו. לחצו כדי להתחיל לתכנן את הוכחת הרעיון שלכם באמצעות הממשק הטרמינל האינטראקטיבי שלנו',
     'terminal_preview.start_planning_aria': 'התחל תכנון עם ARIA',
 
     // Common

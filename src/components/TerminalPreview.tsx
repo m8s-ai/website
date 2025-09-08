@@ -48,11 +48,11 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
         <div className="max-w-4xl mx-auto text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Plan Your POC with ARIA
+              {t('terminal_preview.title')}
             </span>
           </h2>
           <p className="text-lg text-gray-300">
-            Meet ARIA, your AI project validation bot. Click to start planning your proof-of-concept through our interactive terminal interface
+            {t('terminal_preview.description')}
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
           >
             {/* Terminal Header */}
             <div className="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center">
                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>

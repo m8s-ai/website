@@ -671,11 +671,13 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                     className="w-3 h-3 bg-red-500 rounded-full hover:bg-red-400 transition-colors"
                     title="Close"
                   ></button>
+                  <span className="w-2 inline-block" />
                   <button
                     className="w-3 h-3 bg-yellow-500 rounded-full hover:bg-yellow-400 transition-colors"
                     title="Minimize"
                     disabled
                   ></button>
+                  <span className="w-2 inline-block" />
                   <button
                     className="w-3 h-3 bg-green-500 rounded-full hover:bg-green-400 transition-colors"
                     title="Maximize" 

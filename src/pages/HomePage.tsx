@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { ServicesSection } from "@/components/sections/ServicesSection";
@@ -11,6 +11,7 @@ import { PublicHeader } from "@/components/PublicHeader";
 import { TerminalExperience } from "@/components/TerminalExperience";
 import { ConversationEngine } from "@/components/ConversationEngine";
 import { LaunchButton } from "@/components/LaunchButton";
+import { TerminalPreview } from "@/components/TerminalPreview";
 
 const STORAGE_KEY = "site_authenticated";
 
@@ -37,6 +38,7 @@ export const HomePage = () => {
 
   const [showConversation, setShowConversation] = useState(false);
   const [conversationData, setConversationData] = useState<any>(null);
+  const [showTerminalOverlay, setShowTerminalOverlay] = useState(false);
 
   const [isAuthenticated] = useState(() => {
     return typeof window !== "undefined" && sessionStorage.getItem(STORAGE_KEY) === "true";
@@ -49,6 +51,34 @@ export const HomePage = () => {
     setShowTerminal(false); // Hide terminal
     setShowConversation(true); // Show conversation
   };
+
+  const handleTerminalPreviewExpand = () => {
+    // Handle terminal preview expansion to overlay
+    console.log('Terminal preview expanding to overlay');
+    setShowTerminalOverlay(true);
+  };
+
+  const handleTerminalOverlayClose = () => {
+    // Handle terminal overlay close
+    console.log('Terminal overlay closing');
+    setShowTerminalOverlay(false);
+  };
+
+  // Handle escape key for terminal overlay
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showTerminalOverlay) {
+        handleTerminalOverlayClose();
+      }
+    };
+
+    if (showTerminalOverlay) {
+      window.addEventListener('keydown', handleEscapeKey);
+      return () => {
+        window.removeEventListener('keydown', handleEscapeKey);
+      };
+    }
+  }, [showTerminalOverlay]);
 
   // Debug logging
   console.log('HomePage render:', { showTerminal, isAuthenticated, showConversation, hasConversationData: !!conversationData });
@@ -244,6 +274,7 @@ export const HomePage = () => {
       </PublicHeader>
       <main>
         <HeroSection />
+        <TerminalPreview onExpand={handleTerminalPreviewExpand} />
         <ServicesSection />
         <OutcomesSection />
         <IndustriesSection />
@@ -251,6 +282,36 @@ export const HomePage = () => {
         <TrustSection />
         <CTASection />
       </main>
+
+      {/* Terminal Overlay */}
+      {showTerminalOverlay && (
+        <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="relative w-full max-w-6xl h-full max-h-[90vh] bg-black border border-gray-600 rounded-lg shadow-2xl">
+            {/* Close button */}
+            <button
+              onClick={handleTerminalOverlayClose}
+              className="absolute top-4 right-4 z-10 text-gray-400 hover:text-white transition-colors"
+              aria-label="Close terminal"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Terminal content */}
+            <div className="w-full h-full rounded-lg overflow-hidden">
+              <TerminalExperience 
+                onComplete={() => {
+                  // Handle terminal completion in overlay
+                  setShowTerminalOverlay(false);
+                  setShowConversation(true);
+                }}
+                isLoggedIn={isAuthenticated}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAudioManager } from './AudioManager';
+import { analyticsManager } from '@/utils/analyticsManager';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Conversation wave structure based on your methodology
 interface Question {
@@ -183,6 +185,7 @@ const CONVERSATION_WAVES: Wave[] = [
 export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComplete }) => {
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const navigate = useNavigate();
+  // ConversationEngine always uses English - no translations
   
   const [currentWave, setCurrentWave] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -198,9 +201,73 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const [isTyping, setIsTyping] = useState(true); // Bot typing indicator
   const [typingDots, setTypingDots] = useState('');
   
+  // Analytics tracking state
+  const [conversationId] = useState(() => 'conv_' + Date.now());
+  const [allResponses, setAllResponses] = useState<Record<string, any>>({});
+  const [questionHistory, setQuestionHistory] = useState<any[]>([]);
+  
 
   const currentWaveData = CONVERSATION_WAVES[currentWave];
   const currentQuestionData = currentWaveData?.questions[currentQuestion];
+
+  // Initialize conversation tracking
+  useEffect(() => {
+    analyticsManager.startConversation('initial');
+    
+    analyticsManager.trackConversationEvent('conversation_started', {
+      conversation_id: conversationId,
+      entry_method: 'terminal_completion'
+    });
+  }, [conversationId]);
+
+  // Track wave start
+  useEffect(() => {
+    if (currentWaveData) {
+      analyticsManager.startWave(currentWaveData.id);
+      
+      analyticsManager.trackConversationEvent('wave_started', {
+        wave_id: currentWaveData.id,
+        wave_name: currentWaveData.name.substring(0, 50),
+        questions_count: currentWaveData.questions.length
+      });
+    }
+  }, [currentWave, currentWaveData]);
+
+  // Track question presentation
+  useEffect(() => {
+    if (currentQuestionData) {
+      analyticsManager.startQuestion(currentQuestionData.id);
+      
+      analyticsManager.trackConversationEvent('question_presented', {
+        wave_id: currentWaveData.id,
+        question_id: currentQuestionData.id,
+        question_text: currentQuestionData.text.substring(0, 100),
+        question_type: currentQuestionData.type,
+        has_options: !!currentQuestionData.options,
+        options_count: currentQuestionData.options?.length || 0
+      });
+    }
+  }, [currentQuestion, currentQuestionData, currentWaveData]);
+
+  // Helper function to get total questions
+  const getTotalQuestions = () => {
+    return CONVERSATION_WAVES.reduce((sum, wave) => sum + wave.questions.length, 0);
+  };
+
+  // Calculate lead score
+  const calculateLeadScore = (responses: Record<string, any>) => {
+    let score = 0;
+    
+    Object.values(responses).forEach(response => {
+      if (response.answer_length > 50) score += 2;
+      if (response.answer_length > 100) score += 3;
+      if (response.response_time > 10 && response.response_time < 120) score += 1;
+    });
+    
+    if (analyticsManager.conversationPath === 'start_project') score += 5;
+    
+    return Math.min(score, 20);
+  };
 
   // Debug: Log the current state (removed to prevent infinite loops)
 
@@ -227,13 +294,30 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const handleAbort = useCallback(async () => {
     await audio.playSelectionSound();
     
+    // Track conversation abandonment
+    analyticsManager.trackConversationEvent('conversation_abandoned', {
+      abandonment_point: currentWaveData?.name || 'unknown',
+      progress_percent: Math.round((Object.keys(allResponses).length / getTotalQuestions()) * 100),
+      questions_answered: Object.keys(allResponses).length,
+      conversation_duration: analyticsManager.getConversationDuration(),
+      abandonment_reason: 'user_abort'
+    });
+    
     // Show clearing message briefly
     setValidationMessage('Clearing project...');
     
     setTimeout(() => {
-      navigate('/home');
+      // Call onComplete to close the overlay, or navigate if running standalone
+      if (onComplete) {
+        onComplete({
+          responses: {},
+          waveData: { wave1: {}, wave2: {}, wave3: {}, wave4: {} }
+        });
+      } else {
+        navigate('/home');
+      }
     }, 1500);
-  }, [audio, navigate]);
+  }, [audio, navigate, currentWaveData, allResponses, onComplete]);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -431,6 +515,50 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
 
     await playSelectionSound();
     
+    // Track user response
+    const responseTime = analyticsManager.getQuestionResponseTime();
+    const responseData = {
+      wave_id: currentWaveData.id,
+      wave_name: currentWaveData.name,
+      question_id: currentQuestionData.id,
+      question_text: currentQuestionData.text.substring(0, 100),
+      question_type: currentQuestionData.type,
+      user_answer: typeof answer === 'string' ? answer.substring(0, 100) : answer,
+      selected_option: selectedOption,
+      response_time: responseTime,
+      answer_length: typeof answer === 'string' ? answer.length : 0,
+      answer_words: typeof answer === 'string' ? answer.split(' ').length : 0,
+      wave_time: analyticsManager.getWaveDuration()
+    };
+    
+    analyticsManager.trackConversationEvent('question_answered', responseData);
+    
+    // Store full response data
+    const fullResponseData = {
+      ...responseData,
+      full_answer: answer,
+      options_available: currentQuestionData.options,
+      timestamp: new Date().toISOString()
+    };
+    
+    setAllResponses(prev => ({
+      ...prev,
+      [currentQuestionData.id]: fullResponseData
+    }));
+    
+    setQuestionHistory(prev => [...prev, fullResponseData]);
+    
+    // Track conversation path selection
+    if (currentQuestionData.id === 'welcome') {
+      const path = answer === 'Start my project' ? 'start_project' : 'learn_more';
+      analyticsManager.conversationPath = path;
+      
+      analyticsManager.trackConversationEvent('path_selected', {
+        path_chosen: path,
+        decision_time: responseTime
+      });
+    }
+    
     // Store response
     setResponses(prev => ({
       ...prev,
@@ -485,6 +613,20 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       wave3: {},
       wave4: {}
     };
+
+    // Track conversation completion
+    const totalDuration = analyticsManager.getConversationDuration();
+    const leadScore = calculateLeadScore(allResponses);
+    
+    analyticsManager.trackConversationEvent('conversation_completed', {
+      conversation_id: conversationId,
+      total_duration: totalDuration,
+      questions_answered: Object.keys(allResponses).length,
+      lead_score: leadScore,
+      completion_rate: 100
+    });
+    
+    localStorage.setItem('conversation_completed', 'true');
 
     // Organize responses by wave
     CONVERSATION_WAVES.forEach((wave, waveIndex) => {
@@ -693,7 +835,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   }
 
   return (
-    <div className="relative min-h-screen bg-black text-white">
+    <div className="relative min-h-screen bg-black text-white" data-conversation-engine>
       {/* Abort button - always visible in bottom-left */}
       <button
         onClick={handleAbort}
@@ -703,10 +845,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         ⏸ ABORT
       </button>
 
-      <div className="min-h-screen flex items-center justify-center p-4 retro-scanlines">
+      <div className="min-h-screen flex items-start justify-center pt-8 px-4 pb-4 retro-scanlines">
         <div className="w-full max-w-4xl mx-auto space-y-6" dir="ltr">
           {/* Wave indicator */}
-          <div className="text-green-300 text-2xl text-center font-retro-xl retro-glow-green">
+          <div className="text-green-300 text-2xl text-center font-retro-xl retro-glow-green" dir="ltr">
             {currentWave + 1}/4: {currentWaveData.name}
           </div>
 
@@ -780,9 +922,15 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                       ? 'border-green-400 bg-green-400/10 retro-glow-green' 
                       : 'border-gray-600 hover:border-green-300'
                   }`}
-                  onClick={() => setSelectedOption(index)}
+                  onClick={() => {
+                    setSelectedOption(index);
+                    // Auto-submit when clicking an option
+                    setTimeout(() => {
+                      handleSubmitAnswer();
+                    }, 100);
+                  }}
                 >
-                  <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`}>
+                  <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`} dir="ltr">
                     {selectedOption === index ? '> ' : '  '}{option}
                   </span>
                 </div>
@@ -842,6 +990,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
               <input
                 type="text"
                 value={userInput}
+                readOnly={/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}
                 onChange={(e) => {
                   setUserInput(e.target.value);
                   setValidationMessage(''); // Clear validation message when typing

@@ -1,4 +1,5 @@
 
+import { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,15 +8,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ChatWindowProvider } from "@/contexts/ChatWindowContext";
+import { analyticsManager } from "@/utils/analyticsManager";
 import { HomePage } from "./pages/HomePage";
 import { Marketplace } from "./pages/Marketplace";
 import { AutomationDetail } from "./pages/AutomationDetail";
-import { SolutionsPage } from "./pages/SolutionsPage";
-import { IndustriesPage } from "./pages/IndustriesPage";
-import { ResourcesPage } from "./pages/ResourcesPage";
-import { AboutPage } from "./pages/AboutPage";
-import { ContactPage } from "./pages/ContactPage";
-import { AppBuilderPage } from "./pages/AppBuilderPage";
 import NotFound from "./pages/NotFound";
 import { Protected } from "./components/Protected";
 import { TerminalWebsite } from "./components/TerminalWebsite";
@@ -26,6 +22,12 @@ import { CompletionSummaryPage } from "./pages/CompletionSummaryPage";
 const queryClient = new QueryClient();
 
 const App = () => {
+  useEffect(() => {
+    analyticsManager.track('app_initialized', {
+      app_version: import.meta.env.REACT_APP_VERSION || '1.0.0',
+      environment: import.meta.env.NODE_ENV || 'development'
+    });
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -42,14 +44,6 @@ const App = () => {
                   <Route path="/completion-summary" element={<CompletionSummaryPage />} />
                   <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
                   <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
-                  {/* <Route path="/app-builder" element={<AppBuilderPage />} /> */}
-                  {/* <Route path="/solutions" element={<SolutionsPage />} />/
-            <Route path="/industries" element={<IndustriesPage />} />
-            <Route path="/resources" element={<ResourcesPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/services" element={<AppBuilderPage />} /> */}
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

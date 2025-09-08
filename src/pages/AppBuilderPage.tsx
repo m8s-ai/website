@@ -76,7 +76,7 @@ export const AppBuilderPage = () => {
       {/* Hero Section */}
       <section className="relative pt-24 md:pt-32 pb-12 overflow-hidden">
         {/* Enhanced Background Effects */}
-        <div className="absolute inset-0 bg-gradient-hero opacity-30"></div>
+        <div className="aAbsolute inset-0 bg-gradient-hero opacity-30"></div>
         <div className="absolute inset-0">
           {/* Floating neon orbs */}
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-cyan-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>

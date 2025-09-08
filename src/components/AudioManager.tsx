@@ -16,6 +16,7 @@ export interface AudioManagerRef {
   playCompletionSound: () => Promise<void>;
   playGenerationAmbient: () => Promise<void>;
   stopGenerationAmbient: () => void;
+  playExpandingSound: () => Promise<void>;
 }
 
 // Create synthetic audio using Web Audio API for fallback
@@ -238,6 +239,30 @@ export const useAudioManager = (props: AudioManagerProps = {}): AudioManagerRef 
     }
   };
 
+  const playExpandingSound = async (): Promise<void> => {
+    if (!isEnabled || !audioContextRef.current) return;
+    
+    // Quick expanding sound - light and quick as requested
+    // Rising frequency sweep to simulate expansion
+    const oscillator = audioContextRef.current.createOscillator();
+    const gainNode = audioContextRef.current.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContextRef.current.destination);
+    
+    // Quick sweep from 400Hz to 800Hz
+    oscillator.frequency.setValueAtTime(400, audioContextRef.current.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(800, audioContextRef.current.currentTime + 0.15);
+    oscillator.type = 'sine';
+    
+    // Very light volume with quick fade
+    gainNode.gain.setValueAtTime(0.08, audioContextRef.current.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContextRef.current.currentTime + 0.15);
+    
+    oscillator.start(audioContextRef.current.currentTime);
+    oscillator.stop(audioContextRef.current.currentTime + 0.15);
+  };
+
   return {
     playBootSound,
     playTypingSound,
@@ -249,5 +274,6 @@ export const useAudioManager = (props: AudioManagerProps = {}): AudioManagerRef 
     playCompletionSound,
     playGenerationAmbient,
     stopGenerationAmbient,
+    playExpandingSound,
   };
 };

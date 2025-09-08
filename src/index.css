@@ -530,4 +530,37 @@ All colors MUST be HSL.
       0 0 10px rgba(74, 222, 128, 0.6),
       0 0 15px rgba(74, 222, 128, 0.4);
   }
+
+  /* Terminal-style scrollbar - only for overlay */
+  .terminal-scrollbar {
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(16, 185, 129, 0.6) rgba(31, 41, 55, 0.3);
+  }
+
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  .terminal-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .terminal-scrollbar::-webkit-scrollbar-track {
+    background: rgba(31, 41, 55, 0.2);
+    border-radius: 3px;
+  }
+
+  .terminal-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.6);
+    border-radius: 3px;
+    border: 1px solid rgba(31, 41, 55, 0.4);
+  }
+
+  .terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.8);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  }
+
+  .terminal-scrollbar::-webkit-scrollbar-corner {
+    background: rgba(31, 41, 55, 0.2);
+  }
 }

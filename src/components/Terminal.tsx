@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAudioManager } from './AudioManager';
+import { analyticsManager } from '@/utils/analyticsManager';
 
 interface TerminalProps {
   onComplete?: () => void;
@@ -36,6 +37,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
   const [currentChar, setCurrentChar] = useState(0);
   const [conversationStarted, setConversationStarted] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  const [bootStartTime, setBootStartTime] = useState(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
   // Check if user has visited the terminal before
@@ -43,8 +45,18 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
     const hasVisitedTerminal = localStorage.getItem('terminal_visited');
     const skipBoot = searchParams.get('skipBoot') === 'true';
     
+    // Track terminal entry
+    analyticsManager.trackTerminalEvent('entered', {
+      is_return_visit: hasVisitedTerminal === 'true',
+      skip_boot_requested: skipBoot,
+      entry_method: skipBoot ? 'direct_link' : 'organic'
+    });
+    
     if (hasVisitedTerminal === 'true' && !skipBoot) {
       // User has visited before and this isn't a direct project start, redirect to home
+      analyticsManager.trackTerminalEvent('redirected_to_home', {
+        reason: 'return_visitor'
+      });
       navigate('/home');
       return;
     }
@@ -65,6 +77,10 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
     const skipBoot = searchParams.get('skipBoot') === 'true';
     
     if (skipBoot) {
+      analyticsManager.trackTerminalEvent('boot_skipped', {
+        reason: 'skip_boot_parameter'
+      });
+      
       // Skip boot sequence and greeting entirely, go straight to conversation
       setBootStarted(true);
       setBootComplete(true);
@@ -78,11 +94,18 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       // Trigger completion immediately to start conversation
       if (onComplete) {
         setTimeout(() => {
+          analyticsManager.trackTerminalEvent('auto_completed', {
+            reason: 'skip_boot'
+          });
           onComplete();
         }, 100);
       }
     } else {
       const timer = setTimeout(() => {
+        setBootStartTime(Date.now());
+        analyticsManager.trackTerminalEvent('boot_started', {
+          audio_enabled: audioEnabled
+        });
         setBootStarted(true);
       }, 2000); // 2 seconds of just blinking cursor
       return () => clearTimeout(timer);
@@ -95,6 +118,15 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       console.log('Setting timer for boot line:', currentBootLine);
       const timer = setTimeout(() => {
         console.log('Advancing boot line from', currentBootLine, 'to', currentBootLine + 1);
+        
+        // Track boot line display
+        analyticsManager.trackTerminalEvent('boot_line_displayed', {
+          line_number: currentBootLine,
+          line_text: BOOT_SEQUENCE[currentBootLine].substring(0, 50),
+          audio_enabled: audioEnabled,
+          elapsed_time: bootStartTime ? Math.round((Date.now() - bootStartTime) / 1000) : 0
+        });
+        
         // Play boot sound for each line
         if (audioEnabled) {
           audio.playBootSound(currentBootLine);
@@ -103,13 +135,19 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       }, 1500); // 1.5 seconds per boot line
       return () => clearTimeout(timer);
     }
-  }, [bootStarted, currentBootLine, audioEnabled]); // Removed audio from deps
+  }, [bootStarted, currentBootLine, audioEnabled, bootStartTime]); // Added bootStartTime to deps
 
   // Separate effect for boot completion
   useEffect(() => {
     if (bootStarted && currentBootLine >= BOOT_SEQUENCE.length && !bootComplete) {
       console.log('Boot sequence complete, starting greeting');
       const timer = setTimeout(() => {
+        analyticsManager.trackTerminalEvent('boot_completed', {
+          total_boot_time: bootStartTime ? Math.round((Date.now() - bootStartTime) / 1000) : 0,
+          lines_completed: BOOT_SEQUENCE.length,
+          audio_enabled: audioEnabled
+        });
+        
         setBootComplete(true);
         setShowGreeting(true);
         // Start background ambient sound
@@ -119,7 +157,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [bootStarted, currentBootLine, bootComplete, audioEnabled]);
+  }, [bootStarted, currentBootLine, bootComplete, audioEnabled, bootStartTime]);
 
   // Typewriter effect for greeting
   useEffect(() => {
@@ -140,6 +178,9 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
   useEffect(() => {
     if (showGreeting && currentChar >= GREETING_MESSAGE.length) {
       const timer = setTimeout(() => {
+        analyticsManager.trackTerminalEvent('greeting_completed', {
+          message_length: GREETING_MESSAGE.length
+        });
         setConversationStarted(true);
       }, 800);
       return () => clearTimeout(timer);
@@ -147,6 +188,14 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
   }, [showGreeting, currentChar]);
 
   const handleStartConversation = useCallback(async () => {
+    const totalTerminalTime = bootStartTime ? Math.round((Date.now() - bootStartTime) / 1000) : 0;
+    
+    analyticsManager.trackTerminalEvent('conversation_initiated', {
+      interaction_method: 'button_click',
+      total_terminal_time: totalTerminalTime,
+      audio_enabled: audioEnabled
+    });
+    
     // Play selection sound
     if (audioEnabled) {
       await audio.playSelectionSound();
@@ -158,12 +207,16 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
     }
     
     console.log('Starting conversation...');
-  }, [audioEnabled, audio, onComplete]);
+  }, [audioEnabled, audio, onComplete, bootStartTime]);
 
   // Handle Enter key press
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'Enter' && conversationStarted) {
+        analyticsManager.trackTerminalEvent('conversation_initiated', {
+          interaction_method: 'enter_key',
+          audio_enabled: audioEnabled
+        });
         handleStartConversation();
       }
     };
@@ -172,7 +225,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [conversationStarted, handleStartConversation]);
+  }, [conversationStarted, handleStartConversation, audioEnabled]);
 
   console.log('Terminal render:', { bootStarted, bootComplete, currentBootLine, showGreeting, conversationStarted, audioEnabled });
 
@@ -184,7 +237,14 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       {/* Audio mute button */}
       <div className="absolute top-4 right-4 z-20">
         <button
-          onClick={() => setAudioEnabled(!audioEnabled)}
+          onClick={() => {
+            const newAudioState = !audioEnabled;
+            analyticsManager.trackTerminalEvent('audio_toggled', {
+              new_state: newAudioState,
+              terminal_stage: bootComplete ? 'greeting' : 'boot_sequence'
+            });
+            setAudioEnabled(newAudioState);
+          }}
           className={`px-3 py-1 rounded text-sm font-mono transition-colors duration-200 ${
             audioEnabled 
               ? 'bg-green-600 hover:bg-green-500 text-white' 

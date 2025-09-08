@@ -21,15 +21,15 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
     await audio.playTransitionSound();
     
     // Start the transition sequence for ConversationEngine
-    setTransitionMessage('Loading AI Conversation Engine...');
+    setTransitionMessage('Getting Aria ready to chat...');
     setShowTransition(true);
     
     setTimeout(() => {
-      setTransitionMessage('Calibrating AI response models...');
+      setTransitionMessage('Preparing your project analysis...');
     }, 1500);
 
     setTimeout(() => {
-      setTransitionMessage('Engaging natural language interface...');
+      setTransitionMessage('Almost ready! Starting conversation...');
     }, 3000);
 
     setTimeout(() => {

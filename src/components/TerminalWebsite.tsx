@@ -119,10 +119,11 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button 
-                  className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
                   onClick={handleStartProject}
                 >
-                  🚀 Start a project now
+                  <img src="/robot-favicon-white.svg" alt="Robot" className="w-5 h-5 brightness-0 invert" />
+                  Start a project now
                 </button>
                 <button className="border border-emerald-400 text-emerald-400 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-emerald-400 hover:text-black transition-all duration-300">
                   Explore past work
@@ -263,11 +264,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                   )}
                   
                   <div className="text-center flex flex-col h-full">
-                    <h3 className="text-xl font-bold text-white mb-4">{tier.name}</h3>
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold text-white">{tier.price}</span>
-                      <span className="text-gray-400">{tier.period}</span>
-                    </div>
+                    <h3 className="text-xl font-bold text-white mb-10">{tier.name}</h3>
                     
                     <div className="space-y-4 mb-8 flex-grow">
                       {tier.features.map((feature, fIndex) => (
@@ -281,12 +278,12 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                     <button 
                       className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 mt-auto ${
                         tier.highlight 
-                          ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white hover:shadow-lg hover:shadow-emerald-500/25' 
-                          : 'border border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-black'
+                          ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white cursor-not-allowed opacity-75' 
+                          : 'border border-amber-400 text-amber-400 cursor-not-allowed opacity-75'
                       }`}
-                      onClick={() => handleNavigation('contact')}
+                      disabled
                     >
-                      Get Started
+                      Upcoming
                     </button>
                   </div>
                 </div>
@@ -418,29 +415,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                 </p>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/50 rounded-2xl p-8 backdrop-blur-sm">
-                  <h4 className="text-lg font-bold text-emerald-400 mb-6">Technology Stack</h4>
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">AI Engine:</span>
-                      <span className="text-emerald-400">GPT-4 + Custom Models</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Processing:</span>
-                      <span className="text-emerald-400">Real-time Analysis</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Security:</span>
-                      <span className="text-emerald-400">Military Grade</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Uptime:</span>
-                      <span className="text-emerald-400">99.9%</span>
-                    </div>
-                  </div>
-                </div>
-                
+              <div className="max-w-2xl mx-auto">
                 <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/50 rounded-2xl p-8 backdrop-blur-sm">
                   <h4 className="text-lg font-bold text-cyan-400 mb-6">Success Metrics</h4>
                   <div className="space-y-4">
@@ -492,7 +467,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
             <div className="font-bold text-2xl bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
               m8s.ai
             </div>
-            <div className="flex flex-wrap justify-center space-x-1 md:space-x-6">
+            <div className="flex flex-wrap justify-center space-x-1 md:space-x-6 order-2 md:order-none">
               {NAVIGATION_SECTIONS.map((section) => (
                 <button
                   key={section.id}

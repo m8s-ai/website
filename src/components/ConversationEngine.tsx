@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAudioManager } from './AudioManager';
 import { analyticsManager } from '@/utils/analyticsManager';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Conversation wave structure based on your methodology
 interface Question {
@@ -184,6 +185,7 @@ const CONVERSATION_WAVES: Wave[] = [
 export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComplete }) => {
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const navigate = useNavigate();
+  // ConversationEngine always uses English - no translations
   
   const [currentWave, setCurrentWave] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -305,9 +307,17 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     setValidationMessage('Clearing project...');
     
     setTimeout(() => {
-      navigate('/home');
+      // Call onComplete to close the overlay, or navigate if running standalone
+      if (onComplete) {
+        onComplete({
+          responses: {},
+          waveData: { wave1: {}, wave2: {}, wave3: {}, wave4: {} }
+        });
+      } else {
+        navigate('/home');
+      }
     }, 1500);
-  }, [audio, navigate, currentWaveData, allResponses]);
+  }, [audio, navigate, currentWaveData, allResponses, onComplete]);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -825,7 +835,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   }
 
   return (
-    <div className="relative min-h-screen bg-black text-white">
+    <div className="relative min-h-screen bg-black text-white" data-conversation-engine>
       {/* Abort button - always visible in bottom-left */}
       <button
         onClick={handleAbort}
@@ -835,10 +845,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         ⏸ ABORT
       </button>
 
-      <div className="min-h-screen flex items-center justify-center p-4 retro-scanlines">
+      <div className="min-h-screen flex items-start justify-center pt-8 px-4 pb-4 retro-scanlines">
         <div className="w-full max-w-4xl mx-auto space-y-6" dir="ltr">
           {/* Wave indicator */}
-          <div className="text-green-300 text-2xl text-center font-retro-xl retro-glow-green">
+          <div className="text-green-300 text-2xl text-center font-retro-xl retro-glow-green" dir="ltr">
             {currentWave + 1}/4: {currentWaveData.name}
           </div>
 
@@ -912,9 +922,15 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
                       ? 'border-green-400 bg-green-400/10 retro-glow-green' 
                       : 'border-gray-600 hover:border-green-300'
                   }`}
-                  onClick={() => setSelectedOption(index)}
+                  onClick={() => {
+                    setSelectedOption(index);
+                    // Auto-submit when clicking an option
+                    setTimeout(() => {
+                      handleSubmitAnswer();
+                    }, 100);
+                  }}
                 >
-                  <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`}>
+                  <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`} dir="ltr">
                     {selectedOption === index ? '> ' : '  '}{option}
                   </span>
                 </div>
@@ -974,6 +990,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
               <input
                 type="text"
                 value={userInput}
+                readOnly={/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}
                 onChange={(e) => {
                   setUserInput(e.target.value);
                   setValidationMessage(''); // Clear validation message when typing

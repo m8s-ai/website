@@ -2,32 +2,39 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAudioManager } from './AudioManager';
 import { analyticsManager } from '@/utils/analyticsManager';
 import { ConversationEngine } from './ConversationEngine';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TerminalOverlayProps {
   onComplete?: () => void;
 }
 
-const BOOT_SEQUENCE = [
-  'INITIALIZING PROJECT VALIDATION ENGINE...',
-  'LOADING AI ANALYSIS PROTOCOLS...',
-  'CALIBRATING CONVERSATION SYSTEMS...',
-  'ARIA BOT SYSTEMS ONLINE...',
-  'READY FOR POC VALIDATION...'
-];
+// Boot sequence will be translated at runtime
 
-const GREETING_MESSAGE = `Welcome! I'm ARIA, your AI project validation bot. 🤖
+// Greeting message will be translated at runtime
+
+export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) => {
+  const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
+  
+  // Terminal overlay always uses English - hardcoded
+  const BOOT_SEQUENCE = [
+    'INITIALIZING PROJECT VALIDATION ENGINE...',
+    'LOADING AI ANALYSIS PROTOCOLS...',
+    'CALIBRATING CONVERSATION SYSTEMS...',
+    'ARIA BOT SYSTEMS ONLINE...',
+    'READY FOR POC VALIDATION...'
+  ];
+  
+  // Greeting message in English only
+  const GREETING_MESSAGE = `Welcome! I'm ARIA, your AI project validation bot. 🤖
 
 I'll ask you a few strategic questions about your project idea, then generate a complete validation package with:
 
 • Technical feasibility analysis
-• Market opportunity assessment  
+• Market opportunity assessment
 • Development roadmap & costs
 • Risk analysis & mitigation
 
 Ready to validate your next big idea?`;
-
-export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) => {
-  const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const [bootStarted, setBootStarted] = useState(false);
   const [bootComplete, setBootComplete] = useState(false);
   const [currentBootLine, setCurrentBootLine] = useState(0);
@@ -189,10 +196,14 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
     return (
       <div 
         ref={conversationRef} 
-        className="w-full h-full bg-transparent focus:outline-none" 
+        className="w-full h-full bg-transparent focus:outline-none overflow-auto terminal-scrollbar" 
         tabIndex={0} 
         autoFocus
-        style={{ pointerEvents: 'auto' }}
+        style={{ 
+          pointerEvents: 'auto',
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#10b981 #1f2937'
+        }}
         onKeyDown={(e) => {
           console.log('TerminalOverlay received key:', e.key);
           // Let events pass through to ConversationEngine
@@ -237,7 +248,7 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
       <div className="absolute inset-0 bg-gradient-to-r from-green-900/10 via-transparent to-green-900/10 pointer-events-none" />
       
       {/* Terminal content */}
-      <div className="relative z-10 p-8 h-full flex flex-col justify-center items-center max-w-4xl mx-auto text-center">
+      <div className="relative z-10 pt-4 px-8 pb-8 h-full flex flex-col justify-start items-center max-w-4xl mx-auto text-center">
         {/* Boot sequence */}
         {!bootComplete && bootStarted && (
           <div className="space-y-4" dir="ltr">

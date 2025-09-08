@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAudioManager } from './AudioManager';
 import { analyticsManager } from '@/utils/analyticsManager';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TerminalPreviewProps {
   onExpand?: () => void;
@@ -9,6 +10,7 @@ interface TerminalPreviewProps {
 
 export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, className = "" }) => {
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
+  const { t, isRTL } = useLanguage();
   const [showCursor, setShowCursor] = useState(true);
   const [bootText] = useState([
     'INITIALIZING PROJECT VALIDATION ENGINE...',
@@ -111,9 +113,9 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
 
               {/* Click prompt */}
               <div className="pt-4 text-center">
-                <div className="inline-flex items-center px-4 py-2 border border-green-400 text-green-400 rounded text-sm hover:bg-green-400 hover:text-black transition-colors duration-200">
-                  <span className="mr-2">🤖</span>
-                  Start Planning with ARIA
+                <div className={`inline-flex items-center px-4 py-2 border border-green-400 text-green-400 rounded text-sm hover:bg-green-400 hover:text-black transition-colors duration-200 gap-2 ${isRTL ? 'flex-row-reverse' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+                  <span>🤖</span>
+                  {t('terminal_preview.start_planning_aria')}
                 </div>
               </div>
             </div>

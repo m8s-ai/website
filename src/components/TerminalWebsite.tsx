@@ -1,6 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAudioManager } from './AudioManager';
+import { analyticsManager } from '@/utils/analyticsManager';
+import { TerminalPreview } from './TerminalPreview';
+import { TerminalOverlay } from './TerminalOverlay';
 
 interface TerminalWebsiteProps {
   className?: string;
@@ -77,8 +80,27 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
   const navigate = useNavigate();
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const [activeSection, setActiveSection] = useState('home');
+  const [sessionStartTime] = useState(Date.now());
+  const [showTerminalOverlay, setShowTerminalOverlay] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Track website load
+  useEffect(() => {
+    analyticsManager.trackNavigationEvent('website_loaded', {
+      initial_section: 'home',
+      referrer: document.referrer || 'direct'
+    });
+  }, []);
 
   const handleNavigation = useCallback(async (sectionId: string) => {
+    const sessionDuration = Math.round((Date.now() - sessionStartTime) / 1000);
+    
+    analyticsManager.trackNavigationEvent('menu_clicked', {
+      section_selected: sectionId,
+      previous_section: activeSection,
+      session_duration: sessionDuration
+    });
+
     await audio.playSelectionSound();
     setActiveSection(sectionId);
     
@@ -87,15 +109,55 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [audio]);
+  }, [audio, activeSection, sessionStartTime]);
 
   const handleStartProject = useCallback(async () => {
+    const sessionDuration = Math.round((Date.now() - sessionStartTime) / 1000);
+    
+    analyticsManager.trackNavigationEvent('cta_clicked', {
+      button_type: 'start_project',
+      button_location: 'hero_section',
+      current_section: activeSection,
+      session_duration: sessionDuration
+    });
+
     await audio.playSelectionSound();
     // Clear the terminal visited flag so user can access terminal again
     localStorage.removeItem('terminal_visited');
     // Navigate to terminal experience with skip boot parameter
     navigate('/?skipBoot=true');
-  }, [audio, navigate]);
+  }, [audio, navigate, activeSection, sessionStartTime]);
+
+  const handleTerminalPreviewExpand = useCallback(() => {
+    // Handle terminal preview expansion to overlay
+    console.log('Terminal preview expanding to overlay');
+    setShowTerminalOverlay(true);
+    
+    // Focus the overlay content after a short delay to ensure it's rendered
+    setTimeout(() => {
+      if (overlayRef.current) {
+        overlayRef.current.focus();
+      }
+    }, 100);
+  }, []);
+
+  const handleTerminalOverlayClose = useCallback(() => {
+    // Handle terminal overlay close
+    console.log('Terminal overlay closing');
+    setShowTerminalOverlay(false);
+  }, []);
+
+  // Handle overlay state changes - just manage scrolling
+  useEffect(() => {
+    if (showTerminalOverlay) {
+      // Prevent scrolling on the background
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [showTerminalOverlay]);
 
   const renderSection = (sectionId: string) => {
     switch (sectionId) {
@@ -130,6 +192,9 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                 </button>
               </div>
             </div>
+
+            {/* Terminal Preview */}
+            <TerminalPreview onExpand={handleTerminalPreviewExpand} />
 
             {/* What We Do */}
             <div className="max-w-6xl mx-auto">
@@ -240,12 +305,13 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
         return (
           <div className="space-y-12" dir="ltr">
             <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">POC Validation Subscriptions</h2>
-              <p className="text-gray-400 text-lg mb-2">Monthly access to project validation & POC generation</p>
-              <p className="text-gray-500 text-sm mb-8">* Full project development pricing available after POC validation - contact for quote</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Custom Project Pricing</h2>
+              <p className="text-gray-400 text-lg mb-2">Tailored solutions for your specific needs</p>
+              <p className="text-gray-500 text-sm mb-8">Contact us for detailed pricing based on your project requirements</p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Hide POC Validation Subscriptions section */}
+            {false && <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {PRICING_TIERS.map((tier, index) => (
                 <div 
                   key={index} 
@@ -288,15 +354,15 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                   </div>
                 </div>
               ))}
-            </div>
+            </div>}
             
-            {/* Full Development Notice */}
+            {/* Development Services */}
             <div className="max-w-4xl mx-auto mt-16">
               <div className="bg-gradient-to-br from-amber-900/30 to-gray-900/30 border border-amber-500/20 rounded-2xl p-8 backdrop-blur-sm">
                 <div className="text-center">
-                  <h3 className="text-2xl font-bold text-amber-300 mb-4">🚀 Full Project Development</h3>
+                  <h3 className="text-2xl font-bold text-amber-300 mb-4">🚀 Development Services</h3>
                   <p className="text-gray-300 mb-6 text-lg">
-                    After POC validation, we provide custom quotes for complete project development including:
+                    We provide comprehensive development services including:
                   </p>
                   <div className="grid md:grid-cols-2 gap-6 text-left mb-8">
                     <div className="space-y-3">
@@ -332,7 +398,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                     className="bg-transparent border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300"
                     onClick={() => handleNavigation('contact')}
                   >
-                    Request Development Quote
+                    Get Custom Quote
                   </button>
                 </div>
               </div>
@@ -385,6 +451,15 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                       className="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300"
                       onClick={async () => {
                         await audio.playSelectionSound();
+                        
+                        analyticsManager.trackNavigationEvent('contact_interaction', {
+                          interaction_type: 'email_click',
+                          contact_method: 'email',
+                          email: 'contact@m8s.ai',
+                          context: 'contact_section_cta',
+                          session_duration: Math.round((Date.now() - sessionStartTime) / 1000)
+                        });
+                        
                         window.location.href = 'mailto:contact@m8s.ai?subject=Project Validation Request';
                       }}
                     >
@@ -515,6 +590,80 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
           </div>
         </div>
       </footer>
+
+      {/* Terminal Overlay */}
+      {showTerminalOverlay && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-lg flex items-center justify-center p-6"
+          onKeyDown={(e) => {
+            // Only handle ESC key at the overlay level
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              e.stopPropagation();
+              handleTerminalOverlayClose();
+            }
+            // Let all other keys pass through to the terminal content
+          }}
+          onWheel={(e) => {
+            // Prevent scrolling the background
+            e.preventDefault();
+          }}
+          onTouchMove={(e) => {
+            // Prevent touch scrolling on mobile
+            e.preventDefault();
+          }}
+          style={{ pointerEvents: 'auto' }}
+        >
+          <div className="relative w-full max-w-5xl h-full max-h-[85vh] bg-gray-900/90 backdrop-blur-md border border-gray-500/40 rounded-xl shadow-2xl shadow-black/60 ring-1 ring-white/10">
+            {/* Terminal Window Header */}
+            <div className="flex items-center justify-between px-4 py-3 bg-gray-800/80 border-b border-gray-600/50 rounded-t-xl">
+              <div className="flex items-center space-x-3">
+                {/* Traffic Light Buttons */}
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleTerminalOverlayClose}
+                    className="w-3 h-3 bg-red-500 rounded-full hover:bg-red-400 transition-colors"
+                    title="Close"
+                  ></button>
+                  <button
+                    className="w-3 h-3 bg-yellow-500 rounded-full hover:bg-yellow-400 transition-colors"
+                    title="Minimize"
+                    disabled
+                  ></button>
+                  <button
+                    className="w-3 h-3 bg-green-500 rounded-full hover:bg-green-400 transition-colors"
+                    title="Maximize" 
+                    disabled
+                  ></button>
+                </div>
+                <div className="text-gray-300 text-sm font-mono">ARIA - Project Validation Terminal</div>
+              </div>
+              
+              {/* ESC hint */}
+              <div className="text-gray-500 text-xs font-mono">
+                Press ESC to close
+              </div>
+            </div>
+            
+            {/* Terminal content with slight transparency */}
+            <div 
+              ref={overlayRef}
+              className="w-full h-full rounded-b-xl overflow-hidden bg-black/85 backdrop-blur-sm focus:outline-none"
+              tabIndex={0}
+              autoFocus
+            >
+              <TerminalOverlay 
+                onComplete={() => {
+                  // Handle terminal completion in overlay - close overlay and could show success message or navigate
+                  console.log('ARIA terminal completed in overlay mode');
+                  setShowTerminalOverlay(false);
+                  // Could navigate to conversation or show success message
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

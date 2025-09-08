@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAudioManager } from './AudioManager';
 
@@ -14,7 +15,7 @@ const BOOT_SEQUENCE = [
   'READY FOR DEEP ANALYSIS...'
 ];
 
-const GREETING_MESSAGE = `Welcome to m8s! 🚀
+const GREETING_MESSAGE = `Welcome to M8s! 🚀
 
 I'm ARIA, your AI project validation bot.
 
@@ -23,6 +24,8 @@ I'll ask you a few quick questions, then generate your complete project package 
 Ready to validate your amazing idea?`;
 
 export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const [bootStarted, setBootStarted] = useState(false);
   const [bootComplete, setBootComplete] = useState(false);
@@ -35,6 +38,20 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
   const [audioEnabled, setAudioEnabled] = useState(true);
   const terminalRef = useRef<HTMLDivElement>(null);
 
+  // Check if user has visited the terminal before
+  useEffect(() => {
+    const hasVisitedTerminal = localStorage.getItem('terminal_visited');
+    const skipBoot = searchParams.get('skipBoot') === 'true';
+    
+    if (hasVisitedTerminal === 'true' && !skipBoot) {
+      // User has visited before and this isn't a direct project start, redirect to home
+      navigate('/home');
+      return;
+    }
+    // Mark terminal as visited on first load
+    localStorage.setItem('terminal_visited', 'true');
+  }, [navigate, searchParams]);
+
   // Cursor blinking effect
   useEffect(() => {
     const interval = setInterval(() => {
@@ -45,11 +62,32 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
 
   // Initial delay before boot sequence starts
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const skipBoot = searchParams.get('skipBoot') === 'true';
+    
+    if (skipBoot) {
+      // Skip boot sequence and greeting entirely, go straight to conversation
       setBootStarted(true);
-    }, 2000); // 2 seconds of just blinking cursor
-    return () => clearTimeout(timer);
-  }, []);
+      setBootComplete(true);
+      setCurrentBootLine(BOOT_SEQUENCE.length);
+      setShowGreeting(true);
+      setGreetingText(GREETING_MESSAGE);
+      setCurrentChar(GREETING_MESSAGE.length);
+      setConversationStarted(true);
+      // Start background ambient sound
+      audio.playBackgroundAmbient();
+      // Trigger completion immediately to start conversation
+      if (onComplete) {
+        setTimeout(() => {
+          onComplete();
+        }, 100);
+      }
+    } else {
+      const timer = setTimeout(() => {
+        setBootStarted(true);
+      }, 2000); // 2 seconds of just blinking cursor
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, audio, onComplete]);
 
   // Boot sequence effect
   useEffect(() => {

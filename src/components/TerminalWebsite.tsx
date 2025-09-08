@@ -217,20 +217,20 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                 <p className="text-gray-300 mb-4">{t('website.small_businesses_description')}</p>
                 <p className="text-gray-400 text-sm mb-6">{t('website.small_businesses_subtitle')}</p>
                 <div className="space-y-3 text-sm">
-                  <div className="flex items-start">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 mt-2"></div>
+                  <div className={`flex items-start `}>
+                    <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-3' : 'mr-3'} mt-2`}></div>
                     <span className="text-gray-300">{t('website.small_businesses_feature1')}</span>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 mt-2"></div>
+                  <div className={`flex items-start `}>
+                    <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-3' : 'mr-3'} mt-2`}></div>
                     <span className="text-gray-300">{t('website.small_businesses_feature2')}</span>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 mt-2"></div>
+                  <div className={`flex items-start `}>
+                    <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-3' : 'mr-3'} mt-2`}></div>
                     <span className="text-gray-300">{t('website.small_businesses_feature3')}</span>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 mt-2"></div>
+                  <div className={`flex items-start `}>
+                    <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-3' : 'mr-3'} mt-2`}></div>
                     <span className="text-gray-300">{t('website.small_businesses_feature4')}</span>
                   </div>
                 </div>
@@ -251,20 +251,20 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                 <p className="text-gray-300 mb-4">{t('website.companies_description')}</p>
                 <p className="text-gray-400 text-sm mb-6">{t('website.companies_subtitle')}</p>
                 <div className="space-y-3 text-sm">
-                  <div className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 mt-2"></div>
+                  <div className={`flex items-start `}>
+                    <div className={`w-2 h-2 bg-purple-400 rounded-full ${isRTL ? 'ml-3' : 'mr-3'} mt-2`}></div>
                     <span className="text-gray-300">{t('website.companies_feature1')}</span>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 mt-2"></div>
+                  <div className={`flex items-start `}>
+                    <div className={`w-2 h-2 bg-purple-400 rounded-full ${isRTL ? 'ml-3' : 'mr-3'} mt-2`}></div>
                     <span className="text-gray-300">{t('website.companies_feature2')}</span>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 mt-2"></div>
+                  <div className={`flex items-start `}>
+                    <div className={`w-2 h-2 bg-purple-400 rounded-full ${isRTL ? 'ml-3' : 'mr-3'} mt-2`}></div>
                     <span className="text-gray-300">{t('website.companies_feature3')}</span>
                   </div>
-                  <div className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 mt-2"></div>
+                  <div className={`flex items-start `}>
+                    <div className={`w-2 h-2 bg-purple-400 rounded-full ${isRTL ? 'ml-3' : 'mr-3'} mt-2`}></div>
                     <span className="text-gray-300">{t('website.companies_feature4')}</span>
                   </div>
                 </div>
@@ -292,8 +292,8 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                   <p className="text-gray-300 mb-6 text-lg leading-relaxed">{t(`services.${service.title.toLowerCase().replace(/\s+/g, '_')}_description`)}</p>
                   <div className="grid md:grid-cols-2 gap-4">
                     {service.features.map((feature, fIndex) => (
-                      <div key={fIndex} className="flex items-center">
-                        <div className="w-2 h-2 bg-emerald-400 rounded-full mr-4"></div>
+                      <div key={fIndex} className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
                         <span className="text-gray-300">{t(`services.${feature.toLowerCase().replace(/[\s&-]+/g, '_').replace(/[^a-z_]/g, '')}`)}</span>
                       </div>
                     ))}
@@ -369,30 +369,30 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                   </p>
                   <div className="grid md:grid-cols-2 gap-6 text-left mb-8">
                     <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-amber-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
                         <span className="text-gray-300">{t('pricing.fullstack_development')}</span>
                       </div>
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-amber-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
                         <span className="text-gray-300">{t('pricing.database_architecture_service')}</span>
                       </div>
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-amber-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
                         <span className="text-gray-300">{t('pricing.api_integrations')}</span>
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-amber-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
                         <span className="text-gray-300">{t('pricing.production_deployment')}</span>
                       </div>
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-amber-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
                         <span className="text-gray-300">{t('pricing.ongoing_maintenance')}</span>
                       </div>
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-amber-400 rounded-full mr-4"></div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-amber-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
                         <span className="text-gray-300">{t('pricing.team_training')}</span>
                       </div>
                     </div>
@@ -425,7 +425,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                     </div>
                     <div className="text-center">
                       <div className="text-emerald-400 font-semibold mb-2">{t('contact.phone')}</div>
-                      <div className="text-white">+1 (438) 8676782</div>
+                      <div className="text-white" dir="ltr">+1 (438) 8676782</div>
                     </div>
                     <div className="text-center">
                       <div className="text-emerald-400 font-semibold mb-2">{t('contact.response_time')}</div>

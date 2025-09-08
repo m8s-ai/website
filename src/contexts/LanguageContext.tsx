@@ -1366,13 +1366,13 @@ const translations = {
     'website.small_businesses_feature2': 'מאטמטות הזמנות, חשבוניות וטפסים',
     'website.small_businesses_feature3': 'משלבות WhatsApp, אימייל ובוטי AI',
     'website.small_businesses_feature4': 'מפיקות רעיונות, תוכן ושיווק',
-    'website.small_businesses_benefit': '👉 חוסכות זמן, מקטינות עלויות, עובדות כמו פי 10 מהגודל שלכם',
+    'website.small_businesses_benefit': '👈 חוסכות זמן, מקטינות עלויות, עובדות כמו פי 10 מהגודל שלכם',
     
     // Individuals
     'website.individuals_title': '🙋 ליחידים',
     'website.individuals_description': 'יש לכם רעיון? אנחנו מביאים אותו לחיים.',
     'website.individuals_subtitle': 'מאפליקציות מיתוג אישי ועד פרויקטי אינטרנט ומובייל, אנחנו דואגים שהחזון שלכם לא יישאר רק חלום.',
-    'website.individuals_benefit': '👉 אתם מביאים את הניצוץ. ה-m8s בונים את האש.',
+    'website.individuals_benefit': '👈 אתם מביאים את הניצוץ. ה-m8s בונים את האש.',
     
     // Companies
     'website.companies_title': '🏢 לחברות',
@@ -1382,7 +1382,7 @@ const translations = {
     'website.companies_feature2': 'קוד נקי וניתן להרחבה לייצור',
     'website.companies_feature3': 'אספקה זריזה (שלב אחר שלב)',
     'website.companies_feature4': 'איכות מקצה לקצה (אנליסט ← QA)',
-    'website.companies_benefit': '👉 תנועה מהירה יותר, בדיקות חכמות יותר, השקה חזקה יותר',
+    'website.companies_benefit': '👈 תנועה מהירה יותר, בדיקות חכמות יותר, השקה חזקה יותר',
 
     // Services page
     'services.title': 'השירותים שלנו',

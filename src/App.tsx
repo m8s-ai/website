@@ -12,12 +12,6 @@ import { analyticsManager } from "@/utils/analyticsManager";
 import { HomePage } from "./pages/HomePage";
 import { Marketplace } from "./pages/Marketplace";
 import { AutomationDetail } from "./pages/AutomationDetail";
-import { SolutionsPage } from "./pages/SolutionsPage";
-import { IndustriesPage } from "./pages/IndustriesPage";
-import { ResourcesPage } from "./pages/ResourcesPage";
-import { AboutPage } from "./pages/AboutPage";
-import { ContactPage } from "./pages/ContactPage";
-import { AppBuilderPage } from "./pages/AppBuilderPage";
 import NotFound from "./pages/NotFound";
 import { Protected } from "./components/Protected";
 import { TerminalWebsite } from "./components/TerminalWebsite";
@@ -50,14 +44,6 @@ const App = () => {
                   <Route path="/completion-summary" element={<CompletionSummaryPage />} />
                   <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
                   <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
-                  {/* <Route path="/app-builder" element={<AppBuilderPage />} /> */}
-                  {/* <Route path="/solutions" element={<SolutionsPage />} />/
-            <Route path="/industries" element={<IndustriesPage />} />
-            <Route path="/resources" element={<ResourcesPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/services" element={<AppBuilderPage />} /> */}
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

@@ -106,7 +106,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
             <div className="text-center space-y-8">
               <div className="space-y-4">
                 <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                  Welcome to M8s
+                  Welcome to m8s
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto">
                   A Full AI Team, Led by Elite Human Architects, Building Your Next Big Thing
@@ -173,7 +173,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                 <h3 className="text-xl font-bold text-cyan-300 mb-4">🙋 For Individuals</h3>
                 <p className="text-gray-300 mb-4">Got an idea? We bring it to life.</p>
                 <p className="text-gray-400 text-sm mb-6">From personal branding apps to web & mobile projects, we make sure your vision doesn't stay just a dream.</p>
-                <p className="text-cyan-400 text-sm mt-8">👉 You bring the spark. The M8s build the fire.</p>
+                <p className="text-cyan-400 text-sm mt-8">👉 You bring the spark. The m8s build the fire.</p>
               </div>
 
               {/* Companies */}
@@ -404,7 +404,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
         return (
           <div className="space-y-12" dir="ltr">
             <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">About M8s</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">About m8s</h2>
               <p className="text-gray-400 text-lg">Our mission and technology</p>
             </div>
             
@@ -412,7 +412,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
               <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/50 rounded-2xl p-8 backdrop-blur-sm">
                 <h3 className="text-xl font-bold text-emerald-300 mb-4">Our Mission</h3>
                 <p className="text-gray-300 leading-relaxed text-lg">
-                  M8s (Mates) is an advanced AI-powered project validation platform engineered to eliminate 
+                  m8s (Mates) is an advanced AI-powered project validation platform engineered to eliminate 
                   the uncertainty in software development. Our neural networks analyze thousands of project 
                   variables to deliver precise feasibility assessments and implementation strategies.
                 </p>
@@ -490,7 +490,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
         <div className="container mx-auto px-6 py-4">
           <div className="flex flex-wrap justify-center md:justify-between items-center space-y-2 md:space-y-0">
             <div className="font-bold text-2xl bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-              M8s.ai
+              m8s.ai
             </div>
             <div className="flex flex-wrap justify-center space-x-1 md:space-x-6">
               {NAVIGATION_SECTIONS.map((section) => (
@@ -535,7 +535,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
         <div className="container mx-auto px-6 py-8">
           <div className="text-center">
             <div className="text-gray-400 text-sm" dir="ltr">
-              M8s.AI • Advanced Project Validation Systems • Est. 2024
+              m8s.AI • Advanced Project Validation Systems • Est. 2024
             </div>
           </div>
         </div>

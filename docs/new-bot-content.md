@@ -37,7 +37,7 @@ Aria:
 “We follow a simple, proven process:
 1️⃣ Define your idea with me
 2️⃣ Meet our human architects to refine scope & get a quote
-3️⃣ M8s build, design & test
+3️⃣ m8s build, design & test
 4️⃣ Delivery step by step or all at once
 
 This way, you don’t just get a developer — you get a whole team working for you.”
@@ -52,7 +52,7 @@ If “Who are the architects?”
 Aria:
 “Our architects are AI pros with experience delivering hundreds of projects — from startups to enterprise systems. Many come from the elite intelligence unit 8200, bringing top expertise in software, AI, and security.
 
-They make sure everything the M8s deliver is production-ready, scalable, and secure.”
+They make sure everything the m8s deliver is production-ready, scalable, and secure.”
 
 👉 Buttons:
 	•	“Great, start my project”
@@ -107,7 +107,7 @@ Aria:
 
 1️⃣ Define your idea clearly
 2️⃣ Architects refine & align with you
-3️⃣ M8s design, code & test
+3️⃣ m8s design, code & test
 4️⃣ Delivery step by step or all at once
 
 This way, you get the speed of AI + the quality of elite human architects.”

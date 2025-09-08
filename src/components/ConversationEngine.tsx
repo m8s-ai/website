@@ -55,7 +55,7 @@ const CONVERSATION_WAVES: Wave[] = [
   {
     id: 'wave2',
     name: 'Learn More Path',
-    description: 'Educational content about M8s team',
+    description: 'Educational content about m8s team',
     questions: [
       {
         id: 'learn_more',
@@ -70,7 +70,7 @@ const CONVERSATION_WAVES: Wave[] = [
       },
       {
         id: 'how_it_works',
-        text: 'We follow a simple, proven process:\n1️⃣ Define your idea with me\n2️⃣ Meet our human architects to refine scope & get a quote\n3️⃣ M8s build, design & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you don\'t just get a developer — you get a whole team working for you.',
+        text: 'We follow a simple, proven process:\n1️⃣ Define your idea with me\n2️⃣ Meet our human architects to refine scope & get a quote\n3️⃣ m8s build, design & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you don\'t just get a developer — you get a whole team working for you.',
         type: 'multiple-choice',
         options: [
           'Sounds good, start my project',
@@ -80,7 +80,7 @@ const CONVERSATION_WAVES: Wave[] = [
       },
       {
         id: 'about_architects',
-        text: 'Our architects are AI pros with experience delivering hundreds of projects — from startups to enterprise systems. Many come from the elite intelligence unit 8200, bringing top expertise in software, AI, and security.\n\nThey make sure everything the M8s deliver is production-ready, scalable, and secure.',
+        text: 'Our architects are AI pros with experience delivering hundreds of projects — from startups to enterprise systems. Many come from the elite intelligence unit 8200, bringing top expertise in software, AI, and security.\n\nThey make sure everything the m8s deliver is production-ready, scalable, and secure.',
         type: 'multiple-choice',
         options: [
           'Great, start my project',
@@ -122,7 +122,7 @@ const CONVERSATION_WAVES: Wave[] = [
     questions: [
       {
         id: 'process_explanation',
-        text: 'Here\'s how we build every project:\n\n1️⃣ Define your idea clearly\n2️⃣ Architects refine & align with you\n3️⃣ M8s design, code & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you get the speed of AI + the quality of elite human architects.\n\nReady for the next step?',
+        text: 'Here\'s how we build every project:\n\n1️⃣ Define your idea clearly\n2️⃣ Architects refine & align with you\n3️⃣ m8s design, code & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you get the speed of AI + the quality of elite human architects.\n\nReady for the next step?',
         type: 'multiple-choice',
         options: [
           'Yes, next step!'

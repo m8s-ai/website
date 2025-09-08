@@ -15,7 +15,7 @@ const BOOT_SEQUENCE = [
   'READY FOR DEEP ANALYSIS...'
 ];
 
-const GREETING_MESSAGE = `Welcome to M8s! 🚀
+const GREETING_MESSAGE = `Welcome to m8s! 🚀
 
 I'm ARIA, your AI project validation bot.
 

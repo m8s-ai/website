@@ -5,7 +5,7 @@ Subheadline:
 From automations for small businesses to enterprise-scale systems, our AI m8s deliver solutions faster, smarter, and with uncompromising quality — all under the guidance of architects with startup, freelancing, and Unit 8200 intelligence experience.
 
 CTA:
-👉 [Start a Project] [Meet the M8s]
+👉 [Start a Project] [Meet the m8s]
 
 ⸻
 
@@ -44,14 +44,14 @@ We design smart systems that:
 Got an idea? We bring it to life.
 From personal branding apps to web & mobile projects, we make sure your vision doesn’t stay just a dream.
 
-👉 You bring the spark. The M8s build the fire.
+👉 You bring the spark. The m8s build the fire.
 
 ⸻
 
 🏢 For Companies
 
 Need serious tech at startup speed?
-Our M8s deliver enterprise-grade applications and rapid PoCs so you can test bold ideas before committing major resources.
+Our m8s deliver enterprise-grade applications and rapid PoCs so you can test bold ideas before committing major resources.
 
 We specialize in:
 	•	Fast proof-of-concepts to validate new ideas quickly
@@ -63,7 +63,7 @@ We specialize in:
 
 ⸻
 
-👥 Meet the M8s (and the Architects Behind Them)
+👥 Meet the m8s (and the Architects Behind Them)
 
 Every M8 has a profession, just like in a real company:
 	•	📊 Analyst M8 (Aria): Defines your idea and maps solutions
@@ -128,7 +128,7 @@ Get a full AI team + human architects for your project at a fraction of traditio
 
 🔹 Option 2: Build Together (Partnership Model)
 
-For projects we truly believe in, our M8s can also become your investors.
+For projects we truly believe in, our m8s can also become your investors.
 	•	We co-invest in building your product
 	•	You get reduced upfront cost
 	•	We share the upside if the project succeeds
@@ -139,7 +139,7 @@ For projects we truly believe in, our M8s can also become your investors.
 
 Final Call to Action
 
-Ready to Build with M8s?
+Ready to Build with m8s?
 Let’s turn your idea into reality with the power of AI and the assurance of human expertise.
 
 👉 [Start Your Project] [Talk to an Architect

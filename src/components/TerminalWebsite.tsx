@@ -679,7 +679,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
         <div className="container mx-auto px-6 py-8">
           <div className="text-center">
             <div className="text-gray-400 text-sm">
-              m8s.AI • Advanced Project Validation Systems • Est. 2024
+              m8s.ai • Advanced Project Validation Systems • Est. 2024
             </div>
           </div>
         </div>

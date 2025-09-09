@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAudioManager } from './AudioManager';
 import { analyticsManager } from '@/utils/analyticsManager';
 import { TerminalPreview } from './TerminalPreview';
@@ -79,7 +78,6 @@ const SERVICES_DATA = [
 ];
 
 export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = "" }) => {
-  const navigate = useNavigate();
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const { t, isRTL } = useLanguage();
   const [activeSection, setActiveSection] = useState('home');

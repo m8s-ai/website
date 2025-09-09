@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useAudioManager } from './AudioManager';
 import { analyticsManager } from '@/utils/analyticsManager';
 
@@ -25,8 +23,6 @@ I'll ask you a few quick questions, then generate your complete project package 
 Ready to validate your amazing idea?`;
 
 export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const [bootStarted, setBootStarted] = useState(false);
   const [bootComplete, setBootComplete] = useState(false);
@@ -42,19 +38,17 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
 
   // Track terminal access
   useEffect(() => {
-    const skipBoot = searchParams.get('skipBoot') === 'true';
     const hasVisitedTerminal = localStorage.getItem('terminal_visited');
     
     // Track terminal entry
     analyticsManager.trackTerminalEvent('entered', {
       is_return_visit: hasVisitedTerminal === 'true',
-      skip_boot_requested: skipBoot,
-      entry_method: skipBoot ? 'direct_link' : 'organic'
+      entry_method: 'overlay'
     });
     
     // Mark terminal as visited
     localStorage.setItem('terminal_visited', 'true');
-  }, [searchParams]);
+  }, []);
 
   // Cursor blinking effect
   useEffect(() => {
@@ -66,43 +60,15 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
 
   // Initial delay before boot sequence starts
   useEffect(() => {
-    const skipBoot = searchParams.get('skipBoot') === 'true';
-    
-    if (skipBoot) {
-      analyticsManager.trackTerminalEvent('boot_skipped', {
-        reason: 'skip_boot_parameter'
+    const timer = setTimeout(() => {
+      setBootStartTime(Date.now());
+      analyticsManager.trackTerminalEvent('boot_started', {
+        audio_enabled: audioEnabled
       });
-      
-      // Skip boot sequence and greeting entirely, go straight to conversation
       setBootStarted(true);
-      setBootComplete(true);
-      setCurrentBootLine(BOOT_SEQUENCE.length);
-      setShowGreeting(true);
-      setGreetingText(GREETING_MESSAGE);
-      setCurrentChar(GREETING_MESSAGE.length);
-      setConversationStarted(true);
-      // Start background ambient sound
-      audio.playBackgroundAmbient();
-      // Trigger completion immediately to start conversation
-      if (onComplete) {
-        setTimeout(() => {
-          analyticsManager.trackTerminalEvent('auto_completed', {
-            reason: 'skip_boot'
-          });
-          onComplete();
-        }, 100);
-      }
-    } else {
-      const timer = setTimeout(() => {
-        setBootStartTime(Date.now());
-        analyticsManager.trackTerminalEvent('boot_started', {
-          audio_enabled: audioEnabled
-        });
-        setBootStarted(true);
-      }, 2000); // 2 seconds of just blinking cursor
-      return () => clearTimeout(timer);
-    }
-  }, [searchParams, audio, onComplete]);
+    }, 2000); // 2 seconds of just blinking cursor
+    return () => clearTimeout(timer);
+  }, [audioEnabled]);
 
   // Boot sequence effect
   useEffect(() => {

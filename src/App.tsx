@@ -9,7 +9,6 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ChatWindowProvider } from "@/contexts/ChatWindowContext";
 import { analyticsManager } from "@/utils/analyticsManager";
-import { HomePage } from "./pages/HomePage";
 import { Marketplace } from "./pages/Marketplace";
 import { AutomationDetail } from "./pages/AutomationDetail";
 import NotFound from "./pages/NotFound";

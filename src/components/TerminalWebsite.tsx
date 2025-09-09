@@ -126,11 +126,16 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
     });
 
     await audio.playSelectionSound();
-    // Clear the terminal visited flag so user can access terminal again
-    localStorage.removeItem('terminal_visited');
-    // Navigate to terminal experience with skip boot parameter
-    navigate('/terminal?skipBoot=true');
-  }, [audio, navigate, activeSection, sessionStartTime]);
+    // Open the terminal overlay
+    setShowTerminalOverlay(true);
+    
+    // Focus the overlay content after a short delay to ensure it's rendered
+    setTimeout(() => {
+      if (overlayRef.current) {
+        overlayRef.current.focus();
+      }
+    }, 100);
+  }, [audio, activeSection, sessionStartTime]);
 
   const handleTerminalPreviewExpand = useCallback(() => {
     // Handle terminal preview expansion to overlay

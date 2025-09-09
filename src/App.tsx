@@ -41,7 +41,6 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<TerminalWebsite />} />
                   <Route path="/home" element={<TerminalWebsite />} />
-                  <Route path="/terminal" element={<HomePage />} />
                   <Route path="/completion-summary" element={<CompletionSummaryPage />} />
                   <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
                   <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />

@@ -40,10 +40,10 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
   const [bootStartTime, setBootStartTime] = useState(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
-  // Check if user has visited the terminal before
+  // Track terminal access
   useEffect(() => {
-    const hasVisitedTerminal = localStorage.getItem('terminal_visited');
     const skipBoot = searchParams.get('skipBoot') === 'true';
+    const hasVisitedTerminal = localStorage.getItem('terminal_visited');
     
     // Track terminal entry
     analyticsManager.trackTerminalEvent('entered', {
@@ -52,17 +52,9 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       entry_method: skipBoot ? 'direct_link' : 'organic'
     });
     
-    if (hasVisitedTerminal === 'true' && !skipBoot) {
-      // User has visited before and this isn't a direct project start, redirect to home
-      analyticsManager.trackTerminalEvent('redirected_to_home', {
-        reason: 'return_visitor'
-      });
-      navigate('/home');
-      return;
-    }
-    // Mark terminal as visited on first load
+    // Mark terminal as visited
     localStorage.setItem('terminal_visited', 'true');
-  }, [navigate, searchParams]);
+  }, [searchParams]);
 
   // Cursor blinking effect
   useEffect(() => {

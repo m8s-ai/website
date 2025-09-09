@@ -129,7 +129,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
     // Clear the terminal visited flag so user can access terminal again
     localStorage.removeItem('terminal_visited');
     // Navigate to terminal experience with skip boot parameter
-    navigate('/?skipBoot=true');
+    navigate('/terminal?skipBoot=true');
   }, [audio, navigate, activeSection, sessionStartTime]);
 
   const handleTerminalPreviewExpand = useCallback(() => {

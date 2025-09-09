@@ -259,11 +259,11 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
       {/* Terminal content */}
       <div 
         ref={terminalRef}
-        className="relative z-10 p-8 h-full flex flex-col justify-center items-center max-w-4xl mx-auto text-center"
+        className="relative z-10 p-4 md:p-8 h-full flex flex-col justify-center items-center max-w-4xl mx-auto text-center"
       >
         {/* Boot sequence */}
         {!bootComplete && bootStarted && (
-          <div className="space-y-4" dir="ltr">
+          <div className="space-y-2 md:space-y-4" dir="ltr">
             {BOOT_SEQUENCE.slice(0, currentBootLine).map((line, index) => (
               <div key={index} className="flex items-center justify-center space-x-4" dir="ltr">
                 <span className="text-amber-400" style={{
@@ -291,7 +291,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onComplete }) => {
 
         {/* Greeting section */}
         {showGreeting && (
-          <div className="mt-8 space-y-4 text-center" dir="ltr">
+          <div className="mt-4 md:mt-8 space-y-2 md:space-y-4 text-center" dir="ltr">
             <div className="text-amber-300 leading-relaxed whitespace-pre-line" style={{
               textShadow: '0 0 8px rgba(252, 211, 77, 0.8), 0 0 16px rgba(252, 211, 77, 0.6), 0 0 24px rgba(252, 211, 77, 0.4)'
             }}>

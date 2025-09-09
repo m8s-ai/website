@@ -186,7 +186,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   const navigate = useNavigate();
   // ConversationEngine always uses English - no translations
-  
+
   const [currentWave, setCurrentWave] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<Record<string, string>>({});
@@ -200,12 +200,12 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   const [validationMessage, setValidationMessage] = useState('');
   const [isTyping, setIsTyping] = useState(true); // Bot typing indicator
   const [typingDots, setTypingDots] = useState('');
-  
+
   // Analytics tracking state
   const [conversationId] = useState(() => 'conv_' + Date.now());
   const [allResponses, setAllResponses] = useState<Record<string, any>>({});
   const [questionHistory, setQuestionHistory] = useState<any[]>([]);
-  
+
 
   const currentWaveData = CONVERSATION_WAVES[currentWave];
   const currentQuestionData = currentWaveData?.questions[currentQuestion];
@@ -213,7 +213,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   // Initialize conversation tracking
   useEffect(() => {
     analyticsManager.startConversation('initial');
-    
+
     analyticsManager.trackConversationEvent('conversation_started', {
       conversation_id: conversationId,
       entry_method: 'terminal_completion'
@@ -224,7 +224,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   useEffect(() => {
     if (currentWaveData) {
       analyticsManager.startWave(currentWaveData.id);
-      
+
       analyticsManager.trackConversationEvent('wave_started', {
         wave_id: currentWaveData.id,
         wave_name: currentWaveData.name.substring(0, 50),
@@ -237,7 +237,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   useEffect(() => {
     if (currentQuestionData) {
       analyticsManager.startQuestion(currentQuestionData.id);
-      
+
       analyticsManager.trackConversationEvent('question_presented', {
         wave_id: currentWaveData.id,
         question_id: currentQuestionData.id,
@@ -257,15 +257,15 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   // Calculate lead score
   const calculateLeadScore = (responses: Record<string, any>) => {
     let score = 0;
-    
+
     Object.values(responses).forEach(response => {
       if (response.answer_length > 50) score += 2;
       if (response.answer_length > 100) score += 3;
       if (response.response_time > 10 && response.response_time < 120) score += 1;
     });
-    
+
     if (analyticsManager.conversationPath === 'start_project') score += 5;
-    
+
     return Math.min(score, 20);
   };
 
@@ -293,7 +293,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
 
   const handleAbort = useCallback(async () => {
     await audio.playSelectionSound();
-    
+
     // Track conversation abandonment
     analyticsManager.trackConversationEvent('conversation_abandoned', {
       abandonment_point: currentWaveData?.name || 'unknown',
@@ -302,10 +302,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       conversation_duration: analyticsManager.getConversationDuration(),
       abandonment_reason: 'user_abort'
     });
-    
+
     // Show clearing message briefly
     setValidationMessage('Clearing project...');
-    
+
     setTimeout(() => {
       // Call onComplete to close the overlay, or navigate if running standalone
       if (onComplete) {
@@ -344,11 +344,11 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   useEffect(() => {
     setIsTyping(true);
     setTypingDots('');
-    
+
     const timer = setTimeout(() => {
       setIsTyping(false);
     }, 1500);
-    
+
     return () => clearTimeout(timer);
   }, [currentQuestionData?.id]); // Trigger when question changes
 
@@ -372,7 +372,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           <div className="text-gray-400 text-sm font-mono">
             Total Waves: {CONVERSATION_WAVES.length}
           </div>
-          <button 
+          <button
             onClick={() => {
               console.log('Resetting conversation...');
               setCurrentWave(0);
@@ -390,16 +390,6 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     );
   }
 
-  // Background music effect for generation - DISABLED
-  // useEffect(() => {
-  //   if (isGenerating) {
-  //     // Start Pip-Boy style generation ambient sound
-  //     audio.playGenerationAmbient();
-  //   } else {
-  //     // Stop generation ambient sound when complete
-  //     audio.stopGenerationAmbient();
-  //   }
-  // }, [isGenerating, audio]);
 
   // Simple generation timer with setInterval
   useEffect(() => {
@@ -411,22 +401,22 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     let currentStep = 0;
     const isDev = process.env.NODE_ENV === 'development';
     const stepDuration = isDev ? 2000 : 20000; // 2s dev, 20s production
-    
+
     // Set initial step
     setGenerationStep(0);
-    
+
     const interval = setInterval(() => {
       currentStep++;
       setGenerationStep(currentStep);
-      
+
       // When we reach the end of generation steps
       if (currentStep >= GENERATION_STEPS.length) {
         clearInterval(interval);
-        
+
         // Complete generation and navigate
         setTimeout(() => {
           playCompletionSound();
-          
+
           // Navigate to completion summary page with data
           const completionData = {
             responses,
@@ -437,7 +427,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
               wave4: {}
             }
           };
-          
+
           // Fill waveData with organized responses
           CONVERSATION_WAVES.forEach((wave, waveIndex) => {
             const waveKey = `wave${waveIndex + 1}` as keyof typeof completionData.waveData;
@@ -447,12 +437,12 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
               }
             });
           });
-          
+
           navigate('/completion-summary', { state: completionData });
         }, 1000);
       }
     }, stepDuration);
-    
+
     return () => clearInterval(interval);
   }, [isGenerating]);
 
@@ -477,7 +467,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     let answer = '';
     let isValid = true;
     let message = '';
-    
+
     if (currentQuestionData.type === 'multiple-choice') {
       answer = currentQuestionData.options?.[selectedOption] || '';
     } else if (currentQuestionData.type === 'text') {
@@ -514,7 +504,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     if (!answer) return;
 
     await playSelectionSound();
-    
+
     // Track user response
     const responseTime = analyticsManager.getQuestionResponseTime();
     const responseData = {
@@ -530,9 +520,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       answer_words: typeof answer === 'string' ? answer.split(' ').length : 0,
       wave_time: analyticsManager.getWaveDuration()
     };
-    
+
     analyticsManager.trackConversationEvent('question_answered', responseData);
-    
+
     // Store full response data
     const fullResponseData = {
       ...responseData,
@@ -540,25 +530,25 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       options_available: currentQuestionData.options,
       timestamp: new Date().toISOString()
     };
-    
+
     setAllResponses(prev => ({
       ...prev,
       [currentQuestionData.id]: fullResponseData
     }));
-    
+
     setQuestionHistory(prev => [...prev, fullResponseData]);
-    
+
     // Track conversation path selection
     if (currentQuestionData.id === 'welcome') {
       const path = answer === 'Start my project' ? 'start_project' : 'learn_more';
       analyticsManager.conversationPath = path;
-      
+
       analyticsManager.trackConversationEvent('path_selected', {
         path_chosen: path,
         decision_time: responseTime
       });
     }
-    
+
     // Store response
     setResponses(prev => ({
       ...prev,
@@ -617,7 +607,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
     // Track conversation completion
     const totalDuration = analyticsManager.getConversationDuration();
     const leadScore = calculateLeadScore(allResponses);
-    
+
     analyticsManager.trackConversationEvent('conversation_completed', {
       conversation_id: conversationId,
       total_duration: totalDuration,
@@ -625,7 +615,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       lead_score: leadScore,
       completion_rate: 100
     });
-    
+
     localStorage.setItem('conversation_completed', 'true');
 
     // Organize responses by wave
@@ -647,7 +637,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
   if (isGenerating) {
     const isDev = process.env.NODE_ENV === 'development';
     const totalTime = isDev ? '10 seconds' : '2-3 minutes';
-    
+
     return (
       <div className="relative min-h-screen bg-black text-white">
         {/* Abort button - always visible in bottom-left */}
@@ -660,75 +650,75 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         </button>
 
         <div className="min-h-screen flex items-center justify-center retro-scanlines">
-          <div className="space-y-6 text-center max-w-3xl mx-auto" dir="ltr">
-          <div className="text-green-300 text-4xl mb-4 font-retro-xl retro-glow-green">
-            ⚡ PROCESSING YOUR PROJECT
-          </div>
-        
-        <div className="flex items-center justify-center gap-4 mb-8">
-          <img 
-            src="/robot-favicon.svg" 
-            alt="Fellow Bot" 
-            className="w-8 h-8 animate-pulse"
-          />
-          <div className="text-amber-300 text-xl font-retro-light">
-            My fellow bots are reviewing your requirements... ({totalTime} estimated)
-          </div>
-        </div>
-        
-        <div className="space-y-4">
-          {GENERATION_STEPS.slice(0, generationStep).map((step, index) => (
-            <div key={index} className="flex items-center justify-center space-x-4">
-              <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{step}</span>
-              <span className="text-green-300 retro-glow-green">✓</span>
+          <div className="space-y-4 text-center max-w-3xl mx-auto" dir="ltr">
+            <div className="text-green-300 text-4xl mb-4 font-retro-xl retro-glow-green">
+              ⚡ PROCESSING YOUR PROJECT
             </div>
-          ))}
-          
-          {generationStep < GENERATION_STEPS.length && (
-            <div className="flex items-center justify-center space-x-2">
-              <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{GENERATION_STEPS[generationStep]}</span>
-              <div className="w-3 h-5 inline-block ml-2">
-                {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
+
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <img
+                src="/robot-favicon.svg"
+                alt="Fellow Bot"
+                className="w-8 h-8 animate-pulse"
+              />
+              <div className="text-amber-300 text-xl font-retro-light">
+                My fellow bots are reviewing your requirements... ({totalTime} estimated)
               </div>
             </div>
-          )}
-          
-          {generationStep >= GENERATION_STEPS.length && (
-            <div className="flex items-center justify-center space-x-4">
-              <span className="text-green-400 font-retro-light text-xl retro-glow-green">BOT ANALYSIS COMPLETE - SCHEDULING MEETING...</span>
-              <span className="text-green-300 retro-glow-green">✓</span>
+
+            <div className="space-y-4">
+              {GENERATION_STEPS.slice(0, generationStep).map((step, index) => (
+                <div key={index} className="flex items-center justify-center space-x-4">
+                  <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{step}</span>
+                  <span className="text-green-300 retro-glow-green">✓</span>
+                </div>
+              ))}
+
+              {generationStep < GENERATION_STEPS.length && (
+                <div className="flex items-center justify-center space-x-2">
+                  <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{GENERATION_STEPS[generationStep]}</span>
+                  <div className="w-3 h-5 inline-block ml-2">
+                    {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
+                  </div>
+                </div>
+              )}
+
+              {generationStep >= GENERATION_STEPS.length && (
+                <div className="flex items-center justify-center space-x-4">
+                  <span className="text-green-400 font-retro-light text-xl retro-glow-green">BOT ANALYSIS COMPLETE - SCHEDULING MEETING...</span>
+                  <span className="text-green-300 retro-glow-green">✓</span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        
-        <div className="text-gray-400 text-sm mt-8 font-retro">
-          {generationStep < GENERATION_STEPS.length 
-            ? `Phase ${generationStep + 1} of ${GENERATION_STEPS.length}`
-            : `Analysis Complete`
-          }
-        </div>
-        
-        <div className="text-gray-500 text-xs mt-4 font-retro">
-          {isDev ? 'Development mode: Fast bot analysis' : 'Bot team analyzing & preparing your custom solution...'}
-        </div>
-        
-        {/* Clearing message */}
-        {validationMessage === 'Clearing project...' && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
-            <div className="text-red-400 text-xl font-mono">
-              🗑️ CLEARING PROJECT...
+
+            <div className="text-gray-400 text-sm mt-8 font-retro">
+              {generationStep < GENERATION_STEPS.length
+                ? `Phase ${generationStep + 1} of ${GENERATION_STEPS.length}`
+                : `Analysis Complete`
+              }
             </div>
+
+            <div className="text-gray-500 text-xs mt-4 font-retro">
+              {isDev ? 'Development mode: Fast bot analysis' : 'Bot team analyzing & preparing your custom solution...'}
+            </div>
+
+            {/* Clearing message */}
+            {validationMessage === 'Clearing project...' && (
+              <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
+                <div className="text-red-400 text-xl font-mono">
+                  🗑️ CLEARING PROJECT...
+                </div>
+              </div>
+            )}
           </div>
-        )}
         </div>
-      </div>
       </div>
     );
   }
 
   if (isComplete) {
     const userEmail = responses['email'] || 'your email';
-    
+
     return (
       <div className="relative min-h-screen bg-black text-white">
         {/* Abort button - always visible in bottom-left */}
@@ -741,93 +731,93 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
         </button>
 
         <div className="min-h-screen flex items-center justify-center">
-          <div className="space-y-8 text-center max-w-4xl mx-auto" dir="ltr">
-        {/* Success Header */}
-        <div className="space-y-4">
-          <div className="text-green-300 text-2xl font-mono">
-            🎉 PROJECT PACKAGE COMPLETE!
-          </div>
-          <div className="text-amber-300 text-lg">
-            MISSION ACCOMPLISHED • PACKAGE DELIVERED
-          </div>
-        </div>
+          <div className="space-y-5 text-center max-w-4xl mx-auto" dir="ltr">
+            {/* Success Header */}
+            <div className="space-y-4">
+              <div className="text-green-300 text-2xl font-mono">
+                🎉 PROJECT PACKAGE COMPLETE!
+              </div>
+              <div className="text-amber-300 text-lg">
+                MISSION ACCOMPLISHED • PACKAGE DELIVERED
+              </div>
+            </div>
 
-        {/* Detailed completion message */}
-        <div className="space-y-6 text-left bg-green-900/20 border border-green-400/30 p-6 rounded">
-          <div className="text-green-300 text-lg font-mono mb-4">
-            📦 DELIVERY CONFIRMATION
-          </div>
-          
-          <div className="space-y-3 text-amber-200">
-            <div className="flex items-center space-x-3">
-              <span className="text-green-300">✓</span>
-              <span>Project Requirements Document (PRD) generated</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-green-300">✓</span>
-              <span>Technical architecture diagrams created</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-green-300">✓</span>
-              <span>Working prototype built and tested</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-green-300">✓</span>
-              <span>UI/UX design mockups generated</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-green-300">✓</span>
-              <span>Development cost estimates calculated</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-green-300">✓</span>
-              <span>Complete project package prepared</span>
-            </div>
-          </div>
-        </div>
+            {/* Detailed completion message */}
+            <div className="space-y-4 text-left bg-green-900/20 border border-green-400/30 p-6 rounded">
+              <div className="text-green-300 text-lg font-mono mb-4">
+                📦 DELIVERY CONFIRMATION
+              </div>
 
-        {/* Email delivery info */}
-        <div className="bg-amber-900/20 border border-amber-400/30 p-4 rounded">
-          <div className="text-amber-300 font-mono text-lg mb-2">
-            📧 DELIVERY STATUS
-          </div>
-          <div className="text-amber-200">
-            Your complete project package has been sent to: <strong>{userEmail}</strong>
-          </div>
-          <div className="text-gray-400 text-sm mt-2">
-            Expected delivery: Within 24 hours • Check spam folder if not received
-          </div>
-        </div>
+              <div className="space-y-3 text-amber-200">
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-300">✓</span>
+                  <span>Project Requirements Document (PRD) generated</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-300">✓</span>
+                  <span>Technical architecture diagrams created</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-300">✓</span>
+                  <span>Working prototype built and tested</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-300">✓</span>
+                  <span>UI/UX design mockups generated</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-300">✓</span>
+                  <span>Development cost estimates calculated</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-300">✓</span>
+                  <span>Complete project package prepared</span>
+                </div>
+              </div>
+            </div>
 
-        {/* Close button */}
-        <div className="space-y-4">
-          <button
-            onClick={() => {
-              // Call the onComplete callback to redirect
-              onComplete({
-                responses,
-                waveData: {
-                  wave1: {},
-                  wave2: {},
-                  wave3: {},
-                  wave4: {}
-                }
-              });
-            }}
-            className="bg-transparent border-2 border-green-400 text-green-400 px-8 py-3 text-lg font-mono hover:bg-green-400 hover:text-black transition-colors duration-200"
-          >
-            CLOSE TERMINAL
-          </button>
-          
-          <div className="text-gray-500 text-sm">
-            You will be redirected to our main application
-          </div>
-        </div>
+            {/* Email delivery info */}
+            <div className="bg-amber-900/20 border border-amber-400/30 p-4 rounded">
+              <div className="text-amber-300 font-mono text-lg mb-2">
+                📧 DELIVERY STATUS
+              </div>
+              <div className="text-amber-200">
+                Your complete project package has been sent to: <strong>{userEmail}</strong>
+              </div>
+              <div className="text-gray-400 text-sm mt-2">
+                Expected delivery: Within 24 hours • Check spam folder if not received
+              </div>
+            </div>
 
-        {/* Terminal-style footer */}
-        <div className="text-green-400 text-xs font-mono opacity-60 border-t border-green-400/20 pt-4">
-          m8s.ai • AI Project Validation System • Session Complete
-        </div>
+            {/* Close button */}
+            <div className="space-y-4">
+              <button
+                onClick={() => {
+                  // Call the onComplete callback to redirect
+                  onComplete({
+                    responses,
+                    waveData: {
+                      wave1: {},
+                      wave2: {},
+                      wave3: {},
+                      wave4: {}
+                    }
+                  });
+                }}
+                className="bg-transparent border-2 border-green-400 text-green-400 px-8 py-3 text-lg font-mono hover:bg-green-400 hover:text-black transition-colors duration-200"
+              >
+                CLOSE TERMINAL
+              </button>
+
+              <div className="text-gray-500 text-sm">
+                You will be redirected to our main application
+              </div>
+            </div>
+
+            {/* Terminal-style footer */}
+            <div className="text-green-400 text-xs font-mono opacity-60 border-t border-green-400/20 pt-4">
+              m8s.ai • AI Project Validation System • Session Complete
+            </div>
           </div>
         </div>
       </div>
@@ -846,7 +836,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
       </button>
 
       <div className="min-h-screen flex items-start justify-center pt-8 px-4 pb-4 retro-scanlines">
-        <div className="w-full max-w-4xl mx-auto space-y-6" dir="ltr">
+        <div className="w-full max-w-4xl mx-auto space-y-4" dir="ltr">
           {/* Wave indicator */}
           <div className="text-green-300 text-2xl text-center font-retro-xl retro-glow-green" dir="ltr">
             {currentWave + 1}/4: {currentWaveData.name}
@@ -856,20 +846,20 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           <div className="flex items-start gap-4 w-full max-w-3xl mx-auto">
             {/* Bot Avatar */}
             <div className="flex-shrink-0 mt-1">
-              <img 
-                src="/robot-favicon-white.svg" 
-                alt="Aria Bot" 
+              <img
+                src="/robot-favicon-white.svg"
+                alt="Aria Bot"
                 className="w-12 h-12 rounded-full border-2 border-green-400/30 bg-black/20 p-2"
               />
             </div>
-            
+
             {/* Bot Message Bubble */}
             <div className="flex-1">
               <div className="relative bg-black/40 border border-green-400/30 rounded-lg rounded-tl-none p-6 backdrop-blur-sm">
                 {/* Chat bubble tail */}
                 <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
-                
-                <div className="text-amber-300 text-2xl leading-relaxed font-retro-light retro-glow-amber whitespace-pre-line">
+
+                <div className="text-amber-300 text-2xl leading-snug font-retro-light retro-glow-amber whitespace-pre-line">
                   {isTyping ? (
                     <span className="text-gray-400 font-retro text-lg">
                       Aria is typing{typingDots}
@@ -888,19 +878,19 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
             <div className="flex items-start gap-4 w-full max-w-3xl mx-auto">
               {/* Bot Avatar */}
               <div className="flex-shrink-0 mt-1">
-                <img 
-                  src="/robot-favicon-white.svg" 
-                  alt="Aria Bot" 
+                <img
+                  src="/robot-favicon-white.svg"
+                  alt="Aria Bot"
                   className="w-12 h-12 rounded-full border-2 border-green-400/30 bg-black/20 p-2"
                 />
               </div>
-              
+
               {/* Follow-up Message Bubble */}
               <div className="flex-1">
                 <div className="relative bg-black/40 border border-green-400/30 rounded-lg rounded-tl-none p-4 backdrop-blur-sm">
                   {/* Chat bubble tail */}
                   <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
-                  
+
                   <div className="text-green-300 text-xl italic font-retro-light retro-glow-green whitespace-pre-line">
                     {currentQuestionData.followUp}
                   </div>
@@ -912,192 +902,190 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComple
           {/* Answer interface */}
           {!showingFollowUp && !isTyping && (
             <div className="space-y-4 w-full max-w-3xl mx-auto">
-          {currentQuestionData.type === 'multiple-choice' && (
-            <div className="space-y-2">
-              {currentQuestionData.options?.map((option, index) => (
-                <div 
-                  key={index}
-                  className={`p-3 border-2 cursor-pointer transition-all ${
-                    selectedOption === index 
-                      ? 'border-green-400 bg-green-400/10 retro-glow-green' 
-                      : 'border-gray-600 hover:border-green-300'
-                  }`}
-                  onClick={() => {
-                    setSelectedOption(index);
-                    // Auto-submit when clicking an option
-                    setTimeout(() => {
-                      handleSubmitAnswer();
-                    }, 100);
-                  }}
-                >
-                  <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`} dir="ltr">
-                    {selectedOption === index ? '> ' : '  '}{option}
-                  </span>
-                </div>
-              ))}
-              
-              {/* Mobile navigation buttons */}
-              <div className="flex justify-center space-x-4 mt-4 md:hidden">
-                <button
-                  onClick={() => {
-                    if (selectedOption > 0) {
-                      setSelectedOption(selectedOption - 1);
-                      playNavigationSound('up');
-                    }
-                  }}
-                  disabled={selectedOption === 0}
-                  className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
-                >
-                  ↑
-                </button>
-                <button
-                  onClick={() => {
-                    if (selectedOption < (currentQuestionData.options?.length || 0) - 1) {
-                      setSelectedOption(selectedOption + 1);
-                      playNavigationSound('down');
-                    }
-                  }}
-                  disabled={selectedOption === (currentQuestionData.options?.length || 0) - 1}
-                  className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
-                >
-                  ↓
-                </button>
-                <button
-                  onClick={handleSubmitAnswer}
-                  className="bg-transparent border border-green-400 text-green-400 px-4 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200"
-                >
-                  ENTER
-                </button>
-              </div>
-              
-              <div className="text-gray-400 text-lg mt-4 font-retro">
-                <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
-                <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
-              </div>
-            </div>
-          )}
+              {currentQuestionData.type === 'multiple-choice' && (
+                <div className="space-y-2">
+                  {currentQuestionData.options?.map((option, index) => (
+                    <div
+                      key={index}
+                      className={`p-3 border-2 cursor-pointer transition-all ${selectedOption === index
+                          ? 'border-green-400 bg-green-400/10 retro-glow-green'
+                          : 'border-gray-600 hover:border-green-300'
+                        }`}
+                      onClick={() => {
+                        setSelectedOption(index);
+                        // Auto-submit when clicking an option
+                        setTimeout(() => {
+                          handleSubmitAnswer();
+                        }, 100);
+                      }}
+                    >
+                      <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`} dir="ltr">
+                        {selectedOption === index ? '> ' : '  '}{option}
+                      </span>
+                    </div>
+                  ))}
 
-          {currentQuestionData.type === 'text' && (
-            <div className="space-y-4 relative px-4 md:px-0">
-              <div className="w-full p-4 bg-transparent text-green-300 min-h-[60px] flex items-center justify-start border border-green-400/30 rounded">
-                <div className="flex items-center w-full">
-                  <span className="whitespace-pre-wrap text-2xl font-retro-light leading-relaxed">{userInput}</span>
-                  <span className="inline-block w-4 h-6 ml-0 flex-shrink-0">
-                    {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
-                  </span>
-                </div>
-              </div>
-              <input
-                type="text"
-                value={userInput}
-                readOnly={/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}
-                onChange={(e) => {
-                  setUserInput(e.target.value);
-                  setValidationMessage(''); // Clear validation message when typing
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    if (e.altKey) {
-                      // Alt+Enter: Add new line and move cursor to start of new line
-                      e.preventDefault();
-                      const input = e.target as HTMLInputElement;
-                      const cursorPosition = input.selectionStart || 0;
-                      const beforeCursor = userInput.substring(0, cursorPosition);
-                      const afterCursor = userInput.substring(cursorPosition);
-                      const newText = beforeCursor + '\n' + afterCursor;
-                      setUserInput(newText);
-                      
-                      // Move cursor to start of new line (after the \n)
-                      setTimeout(() => {
-                        input.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
-                      }, 0);
-                    } else if (userInput.trim()) {
-                      // Enter: Submit answer
-                      handleSubmitAnswer();
-                    }
-                  }
-                }}
-                className="absolute top-0 left-0 w-full h-[60px] opacity-0 cursor-text z-10 font-retro-light text-2xl"
-                autoFocus
-              />
-              {validationMessage && (
-                <div className="text-red-400 text-lg font-retro text-center">
-                  ⚠️ {validationMessage}
+                  {/* Mobile navigation buttons */}
+                  <div className="flex justify-center space-x-4 mt-4 md:hidden">
+                    <button
+                      onClick={() => {
+                        if (selectedOption > 0) {
+                          setSelectedOption(selectedOption - 1);
+                          playNavigationSound('up');
+                        }
+                      }}
+                      disabled={selectedOption === 0}
+                      className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (selectedOption < (currentQuestionData.options?.length || 0) - 1) {
+                          setSelectedOption(selectedOption + 1);
+                          playNavigationSound('down');
+                        }
+                      }}
+                      disabled={selectedOption === (currentQuestionData.options?.length || 0) - 1}
+                      className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      onClick={handleSubmitAnswer}
+                      className="bg-transparent border border-green-400 text-green-400 px-4 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200"
+                    >
+                      ENTER
+                    </button>
+                  </div>
+
+                  <div className="text-gray-400 text-lg mt-4 font-retro">
+                    <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
+                    <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
+                  </div>
                 </div>
               )}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Button clicked!', { userInput: userInput.trim() });
-                  handleSubmitAnswer();
-                }}
-                disabled={!userInput.trim() && currentQuestionData.validation && !currentQuestionData.validation('')}
-                className="bg-transparent border border-green-400 text-green-400 px-6 py-3 text-2xl font-retro retro-glow-green hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200 touch-manipulation relative z-20"
-              >
-                Submit Answer
-              </button>
-            </div>
-          )}
 
-          {currentQuestionData.type === 'yes-no' && (
-            <div className="space-y-2">
-              {['Yes', 'No'].map((option, index) => (
-                <div 
-                  key={index}
-                  className={`p-3 border-2 cursor-pointer transition-all ${
-                    selectedOption === index 
-                      ? 'border-green-400 bg-green-400/10' 
-                      : 'border-gray-600 hover:border-green-300'
-                  }`}
-                  onClick={() => setSelectedOption(index)}
-                >
-                  <span className={selectedOption === index ? 'text-green-300' : 'text-gray-300'}>
-                    {selectedOption === index ? '> ' : '  '}{option}
-                  </span>
+              {currentQuestionData.type === 'text' && (
+                <div className="space-y-4 relative px-4 md:px-0">
+                  <div className="w-full p-4 bg-transparent text-green-300 min-h-[60px] flex items-center justify-start border border-green-400/30 rounded">
+                    <div className="flex items-center w-full">
+                      <span className="whitespace-pre-wrap text-2xl font-retro-light leading-snug">{userInput}</span>
+                      <span className="inline-block w-4 h-6 ml-0 flex-shrink-0">
+                        {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
+                      </span>
+                    </div>
+                  </div>
+                  <input
+                    type="text"
+                    value={userInput}
+                    readOnly={/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}
+                    onChange={(e) => {
+                      setUserInput(e.target.value);
+                      setValidationMessage(''); // Clear validation message when typing
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (e.altKey) {
+                          // Alt+Enter: Add new line and move cursor to start of new line
+                          e.preventDefault();
+                          const input = e.target as HTMLInputElement;
+                          const cursorPosition = input.selectionStart || 0;
+                          const beforeCursor = userInput.substring(0, cursorPosition);
+                          const afterCursor = userInput.substring(cursorPosition);
+                          const newText = beforeCursor + '\n' + afterCursor;
+                          setUserInput(newText);
+
+                          // Move cursor to start of new line (after the \n)
+                          setTimeout(() => {
+                            input.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
+                          }, 0);
+                        } else if (userInput.trim()) {
+                          // Enter: Submit answer
+                          handleSubmitAnswer();
+                        }
+                      }
+                    }}
+                    className="absolute top-0 left-0 w-full h-[60px] opacity-0 cursor-text z-10 font-retro-light text-2xl"
+                    autoFocus
+                  />
+                  {validationMessage && (
+                    <div className="text-red-400 text-lg font-retro text-center">
+                      ⚠️ {validationMessage}
+                    </div>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Button clicked!', { userInput: userInput.trim() });
+                      handleSubmitAnswer();
+                    }}
+                    disabled={!userInput.trim() && currentQuestionData.validation && !currentQuestionData.validation('')}
+                    className="bg-transparent border border-green-400 text-green-400 px-6 py-3 text-2xl font-retro retro-glow-green hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200 touch-manipulation relative z-20"
+                  >
+                    Submit Answer
+                  </button>
                 </div>
-              ))}
-              
-              {/* Mobile navigation buttons */}
-              <div className="flex justify-center space-x-4 mt-4 md:hidden">
-                <button
-                  onClick={() => {
-                    if (selectedOption > 0) {
-                      setSelectedOption(selectedOption - 1);
-                      playNavigationSound('up');
-                    }
-                  }}
-                  disabled={selectedOption === 0}
-                  className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
-                >
-                  ↑
-                </button>
-                <button
-                  onClick={() => {
-                    if (selectedOption < 1) {
-                      setSelectedOption(selectedOption + 1);
-                      playNavigationSound('down');
-                    }
-                  }}
-                  disabled={selectedOption === 1}
-                  className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
-                >
-                  ↓
-                </button>
-                <button
-                  onClick={handleSubmitAnswer}
-                  className="bg-transparent border border-green-400 text-green-400 px-4 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200"
-                >
-                  ENTER
-                </button>
-              </div>
-              
-              <div className="text-gray-400 text-lg mt-4 font-retro">
-                <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
-                <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
-              </div>
-            </div>
-            )}
+              )}
+
+              {currentQuestionData.type === 'yes-no' && (
+                <div className="space-y-2">
+                  {['Yes', 'No'].map((option, index) => (
+                    <div
+                      key={index}
+                      className={`p-3 border-2 cursor-pointer transition-all ${selectedOption === index
+                          ? 'border-green-400 bg-green-400/10'
+                          : 'border-gray-600 hover:border-green-300'
+                        }`}
+                      onClick={() => setSelectedOption(index)}
+                    >
+                      <span className={selectedOption === index ? 'text-green-300' : 'text-gray-300'}>
+                        {selectedOption === index ? '> ' : '  '}{option}
+                      </span>
+                    </div>
+                  ))}
+
+                  {/* Mobile navigation buttons */}
+                  <div className="flex justify-center space-x-4 mt-4 md:hidden">
+                    <button
+                      onClick={() => {
+                        if (selectedOption > 0) {
+                          setSelectedOption(selectedOption - 1);
+                          playNavigationSound('up');
+                        }
+                      }}
+                      disabled={selectedOption === 0}
+                      className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (selectedOption < 1) {
+                          setSelectedOption(selectedOption + 1);
+                          playNavigationSound('down');
+                        }
+                      }}
+                      disabled={selectedOption === 1}
+                      className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      onClick={handleSubmitAnswer}
+                      className="bg-transparent border border-green-400 text-green-400 px-4 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200"
+                    >
+                      ENTER
+                    </button>
+                  </div>
+
+                  <div className="text-gray-400 text-lg mt-4 font-retro">
+                    <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
+                    <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

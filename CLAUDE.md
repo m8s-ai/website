@@ -16,6 +16,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run `npm run lint` before committing changes
 - Use `npm run build` to test production builds
 
+### Agent Commands
+- **project-discovery** (Alex) - Project Discovery Consultant for business requirements gathering
+  - Activate with: `/BMad:agents:discovery`
+  - Commands: `*help`, `*business-discovery`, `*user-discovery`, `*problem-discovery`, `*success-discovery`, `*scope-discovery`, `*constraint-discovery`, `*competition-discovery`, `*vision-discovery`, `*generate-project-brief`, `*next-steps`, `*doc-out`, `*yolo`, `*exit`
+  - Use when: Starting new projects with non-technical stakeholders or translating business needs into project specifications
+
 ## Project Architecture
 
 This is a React + TypeScript application built with Vite, featuring a modern tech stack with:

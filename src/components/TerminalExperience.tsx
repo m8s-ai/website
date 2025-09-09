@@ -51,7 +51,7 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
         /* Transition screen */
         <div className="fixed inset-0 bg-black text-green-400 font-mono flex items-center justify-center">
           <div className="text-center" dir="ltr">
-            <div className="text-xl mb-4 text-amber-400">
+            <div className="text-lg md:text-xl mb-2 md:mb-4 text-amber-400">
               {transitionMessage}
             </div>
             <div className="flex space-x-1">

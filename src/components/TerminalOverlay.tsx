@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAudioManager } from './AudioManager';
 import { analyticsManager } from '@/utils/analyticsManager';
 import { ConversationEngine } from './ConversationEngine';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TerminalOverlayProps {
   onComplete?: () => void;

@@ -27,6 +27,11 @@ workflow:
       requires: project-brief.md
       notes: "Creates PRD from project brief using prd-tmpl, focused on UI/frontend requirements. SAVE OUTPUT: Copy final prd.md to your project's docs/ folder."
 
+    - agent: discovery
+      creates: discovery.md
+      requires: project-discoverty.md
+      notes: "Talks to a non technical person"
+
     - agent: ux-expert
       creates: front-end-spec.md
       requires: prd.md

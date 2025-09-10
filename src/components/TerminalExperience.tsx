@@ -3,18 +3,23 @@ import { Terminal } from './Terminal';
 import { ConversationEngine } from './ConversationEngine'; // Import ConversationEngine
 import { useAudioManager } from './AudioManager';
 
+type BotMode = 'qa' | 'project';
+
 interface TerminalExperienceProps {
   onComplete: () => void;
   isLoggedIn?: boolean;
+  onBotModeSelect?: (mode: BotMode) => void; // New callback for bot mode selection
 }
 
 export const TerminalExperience: React.FC<TerminalExperienceProps> = ({ 
   onComplete, 
-  isLoggedIn = false
+  isLoggedIn = false,
+  onBotModeSelect
 }) => {
   const [showTransition, setShowTransition] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState('');
   const [showConversationEngine, setShowConversationEngine] = useState(false); // New state for ConversationEngine
+  const [botMode, setBotMode] = useState<BotMode | null>(null); // Track selected bot mode
   const audio = useAudioManager({ isEnabled: true, volume: 0.2 });
 
   const handleTerminalComplete = async () => {
@@ -25,7 +30,7 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
     setShowTransition(true);
     
     setTimeout(() => {
-      setTransitionMessage('Preparing your project analysis...');
+      setTransitionMessage('Initializing bot selection...');
     }, 1500);
 
     setTimeout(() => {
@@ -36,6 +41,21 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
       setShowConversationEngine(true); // Show ConversationEngine after transition
       setShowTransition(false); // Hide transition screen
     }, 4500);
+  };
+
+  // Handle bot mode selection from ConversationEngine
+  const handleBotModeSelection = (mode: BotMode) => {
+    setBotMode(mode);
+    if (onBotModeSelect) {
+      onBotModeSelect(mode);
+    }
+    
+    // Update transition message based on bot mode
+    if (mode === 'qa') {
+      setTransitionMessage('Connecting to business expert bot...');
+    } else {
+      setTransitionMessage('Preparing project discovery session...');
+    }
   };
 
   // Don't show terminal for logged-in users (they see the main site with launch button)
@@ -69,7 +89,11 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
           </div>
         </div>
       ) : (
-        <ConversationEngine onComplete={onComplete} /> // Render ConversationEngine and pass onComplete
+        <ConversationEngine 
+          onComplete={onComplete} 
+          initialBotMode={botMode || 'qa'}
+          onBotModeSelect={handleBotModeSelection}
+        />
       )}
     </div>
   );

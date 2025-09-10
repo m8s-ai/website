@@ -15,34 +15,27 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   
   // Terminal overlay always uses English - hardcoded
-  const BOOT_SEQUENCE = [
-    'INITIALIZING PROJECT VALIDATION ENGINE...',
-    'LOADING AI ANALYSIS PROTOCOLS...',
-    'CALIBRATING CONVERSATION SYSTEMS...',
-    'ARIA BOT SYSTEMS ONLINE...',
-    'READY FOR POC VALIDATION...'
+  const TERMINAL_COMMANDS = [
+    { command: '$ cd /usr/local/m8s/aria', output: null },
+    { command: '$ ./start-validation-system.sh', output: 'Starting ARIA Project Validation System...' },
+    { command: null, output: 'Loading AI analysis protocols... ✓' },
+    { command: null, output: 'Initializing conversation engine... ✓' },
+    { command: null, output: 'Calibrating business intelligence... ✓' },
+    { command: null, output: 'ARIA system ready for project validation' },
+    { command: '$ aria --version', output: 'ARIA v3.2.1 - AI Project Validation Assistant' },
+    { command: '$ aria --help', output: 'Available modes: [qa] [project-validation] [technical-analysis]' }
   ];
   
-  // Greeting message in English only
-  const GREETING_MESSAGE = `Welcome! I'm ARIA, your AI project validation bot. 🤖
-
-I'll ask you a few strategic questions about your project idea, then generate a complete validation package with:
-
-• Technical feasibility analysis
-• Market opportunity assessment
-• Development roadmap & costs
-• Risk analysis & mitigation
-
-Ready to validate your next big idea?`;
-  const [bootStarted, setBootStarted] = useState(false);
-  const [bootComplete, setBootComplete] = useState(false);
-  const [currentBootLine, setCurrentBootLine] = useState(0);
+  // Welcome message after terminal simulation
+  const WELCOME_MESSAGE = 'ARIA Project Validation Terminal';
+  const [terminalStarted, setTerminalStarted] = useState(false);
+  const [terminalComplete, setTerminalComplete] = useState(false);
+  const [currentCommandIndex, setCurrentCommandIndex] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
-  const [showGreeting, setShowGreeting] = useState(false);
-  const [greetingText, setGreetingText] = useState('');
-  const [currentChar, setCurrentChar] = useState(0);
+  const [commandHistory, setCommandHistory] = useState<Array<{command: string | null, output: string | null, completed: boolean}>>([]);
+  const [showingOutput, setShowingOutput] = useState(false);
   const [conversationStarted, setConversationStarted] = useState(false);
-  const [bootStartTime, setBootStartTime] = useState<number | null>(null);
+  const [terminalStartTime, setTerminalStartTime] = useState<number | null>(null);
   const [showTransition, setShowTransition] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState('');
   const [showConversationEngine, setShowConversationEngine] = useState(false);
@@ -56,85 +49,110 @@ Ready to validate your next big idea?`;
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-start boot sequence after short delay
+  // Auto-start terminal simulation after short delay
   useEffect(() => {
-    console.log('TerminalOverlay mounted, starting boot sequence...');
+    console.log('TerminalOverlay mounted, starting terminal simulation...');
     const timer = setTimeout(() => {
-      console.log('Boot sequence timer fired, setting bootStarted to true');
-      setBootStartTime(Date.now());
-      analyticsManager.trackTerminalEvent('overlay_boot_started', {
+      console.log('Terminal simulation timer fired, setting terminalStarted to true');
+      setTerminalStartTime(Date.now());
+      analyticsManager.trackTerminalEvent('overlay_terminal_started', {
         source: 'terminal_preview',
         context: 'aria_poc_planning'
       });
-      setBootStarted(true);
-    }, 500); // Reduced from 1000ms to 500ms
+      setTerminalStarted(true);
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Boot sequence effect
+  // Terminal command simulation effect
   useEffect(() => {
-    if (bootStarted && currentBootLine < BOOT_SEQUENCE.length) {
-      console.log(`Starting boot line ${currentBootLine}: ${BOOT_SEQUENCE[currentBootLine]}`);
-      const timer = setTimeout(() => {
-        analyticsManager.trackTerminalEvent('overlay_boot_line_displayed', {
-          line_number: currentBootLine,
-          line_text: BOOT_SEQUENCE[currentBootLine].substring(0, 50)
-        });
+    if (terminalStarted && currentCommandIndex < TERMINAL_COMMANDS.length) {
+      const currentCmd = TERMINAL_COMMANDS[currentCommandIndex];
+      console.log(`Processing command ${currentCommandIndex}:`, currentCmd);
+      
+      // Step 1: Show command (if it exists)
+      if (currentCmd.command) {
+        const timer = setTimeout(() => {
+          audio.playBootSound(currentCommandIndex);
+          
+          // Add command to history
+          setCommandHistory(prev => [...prev, {
+            command: currentCmd.command,
+            output: null,
+            completed: false
+          }]);
+          
+          // Step 2: Show output after a delay
+          if (currentCmd.output) {
+            setTimeout(() => {
+              setCommandHistory(prev => prev.map((item, index) => 
+                index === prev.length - 1 ? { ...item, output: currentCmd.output, completed: true } : item
+              ));
+              
+              // Move to next command after showing output
+              setTimeout(() => {
+                setCurrentCommandIndex(prev => prev + 1);
+              }, 2000);
+            }, 500); // Small delay before showing output
+          } else {
+            setTimeout(() => {
+              setCurrentCommandIndex(prev => prev + 1);
+            }, 800);
+          }
+        }, 800);
         
-        audio.playBootSound(currentBootLine);
-        setCurrentBootLine(prev => prev + 1);
-      }, 1200);
-      return () => clearTimeout(timer);
+        return () => clearTimeout(timer);
+      } else {
+        // Only output, no command
+        const timer = setTimeout(() => {
+          audio.playBootSound(currentCommandIndex);
+          
+          setCommandHistory(prev => [...prev, {
+            command: null,
+            output: currentCmd.output,
+            completed: true
+          }]);
+          
+          setTimeout(() => {
+            setCurrentCommandIndex(prev => prev + 1);
+          }, 2000);
+        }, 200);
+        
+        return () => clearTimeout(timer);
+      }
     }
-  }, [bootStarted, currentBootLine]);
+  }, [terminalStarted, currentCommandIndex]);
 
-  // Boot completion effect
+  // Terminal completion effect
   useEffect(() => {
-    if (bootStarted && currentBootLine >= BOOT_SEQUENCE.length && !bootComplete) {
-      console.log('Boot sequence completed, starting greeting...');
+    if (terminalStarted && currentCommandIndex >= TERMINAL_COMMANDS.length && !terminalComplete) {
+      console.log('Terminal simulation completed, moving to conversation...');
       const timer = setTimeout(() => {
-        analyticsManager.trackTerminalEvent('overlay_boot_completed', {
-          total_boot_time: bootStartTime ? Math.round((Date.now() - bootStartTime) / 1000) : 0,
-          lines_completed: BOOT_SEQUENCE.length
+        analyticsManager.trackTerminalEvent('overlay_terminal_completed', {
+          total_terminal_time: terminalStartTime ? Math.round((Date.now() - terminalStartTime) / 1000) : 0,
+          commands_executed: TERMINAL_COMMANDS.length
         });
         
-        setBootComplete(true);
-        setShowGreeting(true);
+        setTerminalComplete(true);
+        setConversationStarted(true);
         audio.playBackgroundAmbient();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [bootStarted, currentBootLine, bootComplete, bootStartTime]);
+  }, [terminalStarted, currentCommandIndex, terminalComplete, terminalStartTime]);
 
-  // Typewriter effect for greeting
+  // Auto-start conversation after terminal simulation
   useEffect(() => {
-    if (showGreeting && currentChar < GREETING_MESSAGE.length) {
+    if (conversationStarted && !showConversationEngine) {
       const timer = setTimeout(() => {
-        if (GREETING_MESSAGE[currentChar] !== ' ') {
-          audio.playTypingSound();
-        }
-        setGreetingText(prev => prev + GREETING_MESSAGE[currentChar]);
-        setCurrentChar(prev => prev + 1);
-      }, 20);
+        setShowConversationEngine(true);
+      }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [showGreeting, currentChar]);
-
-  // Conversation start effect
-  useEffect(() => {
-    if (showGreeting && currentChar >= GREETING_MESSAGE.length) {
-      const timer = setTimeout(() => {
-        analyticsManager.trackTerminalEvent('overlay_greeting_completed', {
-          message_length: GREETING_MESSAGE.length
-        });
-        setConversationStarted(true);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-  }, [showGreeting, currentChar]);
+  }, [conversationStarted, showConversationEngine]);
 
   const handleStartConversation = useCallback(async () => {
-    const totalTerminalTime = bootStartTime ? Math.round((Date.now() - bootStartTime) / 1000) : 0;
+    const totalTerminalTime = terminalStartTime ? Math.round((Date.now() - terminalStartTime) / 1000) : 0;
     
     analyticsManager.trackTerminalEvent('overlay_conversation_initiated', {
       interaction_method: 'button_click',
@@ -160,7 +178,7 @@ Ready to validate your next big idea?`;
       setShowConversationEngine(true); // Show ConversationEngine after transition
       setShowTransition(false); // Hide transition screen
     }, 4500);
-  }, [audio, bootStartTime]);
+  }, [audio, terminalStartTime]);
 
   // Focus conversation when it becomes visible
   useEffect(() => {
@@ -169,10 +187,10 @@ Ready to validate your next big idea?`;
     }
   }, [showConversationEngine]);
 
-  // Handle Enter key press (only when not in conversation mode)
+  // Handle Enter key press (only when terminal simulation is complete)
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'Enter' && conversationStarted && !showConversationEngine) {
+      if (event.key === 'Enter' && terminalComplete && !showConversationEngine) {
         analyticsManager.trackTerminalEvent('overlay_conversation_initiated', {
           interaction_method: 'enter_key',
           bot_name: 'ARIA'
@@ -182,13 +200,13 @@ Ready to validate your next big idea?`;
     };
 
     // Only add event listener if conversation engine is not showing
-    if (!showConversationEngine) {
+    if (!showConversationEngine && terminalComplete) {
       window.addEventListener('keydown', handleKeyPress);
       return () => {
         window.removeEventListener('keydown', handleKeyPress);
       };
     }
-  }, [conversationStarted, handleStartConversation, showConversationEngine]);
+  }, [terminalComplete, handleStartConversation, showConversationEngine]);
 
   // Render different states
   if (showConversationEngine) {
@@ -248,75 +266,78 @@ Ready to validate your next big idea?`;
       
       {/* Terminal content */}
       <div className="relative z-10 pt-4 px-8 pb-8 h-full flex flex-col justify-start items-center max-w-4xl mx-auto text-center">
-        {/* Boot sequence */}
-        {!bootComplete && bootStarted && (
-          <div className="space-y-4" dir="ltr">
-            {BOOT_SEQUENCE.slice(0, currentBootLine).map((line, index) => (
-              <div key={index} className="flex items-center justify-center space-x-4" dir="ltr">
-                <span className="text-amber-400" style={{
-                  textShadow: '0 0 10px rgba(251, 191, 36, 0.8), 0 0 20px rgba(251, 191, 36, 0.6), 0 0 30px rgba(251, 191, 36, 0.4)'
-                }}>{line}</span>
-                <span className="text-green-300" style={{
-                  textShadow: '0 0 8px rgba(34, 197, 94, 0.8), 0 0 16px rgba(34, 197, 94, 0.6)'
-                }}>✓</span>
+        {/* Terminal Command Simulation */}
+        {!terminalComplete && terminalStarted && (
+          <div className="space-y-2 text-left w-full max-w-2xl" dir="ltr">
+            {/* Show command history */}
+            {commandHistory.map((item, index) => (
+              <div key={index} className="space-y-1">
+                {item.command && (
+                  <div className="flex items-center" dir="ltr">
+                    <span className="text-green-400" style={{
+                      textShadow: '0 0 8px rgba(34, 197, 94, 0.8), 0 0 16px rgba(34, 197, 94, 0.6)'
+                    }}>{item.command}</span>
+                    {/* Show cursor only on the last command if it doesn't have output yet */}
+                    {index === commandHistory.length - 1 && !item.output && item.command && (
+                      <div className="w-2 h-4 inline-block ml-1">
+                        {showCursor && <div className="bg-green-400 w-full h-full" style={{
+                          boxShadow: '0 0 10px rgba(34, 197, 94, 0.8), 0 0 20px rgba(34, 197, 94, 0.6)'
+                        }}></div>}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {item.output && (
+                  <div className="text-amber-300 pl-4" style={{
+                    textShadow: '0 0 8px rgba(252, 211, 77, 0.6), 0 0 16px rgba(252, 211, 77, 0.4)'
+                  }}>
+                    {item.output}
+                  </div>
+                )}
               </div>
             ))}
-            {currentBootLine < BOOT_SEQUENCE.length && (
-              <div className="flex items-center justify-center space-x-2" dir="ltr">
-                <span className="text-amber-400" style={{
-                  textShadow: '0 0 10px rgba(251, 191, 36, 0.8), 0 0 20px rgba(251, 191, 36, 0.6), 0 0 30px rgba(251, 191, 36, 0.4)'
-                }}>{BOOT_SEQUENCE[currentBootLine]}</span>
-                <div className="w-3 h-5 inline-block ml-2">
-                  {showCursor && <div className="bg-green-400 w-full h-full" style={{
-                    boxShadow: '0 0 10px rgba(34, 197, 94, 0.8), 0 0 20px rgba(34, 197, 94, 0.6)'
-                  }}></div>}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
-        {/* Greeting section */}
-        {showGreeting && (
+        {/* Terminal Complete - Show Welcome */}
+        {terminalComplete && !conversationStarted && (
           <div className="mt-8 space-y-4 text-center" dir="ltr">
-            <div className="text-amber-300 leading-relaxed whitespace-pre-line" style={{
+            <div className="text-amber-300 text-2xl" style={{
               textShadow: '0 0 8px rgba(252, 211, 77, 0.8), 0 0 16px rgba(252, 211, 77, 0.6), 0 0 24px rgba(252, 211, 77, 0.4)'
             }}>
-              {greetingText}
-              <span className="w-3 h-5 inline-block ml-1">
-                {currentChar < GREETING_MESSAGE.length && showCursor && (
-                  <div className="bg-green-400 w-full h-full inline-block" style={{
-                    boxShadow: '0 0 10px rgba(34, 197, 94, 0.8), 0 0 20px rgba(34, 197, 94, 0.6)'
-                  }}></div>
-                )}
-              </span>
+              {WELCOME_MESSAGE}
             </div>
-            
-            {/* Conversation starter */}
-            {conversationStarted && (
-              <div className="mt-8" dir="ltr">
-                <div className="mb-4 text-green-300" style={{
-                  textShadow: '0 0 8px rgba(34, 197, 94, 0.8), 0 0 16px rgba(34, 197, 94, 0.6)'
-                }}>
-                  [PRESS ENTER TO START POC VALIDATION]
-                </div>
-                <button
-                  onClick={handleStartConversation}
-                  className="bg-transparent border border-green-400 text-green-400 px-6 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200 font-mono"
-                  style={{
-                    textShadow: '0 0 8px rgba(34, 197, 94, 0.6), 0 0 16px rgba(34, 197, 94, 0.4)',
-                    boxShadow: '0 0 15px rgba(34, 197, 94, 0.3)'
-                  }}
-                >
-                  🤖 START PLANNING WITH ARIA
-                </button>
-              </div>
-            )}
+            <div className="text-green-300" style={{
+              textShadow: '0 0 8px rgba(34, 197, 94, 0.8), 0 0 16px rgba(34, 197, 94, 0.6)'
+            }}>
+              System initialized and ready for project validation
+            </div>
+          </div>
+        )}
+
+        {/* Conversation starter */}
+        {conversationStarted && !showConversationEngine && (
+          <div className="mt-8 space-y-4 text-center" dir="ltr">
+            <div className="mb-4 text-green-300" style={{
+              textShadow: '0 0 8px rgba(34, 197, 94, 0.8), 0 0 16px rgba(34, 197, 94, 0.6)'
+            }}>
+              [PRESS ENTER TO START POC VALIDATION]
+            </div>
+            <button
+              onClick={handleStartConversation}
+              className="bg-transparent border border-green-400 text-green-400 px-6 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200 font-mono"
+              style={{
+                textShadow: '0 0 8px rgba(34, 197, 94, 0.6), 0 0 16px rgba(34, 197, 94, 0.4)',
+                boxShadow: '0 0 15px rgba(34, 197, 94, 0.3)'
+              }}
+            >
+              🤖 START PLANNING WITH ARIA
+            </button>
           </div>
         )}
 
         {/* Initial cursor when nothing is displayed */}
-        {!bootStarted && (
+        {!terminalStarted && (
           <div className="text-2xl">
             <div className="w-4 h-6 inline-block">
               {showCursor && <div className="bg-green-400 w-full h-full" style={{

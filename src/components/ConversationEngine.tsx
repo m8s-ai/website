@@ -530,6 +530,38 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
     }
   }, [onBotModeSelect]);
 
+  // Home button function to return to Welcome & Path Selection
+  const handleReturnHome = useCallback(async () => {
+    await audio.playSelectionSound();
+    
+    analyticsManager.trackTerminalEvent('home_button_clicked', {
+      current_mode: botMode,
+      current_wave: currentWave,
+      current_question: currentQuestion,
+      is_n8n_mode: isN8nMode
+    });
+    
+    // Reset to initial welcome state
+    setBotMode('qa'); // Default to qa mode initially
+    setIsN8nMode(false);
+    setCurrentWave(0);
+    setCurrentQuestion(0);
+    setSelectedOption(0);
+    setUserInput('');
+    setValidationMessage('');
+    setN8nResponse(null);
+    setSuggestedQuestions([]);
+    setConversationHistory([]);
+    setQaExchangeCount(0);
+    setIsAwaitingN8nResponse(false);
+    
+    // Clear project data
+    setResponses({});
+    setProjectInsights([]);
+    setRiskFlags([]);
+    setAdaptiveQuestions([]);
+  }, [audio, botMode, currentWave, currentQuestion, isN8nMode]);
+
   const handleSubmitAnswer = useCallback(async () => {
     const currentWaveData = CONVERSATION_WAVES[currentWave];
     const currentQuestionData = currentWaveData?.questions[currentQuestion];
@@ -737,6 +769,20 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             <span className="retro-glow-green text-lg">ARIA - Project Validation Terminal</span>
           </div>
+          
+          {/* Home Button - only show if not on welcome screen */}
+          {(currentWave !== 0 || currentQuestion !== 0 || isN8nMode) && (
+            <button
+              onClick={handleReturnHome}
+              className="flex items-center space-x-2 border border-green-500/40 text-green-400 px-4 py-2 rounded-lg hover:bg-green-500/10 hover:border-green-500/60 transition-all duration-200 font-mono text-sm"
+              title="Return to Welcome & Path Selection"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span>HOME</span>
+            </button>
+          )}
         </div>
 
         {/* Progress Indicators */}
@@ -888,6 +934,20 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           <span className="retro-glow-green text-lg">ARIA - Project Validation Terminal</span>
         </div>
+        
+        {/* Home Button - only show if not on welcome screen */}
+        {(currentWave !== 0 || currentQuestion !== 0 || isN8nMode) && (
+          <button
+            onClick={handleReturnHome}
+            className="flex items-center space-x-2 border border-green-500/40 text-green-400 px-4 py-2 rounded-lg hover:bg-green-500/10 hover:border-green-500/60 transition-all duration-200 font-mono text-sm"
+            title="Return to Welcome & Path Selection"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span>HOME</span>
+          </button>
+        )}
       </div>
 
       {/* Progress Indicators */}

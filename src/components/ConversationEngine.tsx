@@ -730,9 +730,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
   // Q&A Mode Interface with Bubble Chat
   if (isN8nMode && botMode === 'qa') {
     return (
-      <div className="relative min-h-screen bg-black text-white font-mono">
+      <div className="relative min-h-screen bg-black text-white font-mono" dir="ltr">
         {/* Terminal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/30">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/30" dir="ltr">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             <span className="retro-glow-green text-lg">ARIA - Project Validation Terminal</span>
@@ -779,10 +779,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
                 </div>
               </div>
               
-              <div className="bg-black/60 border border-green-500/40 rounded-2xl p-6 pt-8 shadow-lg shadow-green-500/10 ml-4">
-                <div className="retro-glow-green text-base leading-relaxed whitespace-pre-line">
+              <div className="bg-black/60 border border-green-500/40 rounded-2xl p-6 pt-8 shadow-lg shadow-green-500/10 ml-4" dir="ltr">
+                <div className="retro-glow-green text-base leading-relaxed whitespace-pre-line text-left" dir="ltr">
                   {isAwaitingN8nResponse ? (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2" dir="ltr">
                       <span>Thinking</span>
                       <div className="flex space-x-1">
                         {[...Array(3)].map((_, i) => (
@@ -798,7 +798,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
                     n8nResponse.text
                   )}
                 </div>
-                <div className="text-xs text-gray-500 mt-3 text-right">
+                <div className="text-xs text-gray-500 mt-3 text-right" dir="ltr">
                   Category: foundation
                 </div>
               </div>
@@ -820,8 +820,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
                     setSelectedOption(index);
                     setTimeout(() => handleSubmitAnswer(), 100);
                   }}
+                  dir="ltr"
                 >
-                  <div className="text-right">
+                  <div className="text-left" dir="ltr">
                     {question}
                   </div>
                 </div>
@@ -839,9 +840,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && userInput.trim() && handleSubmitAnswer()}
-                  className="flex-1 p-3 bg-black border border-green-500/30 retro-glow-green rounded-lg font-mono focus:border-green-500/60 focus:outline-none"
+                  className="flex-1 p-3 bg-black border border-green-500/30 retro-glow-green rounded-lg font-mono focus:border-green-500/60 focus:outline-none text-left"
                   placeholder="Ask about services, team, process..."
                   autoFocus
+                  dir="ltr"
                 />
                 <button
                   onClick={handleSubmitAnswer}
@@ -879,9 +881,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
 
   // Project Mode Interface with Bubble Chat
   return (
-    <div className="relative min-h-screen bg-black text-white font-mono">
+    <div className="relative min-h-screen bg-black text-white font-mono" dir="ltr">
       {/* Terminal Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/30">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/30" dir="ltr">
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           <span className="retro-glow-green text-lg">ARIA - Project Validation Terminal</span>
@@ -927,11 +929,11 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
             </div>
           </div>
           
-          <div className="bg-black/60 border border-green-500/40 rounded-2xl p-6 pt-8 shadow-lg shadow-green-500/10 ml-4">
-            <div className="retro-glow-green text-base leading-relaxed whitespace-pre-line">
+          <div className="bg-black/60 border border-green-500/40 rounded-2xl p-6 pt-8 shadow-lg shadow-green-500/10 ml-4" dir="ltr">
+            <div className="retro-glow-green text-base leading-relaxed whitespace-pre-line text-left" dir="ltr">
               {currentQuestionData.text}
             </div>
-            <div className="text-xs text-gray-500 mt-3 text-right">
+            <div className="text-xs text-gray-500 mt-3 text-right" dir="ltr">
               Category: {currentQuestionData.category}
               {currentQuestionData.technicalDepth && (
                 <span className="ml-2">• {currentQuestionData.technicalDepth} level</span>
@@ -956,8 +958,9 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
                     setSelectedOption(index);
                     setTimeout(() => handleSubmitAnswer(), 100);
                   }}
+                  dir="ltr"
                 >
-                  <div className="text-right">
+                  <div className="text-left" dir="ltr">
                     {option}
                   </div>
                 </div>
@@ -973,9 +976,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && userInput.trim() && handleSubmitAnswer()}
-                  className="flex-1 p-3 bg-black border border-green-500/30 retro-glow-green rounded-lg font-mono focus:border-green-500/60 focus:outline-none"
+                  className="flex-1 p-3 bg-black border border-green-500/30 retro-glow-green rounded-lg font-mono focus:border-green-500/60 focus:outline-none text-left"
                   placeholder="Your answer..."
                   autoFocus
+                  dir="ltr"
                 />
                 <button
                   onClick={handleSubmitAnswer}

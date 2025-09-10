@@ -5,13 +5,14 @@ import { ConversationEngine } from './ConversationEngine';
 
 interface TerminalOverlayProps {
   onComplete?: () => void;
+  initialBotMode?: 'project' | 'qa';
 }
 
 // Boot sequence will be translated at runtime
 
 // Greeting message will be translated at runtime
 
-export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) => {
+export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, initialBotMode = 'project' }) => {
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   
   // Terminal overlay always uses English - hardcoded
@@ -60,7 +61,7 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
         context: 'aria_poc_planning'
       });
       setTerminalStarted(true);
-    }, 500);
+    }, 100);
     return () => clearTimeout(timer);
   }, []);
 
@@ -92,14 +93,14 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
               // Move to next command after showing output
               setTimeout(() => {
                 setCurrentCommandIndex(prev => prev + 1);
-              }, 2000);
-            }, 500); // Small delay before showing output
+              }, 400);
+            }, 150); // Very small delay before showing output
           } else {
             setTimeout(() => {
               setCurrentCommandIndex(prev => prev + 1);
-            }, 800);
+            }, 100);
           }
-        }, 800);
+        }, 200);
         
         return () => clearTimeout(timer);
       } else {
@@ -115,8 +116,8 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
           
           setTimeout(() => {
             setCurrentCommandIndex(prev => prev + 1);
-          }, 2000);
-        }, 200);
+          }, 600);
+        }, 50);
         
         return () => clearTimeout(timer);
       }
@@ -136,7 +137,7 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
         setTerminalComplete(true);
         setConversationStarted(true);
         audio.playBackgroundAmbient();
-      }, 1000);
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [terminalStarted, currentCommandIndex, terminalComplete, terminalStartTime]);
@@ -146,7 +147,7 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
     if (conversationStarted && !showConversationEngine) {
       const timer = setTimeout(() => {
         setShowConversationEngine(true);
-      }, 1500);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [conversationStarted, showConversationEngine]);
@@ -168,16 +169,16 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
     
     setTimeout(() => {
       setTransitionMessage('Preparing your project analysis...');
-    }, 1500);
+    }, 200);
 
     setTimeout(() => {
       setTransitionMessage('Almost ready! Starting conversation...');
-    }, 3000);
+    }, 400);
 
     setTimeout(() => {
       setShowConversationEngine(true); // Show ConversationEngine after transition
       setShowTransition(false); // Hide transition screen
-    }, 4500);
+    }, 600);
   }, [audio, terminalStartTime]);
 
   // Focus conversation when it becomes visible
@@ -230,7 +231,10 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete }) 
           // Let events pass through to ConversationEngine
         }}
       >
-        <ConversationEngine onComplete={onComplete || (() => {})} />
+        <ConversationEngine 
+          onComplete={onComplete || (() => {})} 
+          initialBotMode={initialBotMode}
+        />
       </div>
     );
   }

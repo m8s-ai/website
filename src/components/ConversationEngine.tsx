@@ -252,7 +252,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   
   // All hooks must be at the top level
-  const [currentWave, setCurrentWave] = useState(0);
+  const [currentWave, setCurrentWave] = useState(initialBotMode === 'qa' ? 0 : 0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [userInput, setUserInput] = useState('');
@@ -262,7 +262,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
   
   // Bot state
   const [botMode, setBotMode] = useState<BotMode>(initialBotMode);
-  const [isN8nMode, setIsN8nMode] = useState(false);
+  const [isN8nMode, setIsN8nMode] = useState(initialBotMode === 'qa');
   const [n8nResponse, setN8nResponse] = useState<N8nWebhookResponse | null>(null);
   const [conversationHistory, setConversationHistory] = useState<Array<{role: 'user' | 'bot', content: string}>>([]);
   const [isAwaitingN8nResponse, setIsAwaitingN8nResponse] = useState(false);
@@ -460,6 +460,30 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
   useEffect(() => {
     analyticsManager.startConversation('initial');
   }, []);
+
+  // Initialize Q&A mode when initialBotMode is 'qa'
+  useEffect(() => {
+    if (initialBotMode === 'qa' && !n8nResponse) {
+      // Immediately start with business Q&A
+      setN8nResponse({
+        text: "Great! I'm your business expert. I can tell you about our services, process, team, and capabilities. What would you like to know?",
+        suggestedQuestions: [
+          "How does your development process work?",
+          "Tell me about your team structure", 
+          "What technologies do you use?",
+          "Can you show me examples of your work?",
+          "What makes you different from other agencies?"
+        ]
+      });
+      setSuggestedQuestions([
+        "How does your development process work?",
+        "Tell me about your team structure", 
+        "What technologies do you use?",
+        "Can you show me examples of your work?",
+        "What makes you different from other agencies?"
+      ]);
+    }
+  }, [initialBotMode, n8nResponse]);
 
   const sendToN8nWebhook = useCallback(async (userMessage: string) => {
     setIsAwaitingN8nResponse(true);
@@ -794,6 +818,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
               <span className="text-red-400">❌</span>
             </div>
           </div>
+          <div className="w-4" />
           <div className="flex items-center space-x-2">
             <span className="text-gray-400">Insights:</span>
             <div className="bg-blue-900/30 border border-blue-500/30 rounded px-3 py-1 flex items-center space-x-2">

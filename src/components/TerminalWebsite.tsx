@@ -85,6 +85,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
   const [sessionStartTime] = useState(Date.now());
   const [showTerminalOverlay, setShowTerminalOverlay] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [terminalMode, setTerminalMode] = useState<'project' | 'qa'>('project');
   const overlayRef = useRef<HTMLDivElement>(null);
 
   // Track website load
@@ -125,7 +126,31 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
     });
 
     await audio.playSelectionSound();
-    // Open the terminal overlay
+    // Open the terminal overlay in project mode
+    setTerminalMode('project');
+    setShowTerminalOverlay(true);
+    
+    // Focus the overlay content after a short delay to ensure it's rendered
+    setTimeout(() => {
+      if (overlayRef.current) {
+        overlayRef.current.focus();
+      }
+    }, 100);
+  }, [audio, activeSection, sessionStartTime]);
+
+  const handleLearnMoreAboutM8s = useCallback(async () => {
+    const sessionDuration = Math.round((Date.now() - sessionStartTime) / 1000);
+    
+    analyticsManager.trackNavigationEvent('cta_clicked', {
+      button_type: 'learn_more_about_m8s',
+      button_location: 'hero_section',
+      current_section: activeSection,
+      session_duration: sessionDuration
+    });
+
+    await audio.playSelectionSound();
+    // Open the terminal overlay in Q&A mode
+    setTerminalMode('qa');
     setShowTerminalOverlay(true);
     
     // Focus the overlay content after a short delay to ensure it's rendered
@@ -195,8 +220,11 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                   <img src="/robot-favicon-white.svg" alt="Robot" className="w-5 h-5 brightness-0 invert" />
                   {t('website.start_project_now')}
                 </button>
-                <button className="border border-emerald-400 text-emerald-400 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-emerald-400 hover:text-black transition-all duration-300">
-                  {t('website.explore_past_work')}
+                <button 
+                  className="border border-emerald-400 text-emerald-400 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-emerald-400 hover:text-black transition-all duration-300"
+                  onClick={handleLearnMoreAboutM8s}
+                >
+                  {t('website.learn_more_about_m8s')}
                 </button>
               </div>
             </div>
@@ -322,7 +350,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
             </div>
             
             {/* Hide POC Validation Subscriptions section */}
-            {false && <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* {false && <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {PRICING_TIERS.map((tier, index) => (
                 <div 
                   key={index} 
@@ -365,7 +393,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                   </div>
                 </div>
               ))}
-            </div>}
+            </div> */}
             
             {/* Development Services */}
             <div className="max-w-4xl mx-auto mt-16">
@@ -773,6 +801,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
               }}
             >
               <TerminalOverlay 
+                initialBotMode={terminalMode}
                 onComplete={() => {
                   // Handle terminal completion in overlay - close overlay and could show success message or navigate
                   console.log('ARIA terminal completed in overlay mode');

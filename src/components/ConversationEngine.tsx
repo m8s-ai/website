@@ -727,66 +727,132 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
     );
   }
 
-  // Q&A Mode Interface
+  // Q&A Mode Interface with Bubble Chat
   if (isN8nMode && botMode === 'qa') {
     return (
-      <div className="relative min-h-screen bg-black text-white p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-blue-300 text-xl text-center mb-8">💬 Business Expert Q&A</div>
-          
+      <div className="relative min-h-screen bg-black text-white font-mono">
+        {/* Terminal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/30">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="retro-glow-green text-lg">ARIA - Project Validation Terminal</span>
+          </div>
+        </div>
+
+        {/* Progress Indicators */}
+        <div className="flex justify-center space-x-8 py-4 border-b border-green-500/20">
+          <div className="flex items-center space-x-2">
+            <span className="text-gray-400">Completion:</span>
+            <div className="bg-green-900/30 border border-green-500/30 rounded px-3 py-1 flex items-center space-x-2">
+              <span className="text-red-400">0%</span>
+              <span className="text-red-400">❌</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-gray-400">Insights:</span>
+            <div className="bg-blue-900/30 border border-blue-500/30 rounded px-3 py-1 flex items-center space-x-2">
+              <span className="text-blue-400">0</span>
+              <span className="text-blue-400">📊</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="text-center mb-6 retro-glow-green text-xl">
+            Welcome & Path Selection :1/3
+          </div>
+
+          {/* ARIA's Message Bubble */}
           {n8nResponse && (
-            <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-6 mb-6">
-              <div className="text-blue-300 text-lg whitespace-pre-line">
-                {isAwaitingN8nResponse ? 'Thinking...' : n8nResponse.text}
+            <div className="mb-6 relative">
+              {/* ARIA Avatar */}
+              <div className="absolute -top-2 -left-2 z-10">
+                <div className="w-12 h-12 bg-black/80 border border-green-500/40 rounded-full p-2 shadow-lg shadow-green-500/20">
+                  <img 
+                    src="/robot-favicon-white.svg" 
+                    alt="ARIA" 
+                    className="w-full h-full aria-avatar retro-glow-green"
+                    style={{
+                      animation: 'ariaBlink 3s infinite ease-in-out'
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <div className="bg-black/60 border border-green-500/40 rounded-2xl p-6 pt-8 shadow-lg shadow-green-500/10 ml-4">
+                <div className="retro-glow-green text-base leading-relaxed whitespace-pre-line">
+                  {isAwaitingN8nResponse ? (
+                    <div className="flex items-center space-x-2">
+                      <span>Thinking</span>
+                      <div className="flex space-x-1">
+                        {[...Array(3)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-1 h-1 bg-green-400 rounded-full animate-pulse retro-glow-green"
+                            style={{ animationDelay: `${i * 0.3}s` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    n8nResponse.text
+                  )}
+                </div>
+                <div className="text-xs text-gray-500 mt-3 text-right">
+                  Category: foundation
+                </div>
               </div>
             </div>
           )}
           
-          {!isAwaitingN8nResponse && (
-            <div className="space-y-4">
-              {suggestedQuestions.length > 0 && (
-                <div className="space-y-2">
-                  <div className="text-gray-400">Quick questions:</div>
-                  {suggestedQuestions.map((question, index) => (
-                    <div
-                      key={index}
-                      className={`p-3 border cursor-pointer transition-all ${
-                        selectedOption === index
-                          ? 'border-blue-400 bg-blue-400/10'
-                          : 'border-gray-600 hover:border-blue-300'
-                      }`}
-                      onClick={() => {
-                        setSelectedOption(index);
-                        setTimeout(() => handleSubmitAnswer(), 100);
-                      }}
-                    >
-                      {question}
-                    </div>
-                  ))}
+          {/* Response Options */}
+          {!isAwaitingN8nResponse && suggestedQuestions.length > 0 && (
+            <div className="space-y-3">
+              {suggestedQuestions.map((question, index) => (
+                <div
+                  key={index}
+                  className={`border rounded-2xl p-4 cursor-pointer transition-all duration-200 font-mono ${
+                    selectedOption === index
+                      ? 'border-green-500/60 bg-green-900/20 retro-glow-green shadow-lg shadow-green-500/10'
+                      : 'border-green-500/20 hover:border-green-500/40 hover:bg-green-900/10 text-gray-300 hover:text-green-300'
+                  }`}
+                  onClick={() => {
+                    setSelectedOption(index);
+                    setTimeout(() => handleSubmitAnswer(), 100);
+                  }}
+                >
+                  <div className="text-right">
+                    {question}
+                  </div>
                 </div>
-              )}
-              
-              <div className="space-y-4">
-                <div className="text-gray-400">Or ask your own question:</div>
+              ))}
+            </div>
+          )}
+          
+          {/* Custom Input */}
+          {!isAwaitingN8nResponse && (
+            <div className="mt-6 space-y-4">
+              <div className="text-gray-400 text-sm">Or ask your own question:</div>
+              <div className="flex space-x-3">
                 <input
                   type="text"
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && userInput.trim() && handleSubmitAnswer()}
-                  className="w-full p-3 bg-black border border-blue-400/30 text-blue-300 rounded"
+                  className="flex-1 p-3 bg-black border border-green-500/30 retro-glow-green rounded-lg font-mono focus:border-green-500/60 focus:outline-none"
                   placeholder="Ask about services, team, process..."
                   autoFocus
                 />
                 <button
                   onClick={handleSubmitAnswer}
-                  disabled={!userInput.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded disabled:opacity-50"
+                  disabled={!userInput.trim() && selectedOption === -1}
+                  className="px-6 py-3 bg-green-600/20 border border-green-500/30 retro-glow-green hover:bg-green-600/30 disabled:bg-gray-600/20 disabled:border-gray-500/20 disabled:cursor-not-allowed disabled:text-gray-500 rounded-lg transition-all duration-200 font-mono"
                 >
-                  Ask Expert
+                  Send
                 </button>
               </div>
               
-              <div className="text-center pt-4 border-t border-gray-600">
+              <div className="text-center pt-4 border-t border-green-500/20">
                 <button
                   onClick={() => {
                     setBotMode('project');
@@ -794,7 +860,7 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
                     setCurrentWave(1);
                     setCurrentQuestion(0);
                   }}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded"
+                  className="bg-green-600/20 border border-green-500/30 retro-glow-green hover:bg-green-600/30 px-6 py-3 rounded-lg transition-all duration-200 font-mono"
                 >
                   Ready to define my project →
                 </button>
@@ -802,100 +868,135 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
             </div>
           )}
         </div>
+
+        {/* Question Counter */}
+        <div className="text-center py-4 text-gray-500 font-mono">
+          Question 1/1
+        </div>
       </div>
     );
   }
 
-  // Project Mode Interface
+  // Project Mode Interface with Bubble Chat
   return (
-    <div className="relative min-h-screen bg-black text-white p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-green-300 text-xl text-center mb-4">
-          {currentWave + 1}/{CONVERSATION_WAVES.length}: {currentWaveData.name}
+    <div className="relative min-h-screen bg-black text-white font-mono">
+      {/* Terminal Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/30">
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span className="retro-glow-green text-lg">ARIA - Project Validation Terminal</span>
+        </div>
+      </div>
+
+      {/* Progress Indicators */}
+      <div className="flex justify-center space-x-8 py-4 border-b border-green-500/20">
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-400">Completion:</span>
+          <div className="bg-green-900/30 border border-green-500/30 rounded px-3 py-1 flex items-center space-x-2">
+            <span className="text-green-400">{Math.round((Object.keys(responses).length / CONVERSATION_WAVES.reduce((acc, wave) => acc + wave.questions.length, 0)) * 100)}%</span>
+            <span className="text-green-400">✅</span>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-400">Insights:</span>
+          <div className="bg-blue-900/30 border border-blue-500/30 rounded px-3 py-1 flex items-center space-x-2">
+            <span className="text-blue-400">{projectInsights.length}</span>
+            <span className="text-blue-400">📊</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="text-center mb-6 retro-glow-green text-xl">
+          {currentWaveData.name} :{currentWave + 1}/{CONVERSATION_WAVES.length}
         </div>
         
-        {/* Enhanced Progress Indicators */}
-        <div className="flex justify-center mb-6 space-x-4 text-sm">
-          <div className="bg-blue-900/20 border border-blue-400/30 rounded px-3 py-1">
-            📊 Insights: {projectInsights.length}
-          </div>
-          {riskFlags.length > 0 && (
-            <div className="bg-yellow-900/20 border border-yellow-400/30 rounded px-3 py-1">
-              ⚠️ Risk Factors: {riskFlags.length}
+        {/* ARIA's Message Bubble */}
+        <div className="mb-6 relative">
+          {/* ARIA Avatar */}
+          <div className="absolute -top-2 -left-2 z-10">
+            <div className="w-12 h-12 bg-black/80 border border-green-500/40 rounded-full p-2 shadow-lg shadow-green-500/20">
+              <img 
+                src="/robot-favicon-white.svg" 
+                alt="ARIA" 
+                className="w-full h-full aria-avatar retro-glow-green"
+                style={{
+                  animation: 'ariaBlink 3s infinite ease-in-out'
+                }}
+              />
             </div>
-          )}
-          <div className="bg-green-900/20 border border-green-400/30 rounded px-3 py-1">
-            🎯 Completion: {Math.round((Object.keys(responses).length / CONVERSATION_WAVES.reduce((acc, wave) => acc + wave.questions.length, 0)) * 100)}%
           </div>
-        </div>
-        
-        <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-6 mb-6">
-          <div className="text-green-300 text-lg whitespace-pre-line">
-            {currentQuestionData.text}
-          </div>
-          {currentQuestionData.category && (
-            <div className="mt-3 text-sm text-gray-400">
-              Category: {currentQuestionData.category} 
+          
+          <div className="bg-black/60 border border-green-500/40 rounded-2xl p-6 pt-8 shadow-lg shadow-green-500/10 ml-4">
+            <div className="retro-glow-green text-base leading-relaxed whitespace-pre-line">
+              {currentQuestionData.text}
+            </div>
+            <div className="text-xs text-gray-500 mt-3 text-right">
+              Category: {currentQuestionData.category}
               {currentQuestionData.technicalDepth && (
-                <span className="ml-2 text-blue-300">• {currentQuestionData.technicalDepth} level</span>
-              )}
-              {currentQuestionData.riskFlags && currentQuestionData.riskFlags.length > 0 && (
-                <span className="ml-2 text-yellow-300">• Risk assessment question</span>
+                <span className="ml-2">• {currentQuestionData.technicalDepth} level</span>
               )}
             </div>
-          )}
+          </div>
         </div>
         
-        <div className="space-y-4">
+        {/* Response Options */}
+        <div className="space-y-3">
           {currentQuestionData.type === 'multiple-choice' && (
-            <div className="space-y-2">
+            <>
               {currentQuestionData.options?.map((option, index) => (
                 <div
                   key={index}
-                  className={`p-3 border cursor-pointer transition-all ${
+                  className={`border rounded-2xl p-4 cursor-pointer transition-all duration-200 font-mono ${
                     selectedOption === index
-                      ? 'border-green-400 bg-green-400/10'
-                      : 'border-gray-600 hover:border-green-300'
+                      ? 'border-green-500/60 bg-green-900/20 retro-glow-green shadow-lg shadow-green-500/10'
+                      : 'border-green-500/20 hover:border-green-500/40 hover:bg-green-900/10 text-gray-300 hover:text-green-300'
                   }`}
                   onClick={() => {
                     setSelectedOption(index);
                     setTimeout(() => handleSubmitAnswer(), 100);
                   }}
                 >
-                  {option}
+                  <div className="text-right">
+                    {option}
+                  </div>
                 </div>
               ))}
-            </div>
+            </>
           )}
           
           {currentQuestionData.type === 'text' && (
             <div className="space-y-4">
-              <input
-                type="text"
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && userInput.trim() && handleSubmitAnswer()}
-                className="w-full p-3 bg-black border border-green-400/30 text-green-300 rounded"
-                autoFocus
-              />
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && userInput.trim() && handleSubmitAnswer()}
+                  className="flex-1 p-3 bg-black border border-green-500/30 retro-glow-green rounded-lg font-mono focus:border-green-500/60 focus:outline-none"
+                  placeholder="Your answer..."
+                  autoFocus
+                />
+                <button
+                  onClick={handleSubmitAnswer}
+                  disabled={!userInput.trim()}
+                  className="px-6 py-3 bg-green-600/20 border border-green-500/30 retro-glow-green hover:bg-green-600/30 disabled:bg-gray-600/20 disabled:border-gray-500/20 disabled:cursor-not-allowed disabled:text-gray-500 rounded-lg transition-all duration-200 font-mono"
+                >
+                  Send
+                </button>
+              </div>
               {validationMessage && (
-                <div className="text-red-400 text-sm">{validationMessage}</div>
+                <div className="text-red-400 text-sm font-mono">{validationMessage}</div>
               )}
-              <button
-                onClick={handleSubmitAnswer}
-                disabled={!userInput.trim()}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded disabled:opacity-50"
-              >
-                Submit Answer
-              </button>
             </div>
           )}
         </div>
         
-        <div className="text-gray-400 text-center mt-8 space-y-2">
+        {/* Question Counter and Latest Insight */}
+        <div className="text-center py-4 text-gray-500 font-mono space-y-2">
           <div>Question {currentQuestion + 1}/{currentWaveData.questions.length}</div>
           {projectInsights.length > 0 && (
-            <div className="text-xs text-blue-300">
+            <div className="text-xs text-blue-400">
               💡 Latest insight: {projectInsights[projectInsights.length - 1]?.description}
             </div>
           )}

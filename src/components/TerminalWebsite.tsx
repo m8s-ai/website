@@ -5,6 +5,7 @@ import { TerminalPreview } from './TerminalPreview';
 import { TerminalOverlay } from './TerminalOverlay';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { TechnologiesSection } from './sections/TechnologiesSection';
 
 interface TerminalWebsiteProps {
   className?: string;
@@ -275,38 +276,41 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                 <p className="text-purple-400 text-sm mt-6">{t('website.companies_benefit')}</p>
               </div>
             </div>
+            
+            {/* Technologies Section */}
+            <TechnologiesSection />
           </div>
         );
 
-      case 'services':
-        return (
-          <div className="space-y-12">
-            <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('services.title')}</h2>
-              <p className="text-gray-400 text-lg">{t('services.subtitle')}</p>
-            </div>
+      // case 'services':
+      //   return (
+      //     <div className="space-y-12">
+      //       <div className="text-center">
+      //         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('services.title')}</h2>
+      //         <p className="text-gray-400 text-lg">{t('services.subtitle')}</p>
+      //       </div>
             
-            <div className="grid md:grid-cols-1 gap-8 max-w-4xl mx-auto">
-              {SERVICES_DATA.map((service, index) => (
-                <div key={index} className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/50 rounded-2xl p-8 backdrop-blur-sm hover:border-emerald-500/30 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-emerald-300">{t(`services.${service.title.toLowerCase().replace(/\s+/g, '_')}`)}</h3>
-                    <span className="text-emerald-400 text-sm bg-emerald-400/10 px-3 py-1 rounded-full">{t('services.available')}</span>
-                  </div>
-                  <p className="text-gray-300 mb-6 text-lg leading-relaxed">{t(`services.${service.title.toLowerCase().replace(/\s+/g, '_')}_description`)}</p>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {service.features.map((feature, fIndex) => (
-                      <div key={fIndex} className={`flex items-center `}>
-                        <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
-                        <span className="text-gray-300">{t(`services.${feature.toLowerCase().replace(/[\s&-]+/g, '_').replace(/[^a-z_]/g, '')}`)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+      //       <div className="grid md:grid-cols-1 gap-8 max-w-4xl mx-auto">
+      //         {SERVICES_DATA.map((service, index) => (
+      //           <div key={index} className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/50 rounded-2xl p-8 backdrop-blur-sm hover:border-emerald-500/30 transition-all duration-300">
+      //             <div className="flex items-center justify-between mb-6">
+      //               <h3 className="text-xl font-bold text-emerald-300">{t(`services.${service.title.toLowerCase().replace(/\s+/g, '_')}`)}</h3>
+      //               <span className="text-emerald-400 text-sm bg-emerald-400/10 px-3 py-1 rounded-full">{t('services.available')}</span>
+      //             </div>
+      //             <p className="text-gray-300 mb-6 text-lg leading-relaxed">{t(`services.${service.title.toLowerCase().replace(/\s+/g, '_')}_description`)}</p>
+      //             <div className="grid md:grid-cols-2 gap-4">
+      //               {service.features.map((feature, fIndex) => (
+      //                 <div key={fIndex} className={`flex items-center `}>
+      //                   <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+      //                   <span className="text-gray-300">{t(`services.${feature.toLowerCase().replace(/[\s&-]+/g, '_').replace(/[^a-z_]/g, '')}`)}</span>
+      //                 </div>
+      //               ))}
+      //             </div>
+      //           </div>
+      //         ))}
+      //       </div>
+      //     </div>
+      //   );
 
       case 'pricing':
         return (

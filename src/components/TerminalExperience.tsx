@@ -64,21 +64,21 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative" dir="ltr">
       {!showTransition && !showConversationEngine ? ( // Render Terminal if no transition and no ConversationEngine
         <Terminal onComplete={handleTerminalComplete} />
       ) : showTransition ? (
         /* Transition screen */
-        <div className="fixed inset-0 bg-black text-green-400 font-mono flex items-center justify-center">
-          <div className="text-center" dir="ltr">
-            <div className="text-lg md:text-xl mb-2 md:mb-4 text-amber-400">
+        <div className="fixed inset-0 bg-black text-green-400 font-mono flex items-center justify-center" dir="ltr">
+          <div className="text-center">
+            <div className="text-lg md:text-xl mb-2 md:mb-4 retro-glow-amber">
               {transitionMessage}
             </div>
-            <div className="flex space-x-1">
+            <div className="flex justify-center space-x-1">
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
-                  className="w-2 h-2 bg-green-400 rounded-full animate-pulse"
+                  className="w-2 h-2 bg-green-400 rounded-full animate-pulse retro-glow-green"
                   style={{
                     animationDelay: `${i * 0.3}s`,
                     animationDuration: '1s'
@@ -89,11 +89,13 @@ export const TerminalExperience: React.FC<TerminalExperienceProps> = ({
           </div>
         </div>
       ) : (
-        <ConversationEngine 
-          onComplete={onComplete} 
-          initialBotMode={botMode || 'qa'}
-          onBotModeSelect={handleBotModeSelection}
-        />
+        <div dir="ltr">
+          <ConversationEngine 
+            onComplete={onComplete} 
+            initialBotMode={botMode || 'qa'}
+            onBotModeSelect={handleBotModeSelection}
+          />
+        </div>
       )}
     </div>
   );

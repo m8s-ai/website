@@ -33,6 +33,14 @@ export async function sendToBusinessQABot(
     // Get n8n webhook URL from environment or use development fallback
     const webhookUrl = import.meta.env.VITE_N8N_BUSINESS_QA_WEBHOOK_URL;
     
+    console.log('sendToBusinessQABot: Starting webhook call', {
+      userMessage,
+      sessionId,
+      webhookUrl,
+      conversationHistoryLength: conversationHistory.length,
+      conversationIntelligence
+    });
+    
     if (!webhookUrl) {
       console.warn('VITE_N8N_BUSINESS_QA_WEBHOOK_URL not configured, using fallback response');
       
@@ -71,29 +79,43 @@ For detailed information and pricing discussions, please contact our team direct
     }
 
     // Make request to n8n webhook
+    const requestPayload = {
+      userMessage,
+      conversationHistory,
+      sessionId,
+      timestamp: new Date().toISOString(),
+      businessPolicy: {
+        noPricing: true,
+        redirectPricingToTeam: true,
+        focusAreas: ['services', 'process', 'team', 'technical_capabilities']
+      },
+      conversationFlow: conversationIntelligence || {
+        exchangeCount: 1,
+        engagementScore: 0, 
+        phase: 'exploration',
+        shouldTransition: false
+      }
+    };
+    
+    console.log('sendToBusinessQABot: Making POST request', {
+      url: webhookUrl,
+      payload: requestPayload
+    });
+    
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'm8s-website-business-qa'
       },
-      body: JSON.stringify({
-        userMessage,
-        conversationHistory,
-        sessionId,
-        timestamp: new Date().toISOString(),
-        businessPolicy: {
-          noPricing: true,
-          redirectPricingToTeam: true,
-          focusAreas: ['services', 'process', 'team', 'technical_capabilities']
-        },
-        conversationFlow: conversationIntelligence || {
-          exchangeCount: 1,
-          engagementScore: 0, 
-          phase: 'exploration',
-          shouldTransition: false
-        }
-      })
+      body: JSON.stringify(requestPayload)
+    });
+    
+    console.log('sendToBusinessQABot: Received response', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      headers: Object.fromEntries(response.headers.entries())
     });
 
     if (!response.ok) {
@@ -103,18 +125,23 @@ For detailed information and pricing discussions, please contact our team direct
     const data = await response.json();
     
     return {
-      text: data.response || data.text || "I received your message but had trouble processing it.",
-      suggestedQuestions: data.suggestedQuestions || [
+      text: data.text || "I received your message but had trouble processing it.",
+      suggestedQuestions: [
         "How does your development process work?",
-        "Tell me about your team structure",
+        "Tell me about your team structure", 
         "What makes you different?",
         "Ready to discuss my project"
       ],
-      requiresTeamConsultation: data.requiresTeamConsultation || false
+      requiresTeamConsultation: false
     };
 
   } catch (error) {
     console.error('Business QA webhook error:', error);
+    
+    // Check if it's a CORS or network error
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      console.error('CORS or network error detected:', error.message);
+    }
     
     // Fallback response for errors
     return {

@@ -2,10 +2,11 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAudioManager } from './AudioManager';
 import { analyticsManager } from '@/utils/analyticsManager';
 import { ConversationEngine } from './ConversationEngine';
+import { TerminalMode } from '@/types/terminalModes';
 
 interface TerminalOverlayProps {
   onComplete?: () => void;
-  initialBotMode?: 'project' | 'qa';
+  initialBotMode?: TerminalMode;
 }
 
 // Boot sequence will be translated at runtime
@@ -13,6 +14,18 @@ interface TerminalOverlayProps {
 // Greeting message will be translated at runtime
 
 export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, initialBotMode = 'project' }) => {
+  // Map terminal modes to conversation engine bot modes
+  const mapToBotMode = (terminalMode: TerminalMode): 'qa' | 'project' => {
+    switch (terminalMode) {
+      case 'qa':
+      case 'demo':
+      case 'support':
+        return 'qa';
+      case 'project':
+      default:
+        return 'project';
+    }
+  };
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
   
   // Terminal overlay always uses English - hardcoded
@@ -34,7 +47,6 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
   const [currentCommandIndex, setCurrentCommandIndex] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
   const [commandHistory, setCommandHistory] = useState<Array<{command: string | null, output: string | null, completed: boolean}>>([]);
-  const [showingOutput, setShowingOutput] = useState(false);
   const [conversationStarted, setConversationStarted] = useState(false);
   const [terminalStartTime, setTerminalStartTime] = useState<number | null>(null);
   const [showTransition, setShowTransition] = useState(false);
@@ -233,7 +245,7 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
       >
         <ConversationEngine 
           onComplete={onComplete || (() => {})} 
-          initialBotMode={initialBotMode}
+          initialBotMode={mapToBotMode(initialBotMode)}
         />
       </div>
     );

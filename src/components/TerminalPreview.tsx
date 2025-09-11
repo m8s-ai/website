@@ -51,12 +51,8 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
               Plan Your POC with ARIA
             </span>
           </h2>
-          <p className="text-lg text-gray-300">
-            Meet ARIA, your AI project validation bot. Click to start planning your proof-of-concept through our interactive terminal interface.
-          </p>
-          <p className="text-base text-emerald-300 mt-2">
-            We validate your idea with ARIA & schedule a meeting, then with our special AI development tools ship super fast at amazing prices.
-          </p>
+
+
         </div>
 
         <div className="max-w-3xl mx-auto">
@@ -87,7 +83,7 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
               </div>
             </div>
 
-            {/* Terminal Content - Centered Vertically */}fd
+            {/* Terminal Content - Centered Vertically */}
             <div className="font-mono text-sm md:text-base h-32 flex flex-col justify-center space-y-3" dir="ltr">
               {bootText.map((line, index) => (
                 <div key={index} className="flex items-center justify-center space-x-4">

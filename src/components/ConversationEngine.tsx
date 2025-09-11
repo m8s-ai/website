@@ -464,7 +464,10 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
   // Initialize Q&A mode when initialBotMode is 'qa'
   useEffect(() => {
     if (initialBotMode === 'qa' && !n8nResponse) {
-      // Immediately start with business Q&A
+      // Immediately start with business Q&A - ensure proper state
+      setBotMode('qa');
+      setIsN8nMode(true);
+      
       setN8nResponse({
         text: "Great! I'm your business expert. I can tell you about our services, process, team, and capabilities. What would you like to know?",
         suggestedQuestions: [
@@ -482,13 +485,27 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
         "Can you show me examples of your work?",
         "What makes you different from other agencies?"
       ]);
+      
+      console.log('ConversationEngine: Initialized QA mode', { 
+        initialBotMode, 
+        botMode: 'qa', 
+        isN8nMode: true 
+      });
     }
   }, [initialBotMode, n8nResponse]);
 
   const sendToN8nWebhook = useCallback(async (userMessage: string) => {
+    console.log('ConversationEngine: sendToN8nWebhook called', {
+      userMessage,
+      conversationHistoryLength: conversationHistory.length,
+      conversationId,
+      qaExchangeCount
+    });
+    
     setIsAwaitingN8nResponse(true);
     
     try {
+      console.log('ConversationEngine: Calling sendToBusinessQABot...');
       const response = await sendToBusinessQABot(
         userMessage,
         conversationHistory,
@@ -500,6 +517,8 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
           shouldTransition: qaExchangeCount >= 5
         }
       );
+      
+      console.log('ConversationEngine: Received response from sendToBusinessQABot:', response);
       
       setN8nResponse(response);
       setSuggestedQuestions(response.suggestedQuestions || []);
@@ -587,6 +606,41 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
   }, [audio, botMode, currentWave, currentQuestion, isN8nMode]);
 
   const handleSubmitAnswer = useCallback(async () => {
+    console.log('handleSubmitAnswer called', { isN8nMode, botMode, userInput, selectedOption });
+    
+    // Handle Q&A mode FIRST - before checking currentQuestionData
+    if (isN8nMode && botMode === 'qa') {
+      // In QA mode, prioritize user's custom input if they typed something, otherwise use suggested question
+      const userMessage = userInput.trim() || suggestedQuestions[selectedOption] || '';
+      
+      console.log('ConversationEngine: QA mode submit', {
+        userInput: userInput,
+        userInputTrimmed: userInput.trim(),
+        selectedOption,
+        suggestedQuestion: suggestedQuestions[selectedOption],
+        finalUserMessage: userMessage,
+        willSendToWebhook: !!userMessage
+      });
+      
+      if (userMessage.toLowerCase().includes('start my project') || userMessage.toLowerCase().includes('define my project')) {
+        console.log('ConversationEngine: Detected project transition request');
+        setBotMode('project');
+        setIsN8nMode(false);
+        setCurrentWave(1);
+        setCurrentQuestion(0);
+      } else if (userMessage) {
+        console.log('ConversationEngine: Sending to N8N webhook:', userMessage);
+        await sendToN8nWebhook(userMessage);
+      } else {
+        console.log('ConversationEngine: No message to send - empty userMessage');
+      }
+      
+      setUserInput('');
+      setSelectedOption(0);
+      return;
+    }
+
+    // PROJECT MODE LOGIC BELOW
     const currentWaveData = CONVERSATION_WAVES[currentWave];
     const currentQuestionData = currentWaveData?.questions[currentQuestion];
     
@@ -612,24 +666,6 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
     // Handle bot mode selection
     if (currentQuestionData.id === 'welcome') {
       await handleBotModeSelection(answer);
-      setUserInput('');
-      setSelectedOption(0);
-      return;
-    }
-
-    // Handle Q&A mode
-    if (isN8nMode && botMode === 'qa') {
-      const userMessage = currentQuestionData.type === 'text' ? userInput.trim() : suggestedQuestions[selectedOption];
-      
-      if (userMessage.toLowerCase().includes('start my project') || userMessage.toLowerCase().includes('define my project')) {
-        setBotMode('project');
-        setIsN8nMode(false);
-        setCurrentWave(1);
-        setCurrentQuestion(0);
-      } else {
-        await sendToN8nWebhook(userMessage);
-      }
-      
       setUserInput('');
       setSelectedOption(0);
       return;
@@ -916,9 +952,13 @@ export const ConversationEngine: React.FC<ConversationEngineProps> = ({
                   autoFocus
                   dir="ltr"
                 />
+                <div style={{ width: 8 }} />
                 <button
-                  onClick={handleSubmitAnswer}
-                  disabled={!userInput.trim() && selectedOption === -1}
+                  onClick={() => {
+                    console.log('QA Send button clicked', { userInput, selectedOption });
+                    handleSubmitAnswer();
+                  }}
+                  disabled={!userInput.trim()}
                   className="px-6 py-3 bg-green-600/20 border border-green-500/30 retro-glow-green hover:bg-green-600/30 disabled:bg-gray-600/20 disabled:border-gray-500/20 disabled:cursor-not-allowed disabled:text-gray-500 rounded-lg transition-all duration-200 font-mono"
                 >
                   Send

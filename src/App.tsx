@@ -43,6 +43,7 @@ const App = () => {
                   <Route path="/completion-summary" element={<CompletionSummaryPage />} />
                   <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
                   <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
+                  
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

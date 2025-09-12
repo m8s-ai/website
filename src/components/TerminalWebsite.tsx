@@ -305,6 +305,279 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
               </div>
             </div>
             
+            {/* How It Works Section */}
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('website.how_it_works_title')}</h2>
+                <p className="text-gray-400 text-lg">{t('website.how_it_works_subtitle')}</p>
+              </div>
+              
+              <div className="grid md:grid-cols-4 gap-8">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-white">1</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-emerald-300 mb-2">{t('website.how_it_works_step1_title')}</h3>
+                  <p className="text-gray-300 text-sm">{t('website.how_it_works_step1_description')}</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-white">2</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-cyan-300 mb-2">{t('website.how_it_works_step2_title')}</h3>
+                  <p className="text-gray-300 text-sm">{t('website.how_it_works_step2_description')}</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-white">3</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-purple-300 mb-2">{t('website.how_it_works_step3_title')}</h3>
+                  <p className="text-gray-300 text-sm">{t('website.how_it_works_step3_description')}</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-white">4</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-emerald-300 mb-2">{t('website.how_it_works_step4_title')}</h3>
+                  <p className="text-gray-300 text-sm">{t('website.how_it_works_step4_description')}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Success Stories Section */}
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('website.success_stories_title')}</h2>
+                <p className="text-gray-400 text-lg">{t('website.success_stories_subtitle')}</p>
+              </div>
+              
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="bg-gradient-to-br from-emerald-900/20 to-gray-900/20 border border-emerald-500/20 rounded-2xl p-6 backdrop-blur-sm">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-emerald-400 font-bold text-lg">SB</span>
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold">{t('website.success_story3_company')}</h4>
+                      <p className="text-gray-400 text-sm">E-commerce Startup</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-sm mb-4">{t('website.success_story3_description')}</p>
+                  <div className="text-emerald-400 text-xs">{t('website.success_story3_result')}</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-cyan-900/20 to-gray-900/20 border border-cyan-500/20 rounded-2xl p-6 backdrop-blur-sm">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-cyan-500/20 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-cyan-400 font-bold text-lg">TechCorp</span>
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold">{t('website.success_story1_company')}</h4>
+                      <p className="text-gray-400 text-sm">Enterprise Client</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-sm mb-4">{t('website.success_story1_description')}</p>
+                  <div className="text-cyan-400 text-xs">{t('website.success_story1_result')}</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/20 border border-purple-500/20 rounded-2xl p-6 backdrop-blur-sm">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-purple-400 font-bold text-lg">MK</span>
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold">{t('website.success_story2_company')}</h4>
+                      <p className="text-gray-400 text-sm">Mobile App Founder</p>
+                    </div>
+                  </div>
+                  <p className="text-gray-300 text-sm mb-4">{t('website.success_story2_description')}</p>
+                  <div className="text-purple-400 text-xs">{t('website.success_story2_result')}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Why Validate Section */}
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-gradient-to-br from-red-900/20 to-gray-900/20 border border-red-500/20 rounded-2xl p-8 backdrop-blur-sm">
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold text-red-300 mb-4">{t('website.why_validate_title')}</h2>
+                  <p className="text-gray-300 text-lg">Don't become another statistic</p>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <h3 className="text-xl font-bold text-red-400 mb-4">{t('website.why_validate_without_title')}</h3>
+                    <div className="space-y-3">
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-red-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+                        <span className="text-gray-300 text-sm">{t('website.why_validate_without_item1')}</span>
+                      </div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-red-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+                        <span className="text-gray-300 text-sm">{t('website.why_validate_without_item2')}</span>
+                      </div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-red-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+                        <span className="text-gray-300 text-sm">{t('website.why_validate_without_item3')}</span>
+                      </div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-red-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+                        <span className="text-gray-300 text-sm">{t('website.why_validate_without_item4')}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-xl font-bold text-emerald-400 mb-4">{t('website.why_validate_with_title')}</h3>
+                    <div className="space-y-3">
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+                        <span className="text-gray-300 text-sm">{t('website.why_validate_with_item1')}</span>
+                      </div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+                        <span className="text-gray-300 text-sm">{t('website.why_validate_with_item2')}</span>
+                      </div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+                        <span className="text-gray-300 text-sm">{t('website.why_validate_with_item3')}</span>
+                      </div>
+                      <div className={`flex items-center `}>
+                        <div className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-4' : 'mr-4'}`}></div>
+                        <span className="text-gray-300 text-sm">{t('website.why_validate_with_item4')}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-center mt-8">
+                  <button 
+                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
+                    onClick={handleStartProject}
+                  >
+                    Don't Risk It - Validate First
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('website.faq_title')}</h2>
+                <p className="text-gray-400 text-lg">{t('website.faq_subtitle')}</p>
+              </div>
+              
+              <div className="space-y-4">
+                {[
+                  {
+                    question: t('website.faq_question1'),
+                    answer: t('website.faq_answer1'),
+                    color: "emerald"
+                  },
+                  {
+                    question: t('website.faq_question2'),
+                    answer: t('website.faq_answer2'),
+                    color: "cyan"
+                  },
+                  {
+                    question: t('website.faq_question4'),
+                    answer: t('website.faq_answer4'),
+                    color: "purple"
+                  },
+                  {
+                    question: t('website.faq_question3'),
+                    answer: t('website.faq_answer3'),
+                    color: "emerald"
+                  },
+                  {
+                    question: t('website.faq_question5'),
+                    answer: t('website.faq_answer5'),
+                    color: "cyan"
+                  }
+                ].map((faq, index) => {
+                  const [isOpen, setIsOpen] = useState(false);
+                  
+                  return (
+                    <div key={index} className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/50 rounded-2xl backdrop-blur-sm overflow-hidden">
+                      <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-800/20 transition-colors duration-200"
+                      >
+                        <h3 className={`text-xl font-bold ${
+                          faq.color === 'emerald' ? 'text-emerald-300' : 
+                          faq.color === 'cyan' ? 'text-cyan-300' : 
+                          'text-purple-300'
+                        } pr-4`}>
+                          {faq.question}
+                        </h3>
+                        <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                          faq.color === 'emerald' ? 'border-emerald-400 text-emerald-400' : 
+                          faq.color === 'cyan' ? 'border-cyan-400 text-cyan-400' : 
+                          'border-purple-400 text-purple-400'
+                        } ${isOpen ? 'rotate-45' : ''}`}>
+                          <span className="text-lg font-bold">+</span>
+                        </div>
+                      </button>
+                      
+                      {isOpen && (
+                        <div className="px-6 pb-6 animate-in slide-in-from-top-2 duration-200">
+                          <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Final CTA Section */}
+            <div className="max-w-6xl mx-auto">
+              <div className="bg-gradient-to-br from-emerald-900/30 to-cyan-900/30 border border-emerald-500/30 rounded-2xl p-12 backdrop-blur-sm text-center">
+                <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent mb-6">
+                  {t('website.final_cta_title')}
+                </h2>
+                <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                  {t('website.final_cta_description')}
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                  <button 
+                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-12 py-6 rounded-lg font-bold text-xl hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105 flex items-center gap-3"
+                    onClick={handleStartProject}
+                  >
+                    <img src="/robot-favicon-white.svg" alt="Robot" className="w-6 h-6 brightness-0 invert" />
+                    {t('website.final_cta_button')}
+                    <span className="text-sm bg-white/20 px-2 py-1 rounded-full ml-2">FREE</span>
+                  </button>
+                  <button 
+                    className="border-2 border-emerald-400 text-emerald-400 px-12 py-6 rounded-lg font-bold text-xl hover:bg-emerald-400 hover:text-black transition-all duration-300"
+                    onClick={handleLearnMoreAboutM8s}
+                  >
+                    Learn More First
+                  </button>
+                </div>
+                
+                <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-400">
+                  <div className="flex items-center">
+                    <span className={`w-2 h-2 bg-emerald-400 rounded-full ${isRTL ? 'ml-2' : 'mr-2'}`}></span>
+                    {t('website.final_cta_guarantee')}
+                  </div>
+                  <div className="flex items-center">
+                    <span className={`w-2 h-2 bg-cyan-400 rounded-full ${isRTL ? 'ml-2' : 'mr-2'}`}></span>
+                    {t('website.final_cta_time')}
+                  </div>
+                  <div className="flex items-center">
+                    <span className={`w-2 h-2 bg-purple-400 rounded-full ${isRTL ? 'ml-2' : 'mr-2'}`}></span>
+                    {t('website.final_cta_expert')}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Technologies Section */}
             <TechnologiesSection />
           </div>

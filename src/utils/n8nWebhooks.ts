@@ -24,7 +24,7 @@ interface ConversationIntelligence {
 
 // Business Q&A Bot Integration
 export async function sendToBusinessQABot(
-  userMessage: string, 
+  userMessage: string,
   conversationHistory: ConversationHistory[],
   sessionId: string,
   conversationIntelligence?: ConversationIntelligence
@@ -32,7 +32,7 @@ export async function sendToBusinessQABot(
   try {
     // Get n8n webhook URL from environment or use development fallback
     const webhookUrl = import.meta.env.VITE_N8N_BUSINESS_QA_WEBHOOK_URL;
-    
+
     console.log('sendToBusinessQABot: Starting webhook call', {
       userMessage,
       sessionId,
@@ -40,10 +40,10 @@ export async function sendToBusinessQABot(
       conversationHistoryLength: conversationHistory.length,
       conversationIntelligence
     });
-    
+
     if (!webhookUrl) {
       console.warn('VITE_N8N_BUSINESS_QA_WEBHOOK_URL not configured, using fallback response');
-      
+
       // Development fallback response
       const fallbackResponse: N8nWebhookResponse = {
         text: `I'm in development mode right now. Here's what I can tell you about m8s:
@@ -56,14 +56,14 @@ export async function sendToBusinessQABot(
 For detailed information and pricing discussions, please contact our team directly.`,
         suggestedQuestions: [
           "How does your development process work?",
-          "Tell me about your human architects", 
+          "Tell me about your human architects",
           "What technologies do you use?",
           "Ready to discuss my project",
           "I'd like to speak with your team"
         ],
         requiresTeamConsultation: false
       };
-      
+
       // Add transition prompts if needed
       if (conversationIntelligence?.shouldTransition) {
         fallbackResponse.text += "\n\n💡 **It sounds like you might be ready to explore a project!** Would you like to switch to project discovery mode?";
@@ -74,7 +74,7 @@ For detailed information and pricing discussions, please contact our team direct
           "I'd like to speak with your team"
         ];
       }
-      
+
       return fallbackResponse;
     }
 
@@ -91,17 +91,17 @@ For detailed information and pricing discussions, please contact our team direct
       },
       conversationFlow: conversationIntelligence || {
         exchangeCount: 1,
-        engagementScore: 0, 
+        engagementScore: 0,
         phase: 'exploration',
         shouldTransition: false
       }
     };
-    
+
     console.log('sendToBusinessQABot: Making POST request', {
       url: webhookUrl,
       payload: requestPayload
     });
-    
+
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
@@ -110,7 +110,7 @@ For detailed information and pricing discussions, please contact our team direct
       },
       body: JSON.stringify(requestPayload)
     });
-    
+
     console.log('sendToBusinessQABot: Received response', {
       status: response.status,
       statusText: response.statusText,
@@ -123,12 +123,12 @@ For detailed information and pricing discussions, please contact our team direct
     }
 
     const data = await response.json();
-    
+
     return {
       text: data.text || "I received your message but had trouble processing it.",
       suggestedQuestions: [
         "How does your development process work?",
-        "Tell me about your team structure", 
+        "Tell me about your team structure",
         "What makes you different?",
         "Ready to discuss my project"
       ],
@@ -137,12 +137,12 @@ For detailed information and pricing discussions, please contact our team direct
 
   } catch (error) {
     console.error('Business QA webhook error:', error);
-    
+
     // Check if it's a CORS or network error
     if (error instanceof TypeError && error.message.includes('fetch')) {
       console.error('CORS or network error detected:', error.message);
     }
-    
+
     // Fallback response for errors
     return {
       text: "I'm having trouble connecting right now. Here's what I can tell you:\n\n• We're an AI-powered development team with human architects\n• We build business automations and enterprise systems\n• Our process focuses on quality through AI + human expertise\n\nFor detailed questions, please contact our team directly.",
@@ -186,10 +186,10 @@ export async function sendProjectDataToN8n(payload: ProjectDataPayload): Promise
   try {
     // Send to Bot 2 (Project Interrogation) which automatically forwards to Bot 3 (Summarizer)
     const webhookUrl = import.meta.env.VITE_N8N_PROJECT_DATA_WEBHOOK_URL;
-    
+
     if (!webhookUrl) {
       console.warn('VITE_N8N_PROJECT_DATA_WEBHOOK_URL not configured');
-      
+
       // Log project data for development
       console.log('📋 PROJECT DATA SUBMISSION (Development Mode):', {
         email: payload.email,
@@ -226,9 +226,9 @@ export async function sendProjectDataToN8n(payload: ProjectDataPayload): Promise
     }
 
     const result = await response.json();
-    
+
     console.log(`✅ Project data sent to n8n - Email: ${payload.email}, Questions: ${payload.projectData.questionsAnswers.length}`);
-    
+
     return {
       success: true,
       message: result.message || 'Project data submitted successfully'
@@ -236,7 +236,7 @@ export async function sendProjectDataToN8n(payload: ProjectDataPayload): Promise
 
   } catch (error) {
     console.error('Project data submission error:', error);
-    
+
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -269,10 +269,10 @@ interface SummarizerPayload {
 export async function sendToSummarizerBot(payload: SummarizerPayload): Promise<{ success: boolean; message: string }> {
   try {
     const webhookUrl = import.meta.env.VITE_N8N_SUMMARIZER_WEBHOOK_URL;
-    
+
     if (!webhookUrl) {
       console.warn('VITE_N8N_SUMMARIZER_WEBHOOK_URL not configured');
-      
+
       // Development fallback - log summarizer action
       console.log('🧠 SUMMARIZER BOT (Development Mode):', {
         action: 'process_and_notify',
@@ -306,9 +306,9 @@ export async function sendToSummarizerBot(payload: SummarizerPayload): Promise<{
     }
 
     const result = await response.json();
-    
+
     console.log(`🧠 Summarizer processed - Lead: ${payload.email}, Score: ${payload.projectData.leadScore}`);
-    
+
     return {
       success: true,
       message: result.message || 'Data processed and team notified'
@@ -316,7 +316,7 @@ export async function sendToSummarizerBot(payload: SummarizerPayload): Promise<{
 
   } catch (error) {
     console.error('Summarizer webhook error:', error);
-    
+
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error occurred'

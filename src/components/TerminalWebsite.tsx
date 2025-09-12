@@ -476,7 +476,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
               <div className="bg-gradient-to-br from-red-900/20 to-gray-900/20 border border-red-500/20 rounded-2xl p-8 backdrop-blur-sm">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold text-red-300 mb-4">{t('website.why_validate_title')}</h2>
-                  <p className="text-gray-300 text-lg">Don't become another statistic</p>
+                  <p className="text-gray-300 text-lg">{t('website.dont_become_statistic')}</p>
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-8">
@@ -530,7 +530,7 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
                     className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
                     onClick={handleStartProject}
                   >
-                    Don't Risk It - Validate First
+                    {t('website.dont_risk_validate_first')}
                   </button>
                 </div>
               </div>
@@ -898,25 +898,79 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white ${className}`} dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* Subtle background effects */}
+    <div className={`min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white ${className} relative overflow-hidden`} dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Enhanced background effects */}
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent pointer-events-none" />
       
-      {/* Floating neon orbs - subtle version */}
-      <div className="fixed inset-0 opacity-15 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-emerald-400/10 to-cyan-400/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-cyan-400/8 to-purple-400/8 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-r from-purple-400/6 to-emerald-400/6 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      {/* Animated gradient mesh background */}
+      <div className="fixed inset-0 pointer-events-none opacity-20">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-cyan-500/10 animate-pulse" 
+             style={{ animationDuration: '8s' }}></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/8 via-transparent to-emerald-500/8 animate-pulse" 
+             style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+        <div className="absolute inset-0 bg-gradient-to-bl from-cyan-500/6 via-transparent to-purple-500/6 animate-pulse" 
+             style={{ animationDuration: '10s', animationDelay: '4s' }}></div>
       </div>
       
-      <div className="fixed inset-0 opacity-30 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-emerald-400 rounded-full animate-ping" 
-             style={{ animationDuration: '4s', animationDelay: '0s' }}></div>
-        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-cyan-400 rounded-full animate-ping" 
+      {/* Floating neon orbs - enhanced version */}
+      <div className="fixed inset-0 opacity-25 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-emerald-400/15 to-cyan-400/15 rounded-full blur-3xl animate-pulse" 
+             style={{ animationDuration: '6s' }}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-cyan-400/12 to-purple-400/12 rounded-full blur-2xl animate-pulse" 
+             style={{ animationDuration: '8s', animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-gradient-to-r from-purple-400/10 to-emerald-400/10 rounded-full blur-xl animate-pulse" 
+             style={{ animationDuration: '7s', animationDelay: '2s' }}></div>
+        <div className="absolute top-1/3 right-1/3 w-32 h-32 bg-gradient-to-r from-emerald-400/8 to-cyan-400/8 rounded-full blur-lg animate-pulse" 
+             style={{ animationDuration: '9s', animationDelay: '3s' }}></div>
+      </div>
+      
+      {/* Subtle grid pattern */}
+      <div className="fixed inset-0 pointer-events-none opacity-5">
+        <div className="absolute inset-0" 
+             style={{
+               backgroundImage: `
+                 linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
+                 linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px)
+               `,
+               backgroundSize: '100px 100px',
+               animation: 'grid-move 20s linear infinite'
+             }}>
+        </div>
+      </div>
+      
+      {/* Neon particles */}
+      <div className="fixed inset-0 opacity-40 pointer-events-none">
+        <div className="absolute top-1/5 left-1/5 w-1 h-1 bg-emerald-400 rounded-full animate-ping" 
+             style={{ animationDuration: '3s', animationDelay: '0s' }}></div>
+        <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-cyan-400 rounded-full animate-ping" 
+             style={{ animationDuration: '4s', animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/3 left-2/3 w-1 h-1 bg-purple-400 rounded-full animate-ping" 
+             style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 right-1/6 w-0.5 h-0.5 bg-emerald-300 rounded-full animate-ping" 
+             style={{ animationDuration: '6s', animationDelay: '1.5s' }}></div>
+        <div className="absolute bottom-1/5 left-1/3 w-0.5 h-0.5 bg-cyan-300 rounded-full animate-ping" 
+             style={{ animationDuration: '4.5s', animationDelay: '0.5s' }}></div>
+        <div className="absolute top-3/4 left-1/6 w-0.5 h-0.5 bg-purple-300 rounded-full animate-ping" 
+             style={{ animationDuration: '7s', animationDelay: '3s' }}></div>
+      </div>
+      
+      {/* Animated light beams */}
+      <div className="fixed inset-0 pointer-events-none opacity-10">
+        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-emerald-400/20 to-transparent animate-pulse"
+             style={{ animationDuration: '4s' }}></div>
+        <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-cyan-400/15 to-transparent animate-pulse"
              style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
-        <div className="absolute bottom-1/4 left-3/4 w-1 h-1 bg-purple-400 rounded-full animate-ping" 
+        <div className="absolute top-0 left-2/3 w-px h-full bg-gradient-to-b from-transparent via-purple-400/10 to-transparent animate-pulse"
              style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
       </div>
+      
+      {/* CSS for custom animations */}
+      <style jsx>{`
+        @keyframes grid-move {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(100px, 100px); }
+        }
+      `}</style>
       
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-gray-800/50">

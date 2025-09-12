@@ -189,7 +189,7 @@ export async function sendProjectDataToN8n(payload: ProjectDataPayload): Promise
 
     if (!webhookUrl) {
       console.warn('VITE_N8N_PROJECT_DATA_WEBHOOK_URL not configured');
-
+      
       // Log project data for development
       console.log('📋 PROJECT DATA SUBMISSION (Development Mode):', {
         email: payload.email,

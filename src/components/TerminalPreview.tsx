@@ -46,13 +46,19 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
     <section className={`py-12 md:py-16 ${className}`}>
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Plan Your POC with ARIA
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                {t('terminal_preview.title')}
+              </span>
+            </h2>
+            <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-black text-xs px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+              BETA
             </span>
-          </h2>
-
-
+          </div>
+          <p className="text-gray-400 text-lg">
+            {t('terminal_preview.description')}
+          </p>
         </div>
 
         <div className="max-w-3xl mx-auto">

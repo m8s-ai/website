@@ -721,6 +721,10 @@ const translations = {
     'terminal_preview.title': 'Plan Your POC with ARIA',
     'terminal_preview.description': 'Meet ARIA, your AI project validation bot. Click to start planning your proof-of-concept through our interactive terminal interface',
     'terminal_preview.start_planning_aria': 'Start Planning with ARIA',
+    
+    // Additional translations
+    'website.dont_risk_validate_first': 'Don\'t Risk It - Validate First',
+    'website.dont_become_statistic': 'Don\'t become another statistic',
 
     // How It Works Section
     'website.how_it_works_title': 'How It Works',
@@ -1496,9 +1500,13 @@ const translations = {
     'nav.pricing': 'תמחור',
 
     // Terminal Preview
-    'terminal_preview.title': 'תכננו את ה-POC שלכם עם ARIA',
+    'terminal_preview.title': 'תכנן את ה-POC שלך עם ARIA',
     'terminal_preview.description': 'הכירו את ARIA, בוט אימות הפרויקטים של הבינה המלאכותית שלנו. לחצו כדי להתחיל לתכנן את הוכחת הרעיון שלכם באמצעות הממשק הטרמינל האינטראקטיבי שלנו',
     'terminal_preview.start_planning_aria': 'התחל תכנון עם ARIA',
+    
+    // Additional translations
+    'website.dont_risk_validate_first': 'אל תסכנו - אמתו קודם',
+    'website.dont_become_statistic': 'אל תהפכו לסטטיסטיקה נוספת',
 
     // How It Works Section
     'website.how_it_works_title': 'איך זה עובד',

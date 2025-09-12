@@ -1,0 +1,141 @@
+{
+  "name": "Bot 2: Project Interrogation Workflow", 
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "project-interrogation",
+        "responseMode": "responseNode"
+      },
+      "id": "project-webhook",
+      "name": "Project Interrogation Webhook",
+      "type": "n8n-nodes-base.webhook", 
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced workflow for intelligent project discovery data\n// Processes rich project data with insights, risk analysis, and recommendations\n\nconst payload = $json;\nconst { email, name, company, preferredContact, projectData, sessionId, metadata } = payload;\n\n// Validate required data\nif (!email || !name || !projectData || !sessionId) {\n  throw new Error('Missing required project data');\n}\n\n// Extract enhanced project details\nconst questionsAnswers = projectData.questionsAnswers || [];\nconst projectIdea = questionsAnswers.find(q => q.questionId === 'project_idea')?.answer || 'Not specified';\nconst projectScale = questionsAnswers.find(q => q.questionId === 'project_scale')?.answer || 'Not specified';\nconst businessProblem = questionsAnswers.find(q => q.questionId === 'business_problem')?.answer || 'Not specified';\nconst successCriteria = questionsAnswers.find(q => q.questionId === 'success_criteria')?.answer || 'Not specified';\nconst timeline = questionsAnswers.find(q => q.questionId === 'timeline_expectations')?.answer || 'Not specified';\nconst technicalExperience = questionsAnswers.find(q => q.questionId === 'technical_experience')?.answer || 'Not specified';\n\n// Enhanced analysis from AI processing\nconst insights = projectData.insights || [];\nconst riskFlags = projectData.riskFlags || [];\nconst complexity = projectData.complexity || 'standard';\nconst techRecommendations = projectData.techRecommendations || [];\nconst projectPhases = projectData.projectPhases || {};\nconst estimatedEffort = projectData.estimatedEffort || 'To be determined';\nconst businessImpact = projectData.businessImpact || 'To be defined';\n\n// Enhanced lead scoring\nconst leadScore = projectData.leadScore || 0;\nconst insightScore = insights.length * 2;\nconst complexityScore = complexity === 'complex' ? 5 : complexity === 'standard' ? 3 : 1;\nconst urgencyScore = timeline.includes('ASAP') ? 3 : timeline.includes('1-3 months') ? 2 : 1;\nconst finalLeadScore = leadScore + insightScore + complexityScore + urgencyScore;\n\n// Priority calculation with business context\nconst priority = finalLeadScore >= 20 ? 'CRITICAL' : finalLeadScore >= 15 ? 'HIGH' : finalLeadScore >= 10 ? 'MEDIUM' : 'LOW';\n\n// Risk assessment\nconst riskLevel = riskFlags.length >= 3 ? 'HIGH' : riskFlags.length >= 1 ? 'MEDIUM' : 'LOW';\n\n// Prepare enhanced data for Bot 3 (Intelligent Summarizer)\nreturn {\n  // Client information\n  email,\n  name, \n  company: company || 'Not provided',\n  preferredContact: preferredContact || 'Email with detailed analysis first',\n  \n  // Core project details\n  projectIdea,\n  projectScale,\n  businessProblem,\n  successCriteria,\n  timeline,\n  technicalExperience,\n  questionsAnswers,\n  totalQuestions: questionsAnswers.length,\n  \n  // AI-generated insights and analysis\n  insights,\n  riskFlags,\n  riskLevel,\n  techRecommendations,\n  projectPhases,\n  estimatedEffort,\n  businessImpact,\n  \n  // Enhanced scoring\n  leadScore: finalLeadScore,\n  priority,\n  complexity,\n  \n  // Metadata\n  sessionId,\n  submittedAt: new Date().toISOString(),\n  source: 'enhanced-project-interrogation-bot',\n  version: metadata?.version || '3.0',\n  templateId: metadata?.templateId || 'project-interrogation-output-template-v3',\n  totalInsights: metadata?.totalInsights || insights.length,\n  totalRiskFactors: metadata?.riskFactors || riskFlags.length\n};"
+      },
+      "id": "process-data",
+      "name": "Process Project Data",
+      "type": "n8n-nodes-base.code",
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5678/webhook/summarizer",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "send-to-bot3",
+      "name": "Send to Bot 3 (Summarizer)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log the project interrogation completion\nconst projectData = $json;\n\nconsole.log('Project Interrogation Complete:', {\n  email: projectData.email,\n  name: projectData.name,\n  projectIdea: projectData.projectIdea,\n  questionsCount: projectData.totalQuestions,\n  priority: projectData.priority,\n  sessionId: projectData.sessionId\n});\n\nreturn {\n  success: true,\n  message: 'Project interrogation completed and sent to summarizer',\n  sessionId: projectData.sessionId,\n  questionsAnswered: projectData.totalQuestions,\n  nextStep: 'Data sent to summarizer bot for processing'\n};"
+      },
+      "id": "log-completion",
+      "name": "Log Completion",
+      "type": "n8n-nodes-base.code",
+      "position": [800, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook", 
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Error handler for failed project processing\nconst error = $json.error || 'Unknown error';\nconst originalData = $('project-webhook').first().json;\n\nconsole.error('Project Interrogation Error:', error);\n\n// Still return success to user but log the issue\nreturn {\n  success: false,\n  message: 'Project data received but processing encountered an error',\n  error: error.toString(),\n  fallback: 'Data has been logged for manual processing',\n  sessionId: originalData?.sessionId || 'unknown'\n};"
+      },
+      "id": "error-handler",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "position": [800, 500]
+    }
+  ],
+  "connections": {
+    "Project Interrogation Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Project Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Project Data": {
+      "main": [
+        [
+          {
+            "node": "Send to Bot 3 (Summarizer)",
+            "type": "main", 
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Bot 3 (Summarizer)": {
+      "main": [
+        [
+          {
+            "node": "Log Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Completion": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Respond Success", 
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

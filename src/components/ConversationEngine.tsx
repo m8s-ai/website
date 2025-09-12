@@ -1,17 +1,41 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAudioManager } from './AudioManager';
 import { analyticsManager } from '@/utils/analyticsManager';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { sendToBusinessQABot, sendProjectDataToN8n } from '@/utils/n8nWebhooks';
 
-// Conversation wave structure based on your methodology
+type BotMode = 'qa' | 'project';
+
+interface N8nWebhookResponse {
+  text: string;
+  suggestedQuestions?: string[];
+  requiresTeamConsultation?: boolean;
+  conversationPhase?: string;
+  exchangeCount?: number;
+  shouldTransition?: boolean;
+}
+
+interface ConversationEngineProps {
+  onComplete: (data: EnhancedConversationData) => void;
+  initialBotMode?: BotMode;
+  onBotModeSelect?: (mode: BotMode) => void;
+}
+
+
 interface Question {
   id: string;
   text: string;
   type: 'multiple-choice' | 'text' | 'yes-no';
   options?: string[];
-  followUp?: string; // Smart follow-up comment
+  followUp?: string;
   validation?: (answer: string) => boolean;
+  category?: 'foundation' | 'technical' | 'business' | 'resource';
+  adaptiveLogic?: {
+    condition: string;
+    nextQuestions?: Question[];
+    skipIf?: string;
+  };
+  riskFlags?: string[];
+  technicalDepth?: 'basic' | 'intermediate' | 'advanced';
 }
 
 interface Wave {
@@ -19,1105 +43,1090 @@ interface Wave {
   name: string;
   description: string;
   questions: Question[];
+  adaptive?: boolean;
+  minQuestions?: number;
+  maxQuestions?: number;
 }
 
-interface ConversationEngineProps {
-  onComplete: (data: ConversationData) => void;
+interface ProjectInsight {
+  category: 'immediate' | 'future' | 'risk' | 'technical';
+  description: string;
+  impact: 'low' | 'medium' | 'high';
+  source: string;
 }
 
-interface ConversationData {
+interface EnhancedConversationData {
   responses: Record<string, string>;
-  waveData: {
-    wave1: Record<string, string>;
-    wave2: Record<string, string>;
-    wave3: Record<string, string>;
-    wave4: Record<string, string>;
+  insights: ProjectInsight[];
+  complexity: 'simple' | 'standard' | 'complex';
+  riskFlags: string[];
+  techStack: string[];
+  phases: {
+    phase1: string[];
+    phase2: string[];
+    phase3: string[];
   };
+  estimatedEffort: string;
+  businessImpact: string;
 }
 
-// Aria's conversational flow - simplified and friendly
+// Enhanced adaptive conversation flow
 const CONVERSATION_WAVES: Wave[] = [
   {
     id: 'wave1',
     name: 'Welcome & Path Selection',
-    description: 'Aria introduces herself and the team',
+    description: 'Bot selection',
     questions: [
       {
         id: 'welcome',
-        text: 'Hi, I\'m Aria 👋 your Analyst M8. My job is to help you understand what we do and, if you\'d like, start defining your project.\n\nWould you like me to…',
+        text: 'Hi! I\'m your AI project consultant. I can help you learn about m8s or start defining your project with intelligent discovery. What would you prefer?',
         type: 'multiple-choice',
-        options: [
-          'Learn more first',
-          'Start my project'
-        ],
-        followUp: 'Great choice! Let me guide you through this.'
+        options: ['Learn more about m8s', 'Start smart project discovery'],
+        followUp: 'Perfect! Let me help you with that.',
+        category: 'foundation'
       }
     ]
   },
   {
     id: 'wave2',
-    name: 'Learn More Path',
-    description: 'Educational content about m8s team',
+    name: 'Project Foundation Discovery',
+    description: 'Core project understanding with adaptive depth',
+    adaptive: true,
+    minQuestions: 3,
+    maxQuestions: 8,
     questions: [
       {
-        id: 'learn_more',
-        text: 'Perfect! Here\'s the big picture:\n• We\'re not just one developer. We\'re a full AI-powered team: analyst, PM, architect, UX, developers, QA.\n• Behind us, human architects oversee everything. They\'re elite AI professionals with startup, freelancing, and Unit 8200 experience.\n• Together, we build everything from small business automations to enterprise systems, always with world-class quality.\n\nWhat would you like to know more about?',
-        type: 'multiple-choice',
-        options: [
-          'How does it work?',
-          'Who are the human architects?',
-          'Okay, let\'s start my project'
-        ],
-        followUp: 'I\'m excited to share more details with you!'
+        id: 'project_idea',
+        text: 'Tell me about your project vision. What would you like us to build or automate?',
+        type: 'text',
+        followUp: 'Interesting! Let me understand the business context better.',
+        validation: (answer: string) => answer.length > 10,
+        category: 'foundation',
+        riskFlags: ['unclear requirements', 'scope creep potential']
       },
       {
-        id: 'how_it_works',
-        text: 'We follow a simple, proven process:\n1️⃣ Define your idea with me\n2️⃣ Meet our human architects to refine scope & get a quote\n3️⃣ m8s build, design & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you don\'t just get a developer — you get a whole team working for you.',
-        type: 'multiple-choice',
-        options: [
-          'Sounds good, start my project',
-          'Tell me more about the architects'
-        ],
-        followUp: 'I love how our process keeps everything organized!'
+        id: 'business_problem',
+        text: 'What core business problem are you trying to solve with this project?',
+        type: 'text',
+        followUp: 'That\'s a valuable problem to solve. How are you handling this today?',
+        validation: (answer: string) => answer.length > 5,
+        category: 'business',
+        adaptiveLogic: {
+          condition: 'business_context_needed',
+          nextQuestions: []
+        }
       },
       {
-        id: 'about_architects',
-        text: 'Our architects are AI pros with experience delivering hundreds of projects — from startups to enterprise systems. Many come from the elite intelligence unit 8200, bringing top expertise in software, AI, and security.\n\nThey make sure everything the m8s deliver is production-ready, scalable, and secure.',
+        id: 'current_solution',
+        text: 'How do you currently handle this process? What tools or methods do you use?',
+        type: 'text',
+        followUp: 'Understanding your current setup helps me design the best solution.',
+        category: 'technical',
+        technicalDepth: 'basic'
+      },
+      {
+        id: 'project_scale',
+        text: 'What kind of project scope are you thinking about?',
         type: 'multiple-choice',
         options: [
-          'Great, start my project',
-          'Show me how it works again'
+          'Quick proof-of-concept (validate the idea)',
+          'Production-ready solution (full implementation)', 
+          'Enterprise-scale system (comprehensive solution)',
+          'Not sure - help me decide'
         ],
-        followUp: 'Our architects are truly amazing - you\'ll love working with them!'
+        followUp: 'That helps me understand the investment level and approach.',
+        category: 'foundation',
+        adaptiveLogic: {
+          condition: 'scale_determines_questions',
+          nextQuestions: []
+        }
+      },
+      {
+        id: 'success_criteria',
+        text: 'How will you know this project is successful? What specific outcomes are you hoping for?',
+        type: 'text',
+        followUp: 'Clear success metrics are crucial for project success.',
+        validation: (answer: string) => answer.length > 5,
+        category: 'business'
+      },
+      {
+        id: 'timeline_expectations',
+        text: 'Do you have any timeline expectations or constraints?',
+        type: 'multiple-choice',
+        options: [
+          'ASAP - this is urgent',
+          'Within 1-3 months',
+          'Within 6 months', 
+          'Flexible timeline - quality over speed',
+          'Not sure yet'
+        ],
+        followUp: 'Timeline helps me recommend the right approach.',
+        category: 'resource',
+        riskFlags: ['timeline pressure', 'unrealistic expectations']
+      },
+      {
+        id: 'technical_experience',
+        text: 'What\'s your team\'s technical background with similar projects?',
+        type: 'multiple-choice',
+        options: [
+          'Very experienced - we know exactly what we want',
+          'Some experience - we understand the basics',
+          'Limited experience - we need guidance',
+          'No technical background - full consulting needed'
+        ],
+        followUp: 'This helps me adjust my recommendations to your expertise level.',
+        category: 'technical',
+        technicalDepth: 'basic',
+        adaptiveLogic: {
+          condition: 'technical_depth_adjustment',
+          nextQuestions: []
+        }
+      },
+      {
+        id: 'integration_needs',
+        text: 'Will this need to integrate with existing systems, APIs, or databases?',
+        type: 'multiple-choice',
+        options: [
+          'Yes - several integrations needed',
+          'Yes - one or two key integrations',
+          'Maybe - not sure yet',
+          'No - standalone solution'
+        ],
+        followUp: 'Integration complexity significantly impacts the technical approach.',
+        category: 'technical',
+        technicalDepth: 'intermediate',
+        riskFlags: ['integration complexity', 'dependency risks']
       }
     ]
   },
   {
     id: 'wave3',
-    name: 'Project Definition',
-    description: 'Defining your project with Aria',
+    name: 'Contact & Next Steps',
+    description: 'Gather contact info and plan follow-up',
     questions: [
-      {
-        id: 'project_idea',
-        text: 'Awesome 🚀 Let\'s get your idea down clearly.\n\nIn a few words, tell me what you\'d like us to build or automate.',
-        type: 'text',
-        followUp: 'Got it ✅ Let\'s refine it a bit together.',
-        validation: (answer: string) => answer.length > 5
-      },
-      {
-        id: 'project_scale',
-        text: 'Would you say this is more like…',
-        type: 'multiple-choice',
-        options: [
-          'A small proof-of-concept (just to test an idea quickly)',
-          'A full project (production-ready, high quality)',
-          'Not sure yet — guide me'
-        ],
-        followUp: 'Perfect choice! This helps me understand the scope.'
-      }
-    ]
-  },
-  {
-    id: 'wave4',
-    name: 'Process & Next Steps',
-    description: 'Explaining the process and leading to meeting',
-    questions: [
-      {
-        id: 'process_explanation',
-        text: 'Here\'s how we build every project:\n\n1️⃣ Define your idea clearly\n2️⃣ Architects refine & align with you\n3️⃣ m8s design, code & test\n4️⃣ Delivery step by step or all at once\n\nThis way, you get the speed of AI + the quality of elite human architects.\n\nReady for the next step?',
-        type: 'multiple-choice',
-        options: [
-          'Yes, next step!'
-        ],
-        followUp: 'Excellent! Let\'s connect you with our architects.'
-      },
-      {
-        id: 'schedule_meeting',
-        text: 'The next step is to meet one of our human architects. They\'ll refine your idea with you, agree on the scope, and provide a clear quote.\n\nWould you like me to schedule a meeting?',
-        type: 'multiple-choice',
-        options: [
-          'Yes, schedule a meeting',
-          'Tell me more first',
-          'Not now'
-        ],
-        followUp: 'Perfect! Let me get your details.'
-      },
       {
         id: 'contact_info',
-        text: 'Great! I\'ll need a few details to set up your session.\n\nWhat\'s your name?',
+        text: 'I\'d love to have our team create a detailed project plan for you. What\'s your name?',
         type: 'text',
-        followUp: 'Nice to meet you! Now I need your email.',
-        validation: (answer: string) => answer.length > 1
+        followUp: 'Great to meet you! What\'s the best email to send your project analysis?',
+        validation: (answer: string) => answer.length > 1,
+        category: 'foundation'
       },
       {
         id: 'email',
         text: 'What\'s your email address?',
         type: 'text',
-        followUp: 'Perfect! One of our architects will contact you shortly.',
-        validation: (answer: string) => {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          return emailRegex.test(answer.trim());
-        }
+        followUp: 'Perfect! We\'ll send you a comprehensive project analysis within 24 hours.',
+        validation: (answer: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answer.trim()),
+        category: 'foundation'
       },
       {
-        id: 'company_optional',
-        text: 'Company name? (Optional)',
+        id: 'company',
+        text: 'What company or organization is this for? (Optional)',
         type: 'text',
-        followUp: 'Got it! Thanks for that info.',
-        validation: () => true
+        followUp: 'Thanks! This helps us tailor our recommendations.',
+        category: 'foundation'
       },
       {
-        id: 'preferred_time',
-        text: 'When would you prefer to meet?',
+        id: 'preferred_contact',
+        text: 'How would you prefer our team to follow up?',
         type: 'multiple-choice',
         options: [
-          'This week',
-          'Next week',
-          'Within 2 weeks',
-          'I\'m flexible'
+          'Email with detailed analysis first',
+          'Quick phone call to discuss',
+          'Video meeting to review together',
+          'Email only for now'
         ],
-        followUp: 'Thanks! You\'re all set. One of our architects will meet you soon. You\'ll get an invite shortly 📅.\n\nExcited to start building with you 🚀'
+        followUp: 'Perfect! We\'ll reach out using your preferred method.',
+        category: 'foundation'
       }
     ]
   }
 ];
 
-export const ConversationEngine: React.FC<ConversationEngineProps> = ({ onComplete }) => {
+export const ConversationEngine: React.FC<ConversationEngineProps> = ({ 
+  onComplete, 
+  initialBotMode = 'qa', 
+  onBotModeSelect 
+}) => {
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
-  const navigate = useNavigate();
-  // ConversationEngine always uses English - no translations
-
-  const [currentWave, setCurrentWave] = useState(0);
+  
+  // All hooks must be at the top level
+  const [currentWave, setCurrentWave] = useState(initialBotMode === 'qa' ? 0 : 0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<Record<string, string>>({});
-  const [showingFollowUp, setShowingFollowUp] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [selectedOption, setSelectedOption] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
-  const [showCursor, setShowCursor] = useState(true); // New state for cursor
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationStep, setGenerationStep] = useState(0);
   const [validationMessage, setValidationMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(true); // Bot typing indicator
-  const [typingDots, setTypingDots] = useState('');
-
-  // Analytics tracking state
+  
+  // Bot state
+  const [botMode, setBotMode] = useState<BotMode>(initialBotMode);
+  const [isN8nMode, setIsN8nMode] = useState(initialBotMode === 'qa');
+  const [n8nResponse, setN8nResponse] = useState<N8nWebhookResponse | null>(null);
+  const [conversationHistory, setConversationHistory] = useState<Array<{role: 'user' | 'bot', content: string}>>([]);
+  const [isAwaitingN8nResponse, setIsAwaitingN8nResponse] = useState(false);
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
+  
+  // Conversation intelligence and analysis
+  const [qaExchangeCount, setQaExchangeCount] = useState(0);
+  const [projectInsights, setProjectInsights] = useState<ProjectInsight[]>([]);
+  const [riskFlags, setRiskFlags] = useState<string[]>([]);
+  const [adaptiveQuestions, setAdaptiveQuestions] = useState<Question[]>([]);
   const [conversationId] = useState(() => 'conv_' + Date.now());
-  const [allResponses, setAllResponses] = useState<Record<string, any>>({});
-  const [questionHistory, setQuestionHistory] = useState<any[]>([]);
 
-
-  const currentWaveData = CONVERSATION_WAVES[currentWave];
-  const currentQuestionData = currentWaveData?.questions[currentQuestion];
-
-  // Initialize conversation tracking
-  useEffect(() => {
-    analyticsManager.startConversation('initial');
-
-    analyticsManager.trackConversationEvent('conversation_started', {
-      conversation_id: conversationId,
-      entry_method: 'terminal_completion'
-    });
-  }, [conversationId]);
-
-  // Track wave start
-  useEffect(() => {
-    if (currentWaveData) {
-      analyticsManager.startWave(currentWaveData.id);
-
-      analyticsManager.trackConversationEvent('wave_started', {
-        wave_id: currentWaveData.id,
-        wave_name: currentWaveData.name.substring(0, 50),
-        questions_count: currentWaveData.questions.length
-      });
-    }
-  }, [currentWave, currentWaveData]);
-
-  // Track question presentation
-  useEffect(() => {
-    if (currentQuestionData) {
-      analyticsManager.startQuestion(currentQuestionData.id);
-
-      analyticsManager.trackConversationEvent('question_presented', {
-        wave_id: currentWaveData.id,
-        question_id: currentQuestionData.id,
-        question_text: currentQuestionData.text.substring(0, 100),
-        question_type: currentQuestionData.type,
-        has_options: !!currentQuestionData.options,
-        options_count: currentQuestionData.options?.length || 0
-      });
-    }
-  }, [currentQuestion, currentQuestionData, currentWaveData]);
-
-  // Helper function to get total questions
-  const getTotalQuestions = () => {
-    return CONVERSATION_WAVES.reduce((sum, wave) => sum + wave.questions.length, 0);
-  };
-
-  // Calculate lead score
-  const calculateLeadScore = (responses: Record<string, any>) => {
-    let score = 0;
-
-    Object.values(responses).forEach(response => {
-      if (response.answer_length > 50) score += 2;
-      if (response.answer_length > 100) score += 3;
-      if (response.response_time > 10 && response.response_time < 120) score += 1;
-    });
-
-    if (analyticsManager.conversationPath === 'start_project') score += 5;
-
-    return Math.min(score, 20);
-  };
-
-  // Debug: Log the current state (removed to prevent infinite loops)
-
-  const GENERATION_STEPS = [
-    'ANALYZING YOUR PROJECT REQUIREMENTS...',
-    'ASSEMBLING THE PERFECT BOT TEAM...',
-    'GENERATING TECHNICAL SCOPE DOCUMENT...',
-    'PREPARING CUSTOM QUOTE & TIMELINE...',
-    'READY TO MEET & DISCUSS! 🚀'
-  ];
-
-  const playNavigationSound = useCallback(async (direction: 'up' | 'down') => {
-    await audio.playNavigationSound(direction);
-  }, [audio]);
-
-  const playSelectionSound = useCallback(async () => {
-    await audio.playSelectionSound();
-  }, [audio]);
-
-  const playCompletionSound = useCallback(async () => {
-    await audio.playCompletionSound();
-  }, [audio]);
-
-  const handleAbort = useCallback(async () => {
-    await audio.playSelectionSound();
-
-    // Track conversation abandonment
-    analyticsManager.trackConversationEvent('conversation_abandoned', {
-      abandonment_point: currentWaveData?.name || 'unknown',
-      progress_percent: Math.round((Object.keys(allResponses).length / getTotalQuestions()) * 100),
-      questions_answered: Object.keys(allResponses).length,
-      conversation_duration: analyticsManager.getConversationDuration(),
-      abandonment_reason: 'user_abort'
-    });
-
-    // Show clearing message briefly
-    setValidationMessage('Clearing project...');
-
-    setTimeout(() => {
-      // Call onComplete to close the overlay, or navigate if running standalone
-      if (onComplete) {
-        onComplete({
-          responses: {},
-          waveData: { wave1: {}, wave2: {}, wave3: {}, wave4: {} }
-        });
-      } else {
-        navigate('/home');
-      }
-    }, 1500);
-  }, [audio, navigate, currentWaveData, allResponses, onComplete]);
-
-  // Cursor blinking effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowCursor(prev => !prev);
-    }, 500);
-    return () => clearInterval(interval);
+  // Smart analysis functions
+  const analyzeProjectComplexity = useCallback((responses: Record<string, string>): 'simple' | 'standard' | 'complex' => {
+    const factors = {
+      integration: responses.integration_needs?.includes('several') ? 2 : responses.integration_needs?.includes('one') ? 1 : 0,
+      scale: responses.project_scale?.includes('Enterprise') ? 3 : responses.project_scale?.includes('Production') ? 2 : 1,
+      timeline: responses.timeline_expectations?.includes('ASAP') ? 2 : 0,
+      experience: responses.technical_experience?.includes('No technical') ? 2 : responses.technical_experience?.includes('Limited') ? 1 : 0
+    };
+    
+    const totalComplexity = factors.integration + factors.scale + factors.timeline + factors.experience;
+    return totalComplexity >= 6 ? 'complex' : totalComplexity >= 3 ? 'standard' : 'simple';
   }, []);
 
-  // Typing indicator animation
-  useEffect(() => {
-    if (isTyping) {
-      const interval = setInterval(() => {
-        setTypingDots(prev => {
-          if (prev === '...') return '';
-          return prev + '.';
-        });
-      }, 500);
-      return () => clearInterval(interval);
+  const generateProjectInsights = useCallback((responses: Record<string, string>): ProjectInsight[] => {
+    const insights: ProjectInsight[] = [];
+    
+    // Business impact analysis
+    if (responses.business_problem?.length > 20) {
+      insights.push({
+        category: 'immediate',
+        description: 'Clear business problem identified with good articulation',
+        impact: 'high',
+        source: 'business_problem'
+      });
     }
-  }, [isTyping]);
+    
+    // Technical risk analysis
+    if (responses.integration_needs?.includes('several')) {
+      insights.push({
+        category: 'risk',
+        description: 'Multiple integrations required - potential complexity and timeline risk',
+        impact: 'high',
+        source: 'integration_needs'
+      });
+    }
+    
+    // Timeline pressure
+    if (responses.timeline_expectations?.includes('ASAP')) {
+      insights.push({
+        category: 'risk',
+        description: 'Urgent timeline may require scope reduction or additional resources',
+        impact: 'medium',
+        source: 'timeline_expectations'
+      });
+    }
+    
+    // Technical guidance needs
+    if (responses.technical_experience?.includes('No technical') || responses.technical_experience?.includes('Limited')) {
+      insights.push({
+        category: 'technical',
+        description: 'Client needs comprehensive technical guidance and documentation',
+        impact: 'medium',
+        source: 'technical_experience'
+      });
+    }
+    
+    return insights;
+  }, []);
 
-  // Bot typing simulation - show typing for 2 seconds then reveal message
+  const generateAdaptiveQuestions = useCallback((lastResponse: string, questionId: string): Question[] => {
+    const adaptive: Question[] = [];
+    
+    // Generate follow-ups based on specific answers
+    if (questionId === 'project_idea' && lastResponse.toLowerCase().includes('ai')) {
+      adaptive.push({
+        id: 'ai_specific_use_case',
+        text: 'I see you mentioned AI. What specific AI capabilities are you looking for? (e.g., data analysis, automation, chatbots, prediction)',
+        type: 'text',
+        category: 'technical',
+        technicalDepth: 'intermediate'
+      });
+    }
+    
+    if (questionId === 'integration_needs' && lastResponse.includes('several')) {
+      adaptive.push({
+        id: 'integration_details',
+        text: 'Which systems need to be integrated? (e.g., CRM, database, APIs, existing software)',
+        type: 'text',
+        category: 'technical',
+        technicalDepth: 'advanced',
+        riskFlags: ['integration complexity']
+      });
+    }
+    
+    if (questionId === 'business_problem' && lastResponse.length > 50) {
+      adaptive.push({
+        id: 'quantify_impact',
+        text: 'Can you quantify the impact? (e.g., time saved, cost reduction, revenue increase)',
+        type: 'text',
+        category: 'business'
+      });
+    }
+    
+    return adaptive;
+  }, []);
+  
+  const generateTechRecommendations = useCallback((responses: Record<string, string>): string[] => {
+    const recommendations: string[] = [];
+    
+    // Web applications
+    if (responses.project_idea?.toLowerCase().includes('web')) {
+      recommendations.push('React/TypeScript for frontend', 'Node.js/Express for backend');
+    }
+    
+    // Mobile applications - offer both options
+    if (responses.project_idea?.toLowerCase().includes('mobile') || responses.project_idea?.toLowerCase().includes('app')) {
+      recommendations.push('Flutter for native iOS/Android apps', 'React Native for cross-platform mobile');
+    }
+    
+    // AI and automation solutions
+    if (responses.project_idea?.toLowerCase().includes('ai') || responses.project_idea?.toLowerCase().includes('automat')) {
+      recommendations.push('Python/FastAPI for AI services', 'OpenAI API integration');
+    }
+    
+    // Automation-specific recommendations
+    if (responses.project_idea?.toLowerCase().includes('automat') || 
+        responses.project_idea?.toLowerCase().includes('workflow') ||
+        responses.business_problem?.toLowerCase().includes('manual') ||
+        responses.business_problem?.toLowerCase().includes('repetitive')) {
+      recommendations.push('n8n for workflow automation', 'Zapier integration', 'Custom automation APIs');
+    }
+    
+    // Process automation
+    if (responses.project_idea?.toLowerCase().includes('process') || 
+        responses.business_problem?.toLowerCase().includes('efficiency')) {
+      recommendations.push('Business process automation (BPA)', 'RPA (Robotic Process Automation)');
+    }
+    
+    // Data automation
+    if (responses.project_idea?.toLowerCase().includes('data') || 
+        responses.project_idea?.toLowerCase().includes('analytics')) {
+      recommendations.push('Data pipeline automation', 'ETL/ELT processes', 'Business intelligence dashboards');
+    }
+    
+    // Integration complexity
+    if (responses.integration_needs?.includes('several')) {
+      recommendations.push('API Gateway for integration management', 'Event-driven architecture', 'Microservices approach');
+    }
+    
+    // E-commerce
+    if (responses.project_idea?.toLowerCase().includes('ecommerce') || 
+        responses.project_idea?.toLowerCase().includes('shop') ||
+        responses.project_idea?.toLowerCase().includes('store')) {
+      recommendations.push('Shopify/WooCommerce integration', 'Payment gateway automation', 'Inventory management');
+    }
+    
+    // Default comprehensive stack
+    if (recommendations.length === 0) {
+      recommendations.push('Modern web stack (React, Node.js)', 'Cloud hosting (AWS/Azure)', 'Automation tools (n8n, custom APIs)');
+    }
+    
+    return recommendations;
+  }, []);
+  
+  const generateProjectPhases = useCallback((responses: Record<string, string>, _insights: ProjectInsight[]): {phase1: string[], phase2: string[], phase3: string[]} => {
+    const hasComplexIntegration = responses.integration_needs?.includes('several');
+    const isUrgent = responses.timeline_expectations?.includes('ASAP');
+    const needsGuidance = responses.technical_experience?.includes('No technical') || responses.technical_experience?.includes('Limited');
+    
+    return {
+      phase1: [
+        'Requirements analysis and documentation',
+        needsGuidance ? 'Technical architecture consultation' : 'Technical specification review',
+        'UI/UX design and prototyping',
+        hasComplexIntegration ? 'Integration planning and API analysis' : 'Core feature development start'
+      ],
+      phase2: [
+        'Core functionality development',
+        hasComplexIntegration ? 'Integration implementation' : 'Advanced features',
+        'Testing and quality assurance',
+        isUrgent ? 'Rapid iteration cycles' : 'Comprehensive testing'
+      ],
+      phase3: [
+        'Production deployment',
+        'Performance optimization',
+        'User training and documentation',
+        'Ongoing support setup'
+      ]
+    };
+  }, []);
+
+  // All useEffect and useCallback hooks
   useEffect(() => {
-    setIsTyping(true);
-    setTypingDots('');
+    analyticsManager.startConversation('initial');
+  }, []);
 
-    const timer = setTimeout(() => {
-      setIsTyping(false);
-    }, 1500);
+  // Initialize Q&A mode when initialBotMode is 'qa'
+  useEffect(() => {
+    if (initialBotMode === 'qa' && !n8nResponse) {
+      // Immediately start with business Q&A - ensure proper state
+      setBotMode('qa');
+      setIsN8nMode(true);
+      
+      setN8nResponse({
+        text: "Great! I'm your business expert. I can tell you about our services, process, team, and capabilities. What would you like to know?",
+        suggestedQuestions: [
+          "How does your development process work?",
+          "Tell me about your team structure", 
+          "What technologies do you use?",
+          "Can you show me examples of your work?",
+          "What makes you different from other agencies?"
+        ]
+      });
+      setSuggestedQuestions([
+        "How does your development process work?",
+        "Tell me about your team structure", 
+        "What technologies do you use?",
+        "Can you show me examples of your work?",
+        "What makes you different from other agencies?"
+      ]);
+      
+      console.log('ConversationEngine: Initialized QA mode', { 
+        initialBotMode, 
+        botMode: 'qa', 
+        isN8nMode: true 
+      });
+    }
+  }, [initialBotMode, n8nResponse]);
 
-    return () => clearTimeout(timer);
-  }, [currentQuestionData?.id]); // Trigger when question changes
-
-  // Early return if no valid data (but allow generation and completion states)
-  if ((!currentWaveData || !currentQuestionData) && !isGenerating && !isComplete) {
-    console.error('ConversationEngine Error: Missing wave or question data', {
-      currentWave,
-      currentQuestion,
-      totalWaves: CONVERSATION_WAVES.length,
-      waveData: currentWaveData,
-      questionData: currentQuestionData
+  const sendToN8nWebhook = useCallback(async (userMessage: string) => {
+    console.log('ConversationEngine: sendToN8nWebhook called', {
+      userMessage,
+      conversationHistoryLength: conversationHistory.length,
+      conversationId,
+      qaExchangeCount
     });
-    return (
-      <div className="relative min-h-screen bg-black text-white flex items-center justify-center p-4 retro-scanlines">
-        <div className="text-center space-y-4">
-          <div className="text-red-400 text-4xl font-retro-xl retro-glow-green">⚠️ DEBUG MODE</div>
-          <div className="text-yellow-400 text-2xl font-retro-large">ConversationEngine Component Loaded</div>
-          <div className="text-gray-400 text-sm font-mono">
-            Wave: {currentWave} / Question: {currentQuestion}
-          </div>
-          <div className="text-gray-400 text-sm font-mono">
-            Total Waves: {CONVERSATION_WAVES.length}
-          </div>
-          <button
-            onClick={() => {
-              console.log('Resetting conversation...');
-              setCurrentWave(0);
-              setCurrentQuestion(0);
-            }}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-retro-xl text-2xl transition-colors retro-glow-green"
-          >
-            RESET & START CONVERSATION
-          </button>
-          <div className="text-gray-500 text-xs mt-4 font-mono">
-            If you can see this, the component is mounting correctly.
-          </div>
-        </div>
-      </div>
-    );
-  }
+    
+    setIsAwaitingN8nResponse(true);
+    
+    try {
+      console.log('ConversationEngine: Calling sendToBusinessQABot...');
+      const response = await sendToBusinessQABot(
+        userMessage,
+        conversationHistory,
+        conversationId,
+        {
+          exchangeCount: qaExchangeCount,
+          engagementScore: 0,
+          phase: 'exploration',
+          shouldTransition: qaExchangeCount >= 5
+        }
+      );
+      
+      console.log('ConversationEngine: Received response from sendToBusinessQABot:', response);
+      
+      setN8nResponse(response);
+      setSuggestedQuestions(response.suggestedQuestions || []);
+      
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'user', content: userMessage },
+        { role: 'bot', content: response.text }
+      ]);
+      
+      setQaExchangeCount(prev => prev + 1);
+      
+    } catch (error) {
+      console.error('n8n webhook error:', error);
+      setN8nResponse({
+        text: "I'm having trouble connecting right now. For questions about our services, please contact our team directly.",
+        requiresTeamConsultation: true
+      });
+    } finally {
+      setIsAwaitingN8nResponse(false);
+    }
+  }, [conversationHistory, conversationId, qaExchangeCount]);
 
+  const handleBotModeSelection = useCallback(async (answer: string) => {
+    if (answer === 'Learn more about m8s') {
+      setBotMode('qa');
+      setIsN8nMode(true);
+      if (onBotModeSelect) onBotModeSelect('qa');
+      
+      setN8nResponse({
+        text: "Great! I'm your business expert. I can tell you about our services, process, team, and capabilities. What would you like to know?",
+        suggestedQuestions: [
+          "How does your development process work?",
+          "Tell me about your team structure", 
+          "What technologies do you use?",
+          "Can you show me examples?"
+        ]
+      });
+      setSuggestedQuestions([
+        "How does your development process work?",
+        "Tell me about your team structure", 
+        "What technologies do you use?",
+        "Can you show me examples?"
+      ]);
+      
+    } else if (answer === 'Start my project') {
+      setBotMode('project');
+      setIsN8nMode(false);
+      if (onBotModeSelect) onBotModeSelect('project');
+      setCurrentWave(1); // Move to project questions
+      setCurrentQuestion(0);
+    }
+  }, [onBotModeSelect]);
 
-  // Simple generation timer with setInterval
-  useEffect(() => {
-    if (!isGenerating) {
+  // Home button function to return to Welcome & Path Selection
+  const handleReturnHome = useCallback(async () => {
+    await audio.playSelectionSound();
+    
+    analyticsManager.trackTerminalEvent('home_button_clicked', {
+      current_mode: botMode,
+      current_wave: currentWave,
+      current_question: currentQuestion,
+      is_n8n_mode: isN8nMode
+    });
+    
+    // Reset to initial welcome state
+    setBotMode('qa'); // Default to qa mode initially
+    setIsN8nMode(false);
+    setCurrentWave(0);
+    setCurrentQuestion(0);
+    setSelectedOption(0);
+    setUserInput('');
+    setValidationMessage('');
+    setN8nResponse(null);
+    setSuggestedQuestions([]);
+    setConversationHistory([]);
+    setQaExchangeCount(0);
+    setIsAwaitingN8nResponse(false);
+    
+    // Clear project data
+    setResponses({});
+    setProjectInsights([]);
+    setRiskFlags([]);
+    setAdaptiveQuestions([]);
+  }, [audio, botMode, currentWave, currentQuestion, isN8nMode]);
+
+  const handleSubmitAnswer = useCallback(async () => {
+    console.log('handleSubmitAnswer called', { isN8nMode, botMode, userInput, selectedOption });
+    
+    // Handle Q&A mode FIRST - before checking currentQuestionData
+    if (isN8nMode && botMode === 'qa') {
+      // In QA mode, prioritize user's custom input if they typed something, otherwise use suggested question
+      const userMessage = userInput.trim() || suggestedQuestions[selectedOption] || '';
+      
+      console.log('ConversationEngine: QA mode submit', {
+        userInput: userInput,
+        userInputTrimmed: userInput.trim(),
+        selectedOption,
+        suggestedQuestion: suggestedQuestions[selectedOption],
+        finalUserMessage: userMessage,
+        willSendToWebhook: !!userMessage
+      });
+      
+      if (userMessage.toLowerCase().includes('start my project') || userMessage.toLowerCase().includes('define my project')) {
+        console.log('ConversationEngine: Detected project transition request');
+        setBotMode('project');
+        setIsN8nMode(false);
+        setCurrentWave(1);
+        setCurrentQuestion(0);
+      } else if (userMessage) {
+        console.log('ConversationEngine: Sending to N8N webhook:', userMessage);
+        await sendToN8nWebhook(userMessage);
+      } else {
+        console.log('ConversationEngine: No message to send - empty userMessage');
+      }
+      
+      setUserInput('');
+      setSelectedOption(0);
       return;
     }
 
-    // Start from step 0 and progress through all steps
-    let currentStep = 0;
-    const isDev = process.env.NODE_ENV === 'development';
-    const stepDuration = isDev ? 2000 : 20000; // 2s dev, 20s production
-
-    // Set initial step
-    setGenerationStep(0);
-
-    const interval = setInterval(() => {
-      currentStep++;
-      setGenerationStep(currentStep);
-
-      // When we reach the end of generation steps
-      if (currentStep >= GENERATION_STEPS.length) {
-        clearInterval(interval);
-
-        // Complete generation and navigate
-        setTimeout(() => {
-          playCompletionSound();
-
-          // Navigate to completion summary page with data
-          const completionData = {
-            responses,
-            waveData: {
-              wave1: {},
-              wave2: {},
-              wave3: {},
-              wave4: {}
-            }
-          };
-
-          // Fill waveData with organized responses
-          CONVERSATION_WAVES.forEach((wave, waveIndex) => {
-            const waveKey = `wave${waveIndex + 1}` as keyof typeof completionData.waveData;
-            wave.questions.forEach(question => {
-              if (responses[question.id]) {
-                completionData.waveData[waveKey][question.id] = responses[question.id];
-              }
-            });
-          });
-
-          navigate('/completion-summary', { state: completionData });
-        }, 1000);
-      }
-    }, stepDuration);
-
-    return () => clearInterval(interval);
-  }, [isGenerating]);
-
-  const proceedToNextQuestion = useCallback(() => {
-    if (currentQuestion < currentWaveData.questions.length - 1) {
-      // Next question in current wave
-      setCurrentQuestion(prev => prev + 1);
-    } else if (currentWave < CONVERSATION_WAVES.length - 1) {
-      // Next wave
-      setCurrentWave(prev => prev + 1);
-      setCurrentQuestion(0);
-    } else {
-      // All questions complete, start generation
-      setIsGenerating(true);
-      setGenerationStep(0);
-    }
-  }, [currentQuestion, currentWaveData.questions.length, currentWave]);
-
-  const handleSubmitAnswer = useCallback(async () => {
+    // PROJECT MODE LOGIC BELOW
+    const currentWaveData = CONVERSATION_WAVES[currentWave];
+    const currentQuestionData = currentWaveData?.questions[currentQuestion];
+    
     if (!currentQuestionData) return;
 
     let answer = '';
-    let isValid = true;
-    let message = '';
-
+    
     if (currentQuestionData.type === 'multiple-choice') {
       answer = currentQuestionData.options?.[selectedOption] || '';
     } else if (currentQuestionData.type === 'text') {
       answer = userInput.trim();
-      if (!answer && currentQuestionData.validation && !currentQuestionData.validation('')) {
-        isValid = false;
-        message = 'Please enter your answer before submitting.';
-      } else if (currentQuestionData.validation && !currentQuestionData.validation(answer)) {
-        isValid = false;
-        if (currentQuestionData.id === 'email') {
-          message = 'Please enter a valid email address.';
-        } else if (currentQuestionData.id === 'main_problem') {
-          message = 'Please provide a more detailed description (at least 10 characters).';
-        } else if (currentQuestionData.id === 'unique_approach') {
-          message = 'Please provide a more detailed explanation (at least 15 characters).';
-        } else if (currentQuestionData.id === 'core_features') {
-          message = 'Please list your features (use numbers or bullet points).';
-        } else if (currentQuestionData.id === 'user_workflow') {
-          message = 'Please provide a more detailed workflow description (at least 20 characters).';
-        } else {
-          message = 'Please provide a more detailed answer.';
-        }
+      if (currentQuestionData.validation && !currentQuestionData.validation(answer)) {
+        setValidationMessage('Please provide a valid answer.');
+        setTimeout(() => setValidationMessage(''), 3000);
+        return;
       }
-    } else if (currentQuestionData.type === 'yes-no') {
-      answer = selectedOption === 0 ? 'Yes' : 'No';
-    }
-
-    if (!isValid) {
-      setValidationMessage(message);
-      setTimeout(() => setValidationMessage(''), 3000);
-      return;
     }
 
     if (!answer) return;
 
-    await playSelectionSound();
+    await audio.playSelectionSound();
 
-    // Track user response
-    const responseTime = analyticsManager.getQuestionResponseTime();
-    const responseData = {
-      wave_id: currentWaveData.id,
-      wave_name: currentWaveData.name,
-      question_id: currentQuestionData.id,
-      question_text: currentQuestionData.text.substring(0, 100),
-      question_type: currentQuestionData.type,
-      user_answer: typeof answer === 'string' ? answer.substring(0, 100) : answer,
-      selected_option: selectedOption,
-      response_time: responseTime,
-      answer_length: typeof answer === 'string' ? answer.length : 0,
-      answer_words: typeof answer === 'string' ? answer.split(' ').length : 0,
-      wave_time: analyticsManager.getWaveDuration()
-    };
-
-    analyticsManager.trackConversationEvent('question_answered', responseData);
-
-    // Store full response data
-    const fullResponseData = {
-      ...responseData,
-      full_answer: answer,
-      options_available: currentQuestionData.options,
-      timestamp: new Date().toISOString()
-    };
-
-    setAllResponses(prev => ({
-      ...prev,
-      [currentQuestionData.id]: fullResponseData
-    }));
-
-    setQuestionHistory(prev => [...prev, fullResponseData]);
-
-    // Track conversation path selection
+    // Handle bot mode selection
     if (currentQuestionData.id === 'welcome') {
-      const path = answer === 'Start my project' ? 'start_project' : 'learn_more';
-      analyticsManager.conversationPath = path;
-
-      analyticsManager.trackConversationEvent('path_selected', {
-        path_chosen: path,
-        decision_time: responseTime
-      });
+      await handleBotModeSelection(answer);
+      setUserInput('');
+      setSelectedOption(0);
+      return;
     }
 
-    // Store response
-    setResponses(prev => ({
-      ...prev,
+    // Store response and analyze for insights
+    const newResponses = {
+      ...responses,
       [currentQuestionData.id]: answer
-    }));
-
-    // Show follow-up
-    if (currentQuestionData.followUp) {
-      setShowingFollowUp(true);
-      setTimeout(() => {
-        setShowingFollowUp(false);
-        proceedToNextQuestion();
-      }, 2500);
-    } else {
-      proceedToNextQuestion();
+    };
+    setResponses(newResponses);
+    
+    // Generate insights and check for risks
+    const newInsights = generateProjectInsights(newResponses);
+    setProjectInsights(prev => [...prev, ...newInsights]);
+    
+    // Check for risk flags
+    if (currentQuestionData.riskFlags) {
+      setRiskFlags(prev => [...prev, ...currentQuestionData.riskFlags!]);
+    }
+    
+    // Generate adaptive follow-up questions
+    const adaptiveFollowUps = generateAdaptiveQuestions(answer, currentQuestionData.id);
+    if (adaptiveFollowUps.length > 0) {
+      setAdaptiveQuestions(prev => [...prev, ...adaptiveFollowUps]);
     }
 
-    // Reset input
+    // Check if we have adaptive questions to ask
+    const shouldAskAdaptiveQuestions = adaptiveQuestions.length > 0 && currentWave === 1; // Only in project discovery wave
+    
+    // Move to next question or complete
+    if (shouldAskAdaptiveQuestions && adaptiveQuestions.length > 0) {
+      // Insert adaptive question
+      const nextAdaptive = adaptiveQuestions[0];
+      setAdaptiveQuestions(prev => prev.slice(1));
+      // Add to current wave temporarily
+      CONVERSATION_WAVES[currentWave].questions.push(nextAdaptive);
+      setCurrentQuestion(prev => prev + 1);
+    } else if (currentQuestion < currentWaveData.questions.length - 1) {
+      setCurrentQuestion(prev => prev + 1);
+    } else if (currentWave < CONVERSATION_WAVES.length - 1) {
+      setCurrentWave(prev => prev + 1);
+      setCurrentQuestion(0);
+    } else {
+      // Project complete - send to n8n
+      try {
+        const email = responses['email'] || '';
+        const name = responses['contact_info'] || '';
+        
+        const enhancedQuestionsAnswers = Object.entries(newResponses).map(([questionId, answer]) => ({
+          questionId,
+          questionText: CONVERSATION_WAVES.flatMap(w => w.questions).find(q => q.id === questionId)?.text || questionId,
+          questionType: 'text',
+          answer: typeof answer === 'string' ? answer : String(answer),
+          timestamp: new Date().toISOString(),
+          category: CONVERSATION_WAVES.flatMap(w => w.questions).find(q => q.id === questionId)?.category || 'general',
+          riskFlags: CONVERSATION_WAVES.flatMap(w => w.questions).find(q => q.id === questionId)?.riskFlags || []
+        }));
+        
+        const enhancedProjectData = {
+          questionsAnswers: enhancedQuestionsAnswers,
+          totalQuestions: enhancedQuestionsAnswers.length,
+          completionTime: 0,
+          leadScore: enhancedQuestionsAnswers.length * 3 + projectInsights.length * 2,
+          conversationPath: 'enhanced_project_discovery',
+          insights: projectInsights,
+          complexity: analyzeProjectComplexity(newResponses),
+          riskFlags,
+          estimatedEffort: analyzeProjectComplexity(newResponses) === 'complex' ? '3-6 months' : 
+                          analyzeProjectComplexity(newResponses) === 'standard' ? '1-3 months' : '2-6 weeks',
+          businessImpact: newResponses.success_criteria || 'To be defined',
+          techRecommendations: generateTechRecommendations(newResponses),
+          projectPhases: generateProjectPhases(newResponses, projectInsights)
+        };
+        
+        const payload = {
+          email,
+          name,
+          company: newResponses.company || '',
+          preferredContact: newResponses.preferred_contact || 'Email with detailed analysis first',
+          timestamp: new Date().toISOString(),
+          sessionId: conversationId,
+          projectData: enhancedProjectData,
+          metadata: {
+            userAgent: navigator.userAgent,
+            timestamp: Date.now(),
+            version: '3.0',
+            templateId: 'project-interrogation-output-template-v3',
+            totalInsights: projectInsights.length,
+            riskFactors: riskFlags.length
+          }
+        };
+
+        await sendProjectDataToN8n(payload);
+      } catch (error) {
+        console.error('Failed to send project data:', error);
+      }
+      
+      setIsGenerating(true);
+      setTimeout(() => {
+        const enhancedData: EnhancedConversationData = {
+          responses: newResponses,
+          insights: projectInsights,
+          complexity: analyzeProjectComplexity(newResponses),
+          riskFlags,
+          techStack: generateTechRecommendations(newResponses),
+          phases: generateProjectPhases(newResponses, projectInsights),
+          estimatedEffort: analyzeProjectComplexity(newResponses) === 'complex' ? '3-6 months' : 
+                          analyzeProjectComplexity(newResponses) === 'standard' ? '1-3 months' : '2-6 weeks',
+          businessImpact: newResponses.success_criteria || 'To be defined'
+        };
+        
+        onComplete(enhancedData);
+      }, 3000);
+    }
+
     setUserInput('');
     setSelectedOption(0);
     setValidationMessage('');
-  }, [currentQuestionData, selectedOption, userInput, playSelectionSound, proceedToNextQuestion]);
+  }, [currentWave, currentQuestion, selectedOption, userInput, responses, handleBotModeSelection, sendToN8nWebhook, isN8nMode, botMode, suggestedQuestions, conversationId, onComplete, audio, adaptiveQuestions, analyzeProjectComplexity, generateAdaptiveQuestions, generateProjectInsights, generateProjectPhases, generateTechRecommendations, projectInsights, riskFlags]);
 
-  // Handle keyboard navigation for multiple choice - moved after handleSubmitAnswer
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (!currentQuestionData || showingFollowUp) return;
+  // Render logic
+  const currentWaveData = CONVERSATION_WAVES[currentWave];
+  const currentQuestionData = currentWaveData?.questions[currentQuestion];
 
-      if (currentQuestionData.type === 'multiple-choice') {
-        if (event.key === 'ArrowUp' && selectedOption > 0) {
-          setSelectedOption(prev => prev - 1);
-          playNavigationSound('up');
-        } else if (event.key === 'ArrowDown' && selectedOption < (currentQuestionData.options?.length || 0) - 1) {
-          setSelectedOption(prev => prev + 1);
-          playNavigationSound('down');
-        } else if (event.key === 'Enter') {
-          handleSubmitAnswer();
-        }
-      } else if (event.key === 'Enter' && currentQuestionData.type !== 'text') {
-        handleSubmitAnswer();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentQuestionData, selectedOption, showingFollowUp, playNavigationSound, handleSubmitAnswer]);
-
-  const completeConversation = () => {
-    const waveData = {
-      wave1: {},
-      wave2: {},
-      wave3: {},
-      wave4: {}
-    };
-
-    // Track conversation completion
-    const totalDuration = analyticsManager.getConversationDuration();
-    const leadScore = calculateLeadScore(allResponses);
-
-    analyticsManager.trackConversationEvent('conversation_completed', {
-      conversation_id: conversationId,
-      total_duration: totalDuration,
-      questions_answered: Object.keys(allResponses).length,
-      lead_score: leadScore,
-      completion_rate: 100
-    });
-
-    localStorage.setItem('conversation_completed', 'true');
-
-    // Organize responses by wave
-    CONVERSATION_WAVES.forEach((wave, waveIndex) => {
-      const waveKey = `wave${waveIndex + 1}` as keyof typeof waveData;
-      wave.questions.forEach(question => {
-        if (responses[question.id]) {
-          waveData[waveKey][question.id] = responses[question.id];
-        }
-      });
-    });
-
-    onComplete({
-      responses,
-      waveData
-    });
-  };
-
+  // Early returns only after all hooks
   if (isGenerating) {
-    const isDev = process.env.NODE_ENV === 'development';
-    const totalTime = isDev ? '10 seconds' : '2-3 minutes';
-
     return (
-      <div className="relative min-h-screen bg-black text-white">
-        {/* Abort button - always visible in bottom-left */}
-        <button
-          onClick={handleAbort}
-          className="fixed bottom-4 left-4 z-50 bg-transparent border border-red-400/30 text-red-400/60 px-3 py-2 text-xs font-mono hover:border-red-400 hover:text-red-400 transition-all duration-300 hover:bg-red-400/10"
-          title="Abort and return to website"
-        >
-          ⏸ ABORT
-        </button>
+      <div className="relative min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-green-300 text-2xl mb-4">⚡ Processing Your Project</div>
+          <div className="text-amber-300 text-lg">Thank you! Our team will contact you shortly.</div>
+        </div>
+      </div>
+    );
+  }
 
-        <div className="min-h-screen flex items-center justify-center retro-scanlines">
-          <div className="space-y-4 text-center max-w-3xl mx-auto" dir="ltr">
-            <div className="text-green-300 text-4xl mb-4 font-retro-xl retro-glow-green">
-              ⚡ PROCESSING YOUR PROJECT
+  if (!currentWaveData || !currentQuestionData) {
+    return (
+      <div className="relative min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-xl">Error loading conversation</div>
+          <button 
+            onClick={() => { setCurrentWave(0); setCurrentQuestion(0); }}
+            className="mt-4 bg-green-600 px-4 py-2 rounded"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Q&A Mode Interface with Bubble Chat
+  if (isN8nMode && botMode === 'qa') {
+    return (
+      <div className="relative min-h-screen bg-black text-white font-mono" dir="ltr">
+        {/* Terminal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/30" dir="ltr">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="retro-glow-green text-lg">ARIA - Project Validation Terminal</span>
+          </div>
+          
+          {/* Home Button - only show if not on welcome screen */}
+          {(currentWave !== 0 || currentQuestion !== 0 || isN8nMode) && (
+            <button
+              onClick={handleReturnHome}
+              className="flex items-center space-x-2 border border-green-500/40 text-green-400 px-4 py-2 rounded-lg hover:bg-green-500/10 hover:border-green-500/60 transition-all duration-200 font-mono text-sm"
+              title="Return to Welcome & Path Selection"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span>HOME</span>
+            </button>
+          )}
+        </div>
+
+        {/* Progress Indicators */}
+        <div className="flex justify-center space-x-8 py-4 border-b border-green-500/20">
+          <div className="flex items-center space-x-2">
+            <span className="text-gray-400">Completion:</span>
+            <div className="bg-green-900/30 border border-green-500/30 rounded px-3 py-1 flex items-center space-x-2">
+              <span className="text-red-400">0%</span>
+              <span className="text-red-400">❌</span>
             </div>
+          </div>
+          <div className="w-4" />
+          <div className="flex items-center space-x-2">
+            <span className="text-gray-400">Insights:</span>
+            <div className="bg-blue-900/30 border border-blue-500/30 rounded px-3 py-1 flex items-center space-x-2">
+              <span className="text-blue-400">0</span>
+              <span className="text-blue-400">📊</span>
+            </div>
+          </div>
+        </div>
 
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <img
-                src="/robot-favicon.svg"
-                alt="Fellow Bot"
-                className="w-8 h-8 animate-pulse"
-              />
-              <div className="text-amber-300 text-xl font-retro-light">
-                My fellow bots are reviewing your requirements... ({totalTime} estimated)
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="text-center mb-6 retro-glow-green text-xl">
+            Welcome & Path Selection :1/3
+          </div>
+
+          {/* ARIA's Message Bubble */}
+          {n8nResponse && (
+            <div className="mb-6 relative">
+              {/* ARIA Avatar */}
+              <div className="absolute -top-2 -left-2 z-10">
+                <div className="w-12 h-12 bg-black/80 border border-green-500/40 rounded-full p-2 shadow-lg shadow-green-500/20">
+                  <img 
+                    src="/robot-favicon-white.svg" 
+                    alt="ARIA" 
+                    className="w-full h-full aria-avatar retro-glow-green"
+                    style={{
+                      animation: 'ariaBlink 3s infinite ease-in-out'
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <div className="bg-black/60 border border-green-500/40 rounded-2xl p-6 pt-8 shadow-lg shadow-green-500/10 ml-4" dir="ltr">
+                <div className="retro-glow-green text-base leading-relaxed whitespace-pre-line text-left" dir="ltr">
+                  {isAwaitingN8nResponse ? (
+                    <div className="flex items-center space-x-2" dir="ltr">
+                      <span>Thinking</span>
+                      <div className="flex space-x-1">
+                        {[...Array(3)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-1 h-1 bg-green-400 rounded-full animate-pulse retro-glow-green"
+                            style={{ animationDelay: `${i * 0.3}s` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    n8nResponse.text
+                  )}
+                </div>
+                <div className="text-xs text-gray-500 mt-3 text-right" dir="ltr">
+                  Category: foundation
+                </div>
               </div>
             </div>
-
-            <div className="space-y-4">
-              {GENERATION_STEPS.slice(0, generationStep).map((step, index) => (
-                <div key={index} className="flex items-center justify-center space-x-4">
-                  <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{step}</span>
-                  <span className="text-green-300 retro-glow-green">✓</span>
+          )}
+          
+          {/* Response Options */}
+          {!isAwaitingN8nResponse && suggestedQuestions.length > 0 && (
+            <div className="space-y-3">
+              {suggestedQuestions.map((question, index) => (
+                <div
+                  key={index}
+                  className={`border rounded-2xl p-4 cursor-pointer transition-all duration-200 font-mono ${
+                    selectedOption === index
+                      ? 'border-green-500/60 bg-green-900/20 retro-glow-green shadow-lg shadow-green-500/10'
+                      : 'border-green-500/20 hover:border-green-500/40 hover:bg-green-900/10 text-gray-300 hover:text-green-300'
+                  }`}
+                  onClick={() => {
+                    setSelectedOption(index);
+                    setTimeout(() => handleSubmitAnswer(), 100);
+                  }}
+                  dir="ltr"
+                >
+                  <div className="text-left" dir="ltr">
+                    {question}
+                  </div>
                 </div>
               ))}
-
-              {generationStep < GENERATION_STEPS.length && (
-                <div className="flex items-center justify-center space-x-2">
-                  <span className="text-amber-400 font-retro-light text-xl retro-glow-amber">{GENERATION_STEPS[generationStep]}</span>
-                  <div className="w-3 h-5 inline-block ml-2">
-                    {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
-                  </div>
-                </div>
-              )}
-
-              {generationStep >= GENERATION_STEPS.length && (
-                <div className="flex items-center justify-center space-x-4">
-                  <span className="text-green-400 font-retro-light text-xl retro-glow-green">BOT ANALYSIS COMPLETE - SCHEDULING MEETING...</span>
-                  <span className="text-green-300 retro-glow-green">✓</span>
-                </div>
-              )}
             </div>
-
-            <div className="text-gray-400 text-sm mt-8 font-retro">
-              {generationStep < GENERATION_STEPS.length
-                ? `Phase ${generationStep + 1} of ${GENERATION_STEPS.length}`
-                : `Analysis Complete`
-              }
-            </div>
-
-            <div className="text-gray-500 text-xs mt-4 font-retro">
-              {isDev ? 'Development mode: Fast bot analysis' : 'Bot team analyzing & preparing your custom solution...'}
-            </div>
-
-            {/* Clearing message */}
-            {validationMessage === 'Clearing project...' && (
-              <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
-                <div className="text-red-400 text-xl font-mono">
-                  🗑️ CLEARING PROJECT...
-                </div>
+          )}
+          
+          {/* Custom Input */}
+          {!isAwaitingN8nResponse && (
+            <div className="mt-6 space-y-4">
+              <div className="text-gray-400 text-sm">Or ask your own question:</div>
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && userInput.trim() && handleSubmitAnswer()}
+                  className="flex-1 p-3 bg-black border border-green-500/30 retro-glow-green rounded-lg font-mono focus:border-green-500/60 focus:outline-none text-left"
+                  placeholder="Ask about services, team, process..."
+                  autoFocus
+                  dir="ltr"
+                />
+                <div style={{ width: 8 }} />
+                <button
+                  onClick={() => {
+                    console.log('QA Send button clicked', { userInput, selectedOption });
+                    handleSubmitAnswer();
+                  }}
+                  disabled={!userInput.trim()}
+                  className="px-6 py-3 bg-green-600/20 border border-green-500/30 retro-glow-green hover:bg-green-600/30 disabled:bg-gray-600/20 disabled:border-gray-500/20 disabled:cursor-not-allowed disabled:text-gray-500 rounded-lg transition-all duration-200 font-mono"
+                >
+                  Send
+                </button>
               </div>
-            )}
-          </div>
+              
+              <div className="text-center pt-4 border-t border-green-500/20">
+                <button
+                  onClick={() => {
+                    setBotMode('project');
+                    setIsN8nMode(false);
+                    setCurrentWave(1);
+                    setCurrentQuestion(0);
+                  }}
+                  className="bg-green-600/20 border border-green-500/30 retro-glow-green hover:bg-green-600/30 px-6 py-3 rounded-lg transition-all duration-200 font-mono"
+                >
+                  Ready to define my project →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Question Counter */}
+        <div className="text-center py-4 text-gray-500 font-mono">
+          Question 1/1
         </div>
       </div>
     );
   }
 
-  if (isComplete) {
-    const userEmail = responses['email'] || 'your email';
-
-    return (
-      <div className="relative min-h-screen bg-black text-white">
-        {/* Abort button - always visible in bottom-left */}
-        <button
-          onClick={handleAbort}
-          className="fixed bottom-4 left-4 z-50 bg-transparent border border-red-400/30 text-red-400/60 px-3 py-2 text-xs font-mono hover:border-red-400 hover:text-red-400 transition-all duration-300 hover:bg-red-400/10"
-          title="Abort and return to website"
-        >
-          ⏸ ABORT
-        </button>
-
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="space-y-5 text-center max-w-4xl mx-auto" dir="ltr">
-            {/* Success Header */}
-            <div className="space-y-4">
-              <div className="text-green-300 text-2xl font-mono">
-                🎉 PROJECT PACKAGE COMPLETE!
-              </div>
-              <div className="text-amber-300 text-lg">
-                MISSION ACCOMPLISHED • PACKAGE DELIVERED
-              </div>
-            </div>
-
-            {/* Detailed completion message */}
-            <div className="space-y-4 text-left bg-green-900/20 border border-green-400/30 p-6 rounded">
-              <div className="text-green-300 text-lg font-mono mb-4">
-                📦 DELIVERY CONFIRMATION
-              </div>
-
-              <div className="space-y-3 text-amber-200">
-                <div className="flex items-center space-x-3">
-                  <span className="text-green-300">✓</span>
-                  <span>Project Requirements Document (PRD) generated</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-green-300">✓</span>
-                  <span>Technical architecture diagrams created</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-green-300">✓</span>
-                  <span>Working prototype built and tested</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-green-300">✓</span>
-                  <span>UI/UX design mockups generated</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-green-300">✓</span>
-                  <span>Development cost estimates calculated</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-green-300">✓</span>
-                  <span>Complete project package prepared</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Email delivery info */}
-            <div className="bg-amber-900/20 border border-amber-400/30 p-4 rounded">
-              <div className="text-amber-300 font-mono text-lg mb-2">
-                📧 DELIVERY STATUS
-              </div>
-              <div className="text-amber-200">
-                Your complete project package has been sent to: <strong>{userEmail}</strong>
-              </div>
-              <div className="text-gray-400 text-sm mt-2">
-                Expected delivery: Within 24 hours • Check spam folder if not received
-              </div>
-            </div>
-
-            {/* Close button */}
-            <div className="space-y-4">
-              <button
-                onClick={() => {
-                  // Call the onComplete callback to redirect
-                  onComplete({
-                    responses,
-                    waveData: {
-                      wave1: {},
-                      wave2: {},
-                      wave3: {},
-                      wave4: {}
-                    }
-                  });
-                }}
-                className="bg-transparent border-2 border-green-400 text-green-400 px-8 py-3 text-lg font-mono hover:bg-green-400 hover:text-black transition-colors duration-200"
-              >
-                CLOSE TERMINAL
-              </button>
-
-              <div className="text-gray-500 text-sm">
-                You will be redirected to our main application
-              </div>
-            </div>
-
-            {/* Terminal-style footer */}
-            <div className="text-green-400 text-xs font-mono opacity-60 border-t border-green-400/20 pt-4">
-              m8s.ai • AI Project Validation System • Session Complete
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // Project Mode Interface with Bubble Chat
   return (
-    <div className="relative min-h-screen bg-black text-white" data-conversation-engine>
-      {/* Abort button - always visible in bottom-left */}
-      <button
-        onClick={handleAbort}
-        className="fixed bottom-4 left-4 z-50 bg-transparent border border-red-400/30 text-red-400/60 px-3 py-2 text-xs font-mono hover:border-red-400 hover:text-red-400 transition-all duration-300 hover:bg-red-400/10"
-        title="Abort and return to website"
-      >
-        ⏸ ABORT
-      </button>
+    <div className="relative min-h-screen bg-black text-white font-mono" dir="ltr">
+      {/* Terminal Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-green-500/30" dir="ltr">
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span className="retro-glow-green text-lg">ARIA - Project Validation Terminal</span>
+        </div>
+        
+        {/* Home Button - only show if not on welcome screen */}
+        {(currentWave !== 0 || currentQuestion !== 0 || isN8nMode) && (
+          <button
+            onClick={handleReturnHome}
+            className="flex items-center space-x-2 border border-green-500/40 text-green-400 px-4 py-2 rounded-lg hover:bg-green-500/10 hover:border-green-500/60 transition-all duration-200 font-mono text-sm"
+            title="Return to Welcome & Path Selection"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span>HOME</span>
+          </button>
+        )}
+      </div>
 
-      <div className="min-h-screen flex items-start justify-center pt-8 px-4 pb-4 retro-scanlines">
-        <div className="w-full max-w-4xl mx-auto space-y-4" dir="ltr">
-          {/* Wave indicator */}
-          <div className="text-green-300 text-2xl text-center font-retro-xl retro-glow-green" dir="ltr">
-            {currentWave + 1}/4: {currentWaveData.name}
+      {/* Progress Indicators */}
+      <div className="flex justify-center space-x-8 py-4 border-b border-green-500/20">
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-400">Completion:</span>
+          <div className="bg-green-900/30 border border-green-500/30 rounded px-3 py-1 flex items-center space-x-2">
+            <span className="text-green-400">{Math.round((Object.keys(responses).length / CONVERSATION_WAVES.reduce((acc, wave) => acc + wave.questions.length, 0)) * 100)}%</span>
+            <span className="text-green-400">✅</span>
           </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-gray-400">Insights:</span>
+          <div className="bg-blue-900/30 border border-blue-500/30 rounded px-3 py-1 flex items-center space-x-2">
+            <span className="text-blue-400">{projectInsights.length}</span>
+            <span className="text-blue-400">📊</span>
+          </div>
+        </div>
+      </div>
 
-          {/* Bot Message with Avatar */}
-          <div className="flex items-start gap-4 w-full max-w-3xl mx-auto">
-            {/* Bot Avatar */}
-            <div className="flex-shrink-0 mt-1">
-              <img
-                src="/robot-favicon-white.svg"
-                alt="Aria Bot"
-                className="w-12 h-12 rounded-full border-2 border-green-400/30 bg-black/20 p-2"
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="text-center mb-6 retro-glow-green text-xl">
+          {currentWaveData.name} :{currentWave + 1}/{CONVERSATION_WAVES.length}
+        </div>
+        
+        {/* ARIA's Message Bubble */}
+        <div className="mb-6 relative">
+          {/* ARIA Avatar */}
+          <div className="absolute -top-2 -left-2 z-10">
+            <div className="w-12 h-12 bg-black/80 border border-green-500/40 rounded-full p-2 shadow-lg shadow-green-500/20">
+              <img 
+                src="/robot-favicon-white.svg" 
+                alt="ARIA" 
+                className="w-full h-full aria-avatar retro-glow-green"
+                style={{
+                  animation: 'ariaBlink 3s infinite ease-in-out'
+                }}
               />
             </div>
-
-            {/* Bot Message Bubble */}
-            <div className="flex-1">
-              <div className="relative bg-black/40 border border-green-400/30 rounded-lg rounded-tl-none p-6 backdrop-blur-sm">
-                {/* Chat bubble tail */}
-                <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
-
-                <div className="text-amber-300 text-2xl leading-snug font-retro-light retro-glow-amber whitespace-pre-line">
-                  {isTyping ? (
-                    <span className="text-gray-400 font-retro text-lg">
-                      Aria is typing{typingDots}
-                      <span className="retro-cursor">█</span>
-                    </span>
-                  ) : (
-                    currentQuestionData.text
-                  )}
-                </div>
-              </div>
+          </div>
+          
+          <div className="bg-black/60 border border-green-500/40 rounded-2xl p-6 pt-8 shadow-lg shadow-green-500/10 ml-4" dir="ltr">
+            <div className="retro-glow-green text-base leading-relaxed whitespace-pre-line text-left" dir="ltr">
+              {currentQuestionData.text}
+            </div>
+            <div className="text-xs text-gray-500 mt-3 text-right" dir="ltr">
+              Category: {currentQuestionData.category}
+              {currentQuestionData.technicalDepth && (
+                <span className="ml-2">• {currentQuestionData.technicalDepth} level</span>
+              )}
             </div>
           </div>
-
-          {/* Follow-up message */}
-          {showingFollowUp && (
-            <div className="flex items-start gap-4 w-full max-w-3xl mx-auto">
-              {/* Bot Avatar */}
-              <div className="flex-shrink-0 mt-1">
-                <img
-                  src="/robot-favicon-white.svg"
-                  alt="Aria Bot"
-                  className="w-12 h-12 rounded-full border-2 border-green-400/30 bg-black/20 p-2"
+        </div>
+        
+        {/* Response Options */}
+        <div className="space-y-3">
+          {currentQuestionData.type === 'multiple-choice' && (
+            <>
+              {currentQuestionData.options?.map((option, index) => (
+                <div
+                  key={index}
+                  className={`border rounded-2xl p-4 cursor-pointer transition-all duration-200 font-mono ${
+                    selectedOption === index
+                      ? 'border-green-500/60 bg-green-900/20 retro-glow-green shadow-lg shadow-green-500/10'
+                      : 'border-green-500/20 hover:border-green-500/40 hover:bg-green-900/10 text-gray-300 hover:text-green-300'
+                  }`}
+                  onClick={() => {
+                    setSelectedOption(index);
+                    setTimeout(() => handleSubmitAnswer(), 100);
+                  }}
+                  dir="ltr"
+                >
+                  <div className="text-left" dir="ltr">
+                    {option}
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+          
+          {currentQuestionData.type === 'text' && (
+            <div className="space-y-4">
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && userInput.trim() && handleSubmitAnswer()}
+                  className="flex-1 p-3 bg-black border border-green-500/30 retro-glow-green rounded-lg font-mono focus:border-green-500/60 focus:outline-none text-left"
+                  placeholder="Your answer..."
+                  autoFocus
+                  dir="ltr"
                 />
+                <button
+                  onClick={handleSubmitAnswer}
+                  disabled={!userInput.trim()}
+                  className="px-6 py-3 bg-green-600/20 border border-green-500/30 retro-glow-green hover:bg-green-600/30 disabled:bg-gray-600/20 disabled:border-gray-500/20 disabled:cursor-not-allowed disabled:text-gray-500 rounded-lg transition-all duration-200 font-mono"
+                >
+                  Send
+                </button>
               </div>
-
-              {/* Follow-up Message Bubble */}
-              <div className="flex-1">
-                <div className="relative bg-black/40 border border-green-400/30 rounded-lg rounded-tl-none p-4 backdrop-blur-sm">
-                  {/* Chat bubble tail */}
-                  <div className="absolute -left-2 top-4 w-4 h-4 bg-black/40 border-l border-b border-green-400/30 transform rotate-45"></div>
-
-                  <div className="text-green-300 text-xl italic font-retro-light retro-glow-green whitespace-pre-line">
-                    {currentQuestionData.followUp}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Answer interface */}
-          {!showingFollowUp && !isTyping && (
-            <div className="space-y-4 w-full max-w-3xl mx-auto">
-              {currentQuestionData.type === 'multiple-choice' && (
-                <div className="space-y-2">
-                  {currentQuestionData.options?.map((option, index) => (
-                    <div
-                      key={index}
-                      className={`p-3 border-2 cursor-pointer transition-all ${selectedOption === index
-                          ? 'border-green-400 bg-green-400/10 retro-glow-green'
-                          : 'border-gray-600 hover:border-green-300'
-                        }`}
-                      onClick={() => {
-                        setSelectedOption(index);
-                        // Auto-submit when clicking an option
-                        setTimeout(() => {
-                          handleSubmitAnswer();
-                        }, 100);
-                      }}
-                    >
-                      <span className={`font-retro-light text-xl ${selectedOption === index ? 'text-green-300 retro-glow-green' : 'text-gray-300'}`} dir="ltr">
-                        {selectedOption === index ? '> ' : '  '}{option}
-                      </span>
-                    </div>
-                  ))}
-
-                  {/* Mobile navigation buttons */}
-                  <div className="flex justify-center space-x-4 mt-4 md:hidden">
-                    <button
-                      onClick={() => {
-                        if (selectedOption > 0) {
-                          setSelectedOption(selectedOption - 1);
-                          playNavigationSound('up');
-                        }
-                      }}
-                      disabled={selectedOption === 0}
-                      className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (selectedOption < (currentQuestionData.options?.length || 0) - 1) {
-                          setSelectedOption(selectedOption + 1);
-                          playNavigationSound('down');
-                        }
-                      }}
-                      disabled={selectedOption === (currentQuestionData.options?.length || 0) - 1}
-                      className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
-                    >
-                      ↓
-                    </button>
-                    <button
-                      onClick={handleSubmitAnswer}
-                      className="bg-transparent border border-green-400 text-green-400 px-4 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200"
-                    >
-                      ENTER
-                    </button>
-                  </div>
-
-                  <div className="text-gray-400 text-lg mt-4 font-retro">
-                    <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
-                    <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
-                  </div>
-                </div>
-              )}
-
-              {currentQuestionData.type === 'text' && (
-                <div className="space-y-4 relative px-4 md:px-0">
-                  <div className="w-full p-4 bg-transparent text-green-300 min-h-[60px] flex items-center justify-start border border-green-400/30 rounded">
-                    <div className="flex items-center w-full">
-                      <span className="whitespace-pre-wrap text-2xl font-retro-light leading-snug">{userInput}</span>
-                      <span className="inline-block w-4 h-6 ml-0 flex-shrink-0">
-                        {showCursor && <div className="w-full h-full text-green-400 retro-cursor">█</div>}
-                      </span>
-                    </div>
-                  </div>
-                  <input
-                    type="text"
-                    value={userInput}
-                    readOnly={/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)}
-                    onChange={(e) => {
-                      setUserInput(e.target.value);
-                      setValidationMessage(''); // Clear validation message when typing
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        if (e.altKey) {
-                          // Alt+Enter: Add new line and move cursor to start of new line
-                          e.preventDefault();
-                          const input = e.target as HTMLInputElement;
-                          const cursorPosition = input.selectionStart || 0;
-                          const beforeCursor = userInput.substring(0, cursorPosition);
-                          const afterCursor = userInput.substring(cursorPosition);
-                          const newText = beforeCursor + '\n' + afterCursor;
-                          setUserInput(newText);
-
-                          // Move cursor to start of new line (after the \n)
-                          setTimeout(() => {
-                            input.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
-                          }, 0);
-                        } else if (userInput.trim()) {
-                          // Enter: Submit answer
-                          handleSubmitAnswer();
-                        }
-                      }
-                    }}
-                    className="absolute top-0 left-0 w-full h-[60px] opacity-0 cursor-text z-10 font-retro-light text-2xl"
-                    autoFocus
-                  />
-                  {validationMessage && (
-                    <div className="text-red-400 text-lg font-retro text-center">
-                      ⚠️ {validationMessage}
-                    </div>
-                  )}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('Button clicked!', { userInput: userInput.trim() });
-                      handleSubmitAnswer();
-                    }}
-                    disabled={!userInput.trim() && currentQuestionData.validation && !currentQuestionData.validation('')}
-                    className="bg-transparent border border-green-400 text-green-400 px-6 py-3 text-2xl font-retro retro-glow-green hover:bg-green-400 hover:text-black disabled:opacity-50 transition-colors duration-200 touch-manipulation relative z-20"
-                  >
-                    Submit Answer
-                  </button>
-                </div>
-              )}
-
-              {currentQuestionData.type === 'yes-no' && (
-                <div className="space-y-2">
-                  {['Yes', 'No'].map((option, index) => (
-                    <div
-                      key={index}
-                      className={`p-3 border-2 cursor-pointer transition-all ${selectedOption === index
-                          ? 'border-green-400 bg-green-400/10'
-                          : 'border-gray-600 hover:border-green-300'
-                        }`}
-                      onClick={() => setSelectedOption(index)}
-                    >
-                      <span className={selectedOption === index ? 'text-green-300' : 'text-gray-300'}>
-                        {selectedOption === index ? '> ' : '  '}{option}
-                      </span>
-                    </div>
-                  ))}
-
-                  {/* Mobile navigation buttons */}
-                  <div className="flex justify-center space-x-4 mt-4 md:hidden">
-                    <button
-                      onClick={() => {
-                        if (selectedOption > 0) {
-                          setSelectedOption(selectedOption - 1);
-                          playNavigationSound('up');
-                        }
-                      }}
-                      disabled={selectedOption === 0}
-                      className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (selectedOption < 1) {
-                          setSelectedOption(selectedOption + 1);
-                          playNavigationSound('down');
-                        }
-                      }}
-                      disabled={selectedOption === 1}
-                      className="bg-transparent border border-green-400 text-green-400 px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-400 hover:text-black transition-colors duration-200"
-                    >
-                      ↓
-                    </button>
-                    <button
-                      onClick={handleSubmitAnswer}
-                      className="bg-transparent border border-green-400 text-green-400 px-4 py-2 hover:bg-green-400 hover:text-black transition-colors duration-200"
-                    >
-                      ENTER
-                    </button>
-                  </div>
-
-                  <div className="text-gray-400 text-lg mt-4 font-retro">
-                    <span className="hidden md:inline retro-glow-cyan">Use ↑↓ arrows to navigate, Enter to select</span>
-                    <span className="md:hidden retro-glow-cyan">Use buttons below or tap options to navigate</span>
-                  </div>
-                </div>
+              {validationMessage && (
+                <div className="text-red-400 text-sm font-mono">{validationMessage}</div>
               )}
             </div>
           )}
-
-          {/* Progress indicator */}
-          {!isTyping && (
-            <div className="text-gray-400 text-xl text-center font-retro">
-              Question {currentQuestion + 1}/{currentWaveData.questions.length}
-            </div>
-          )}
-
-          {/* Dev only: Skip to generation button */}
-          {process.env.NODE_ENV === 'development' && !showingFollowUp && !isTyping && (
-            <div className="mt-4 text-center">
-              <button
-                onClick={() => {
-                  setIsGenerating(true);
-                  setGenerationStep(0);
-                }}
-                className="bg-transparent border border-red-400 text-red-400 px-4 py-2 text-xl font-retro hover:bg-red-400 hover:text-black transition-colors duration-200"
-              >
-                DEV: SKIP TO GENERATION
-              </button>
-            </div>
-          )}
-
-
-          {/* Clearing message */}
-          {validationMessage === 'Clearing project...' && (
-            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-60">
-              <div className="text-red-400 text-xl font-mono">
-                🗑️ CLEARING PROJECT...
-              </div>
+        </div>
+        
+        {/* Question Counter and Latest Insight */}
+        <div className="text-center py-4 text-gray-500 font-mono space-y-2">
+          <div>Question {currentQuestion + 1}/{currentWaveData.questions.length}</div>
+          {projectInsights.length > 0 && (
+            <div className="text-xs text-blue-400">
+              💡 Latest insight: {projectInsights[projectInsights.length - 1]?.description}
             </div>
           )}
         </div>

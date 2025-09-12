@@ -1,0 +1,332 @@
+{
+  "name": "Bot 1: Business Q&A Workflow (Enhanced)",
+  "description": "Purpose: Handle business Q&A queries with AI responses\nOwners: m8s.ai development team\nInputs: POST webhook with {userMessage, conversationHistory, sessionId, businessPolicy, conversationFlow}\nOutputs: {text, suggestedQuestions, requiresTeamConsultation?, conversationPhase?, exchangeCount?, shouldTransition?}\nError Workflow: business-qa-error-handler\nDependencies: OpenAI API credentials\nSLAs: <2s response time, 99.5% uptime",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "business-qa",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "id": "qa-webhook-trigger",
+      "name": "Business Q&A Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300],
+      "webhookId": "business-qa-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input validation and preprocessing\nconst payload = $json;\n\n// Validate required fields\nif (!payload.userMessage || typeof payload.userMessage !== 'string') {\n  throw new Error('Missing or invalid userMessage field');\n}\n\nif (!payload.sessionId || typeof payload.sessionId !== 'string') {\n  throw new Error('Missing or invalid sessionId field');\n}\n\n// Set defaults for optional fields\nconst conversationHistory = Array.isArray(payload.conversationHistory) ? payload.conversationHistory : [];\nconst businessPolicy = payload.businessPolicy || {\n  noPricing: true,\n  redirectPricingToTeam: true,\n  focusAreas: ['services', 'process', 'team', 'technical_capabilities']\n};\nconst conversationFlow = payload.conversationFlow || {\n  exchangeCount: 1,\n  engagementScore: 0,\n  phase: 'exploration',\n  shouldTransition: false\n};\n\n// Add execution breadcrumb\nconst executionId = $workflow.id + '_' + Date.now();\n\nreturn {\n  userMessage: payload.userMessage.trim(),\n  conversationHistory,\n  sessionId: payload.sessionId,\n  businessPolicy,\n  conversationFlow,\n  timestamp: new Date().toISOString(),\n  executionId,\n  userAgent: payload.userAgent || 'm8s-website-business-qa'\n};"
+      },
+      "id": "input-validator",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process user message and detect intent\nconst { userMessage, conversationHistory, businessPolicy, conversationFlow } = $json;\n\n// Check for pricing keywords (following business policy)\nconst pricingKeywords = [\n  'price', 'cost', 'budget', 'rate', 'fee', 'billing', 'payment', 'quote',\n  'how much', 'pricing', 'expensive', 'cheap', 'afford', 'money', 'dollar',\n  'estimate', 'investment', 'charge', 'subscription', 'plan'\n];\n\nconst isPricingQuery = businessPolicy.noPricing && \n  pricingKeywords.some(keyword => userMessage.toLowerCase().includes(keyword));\n\n// Detect project transition intent\nconst projectKeywords = [\n  'start my project', 'define my project', 'project discovery',\n  'ready to begin', 'let\\'s start', 'validation', 'analyze my idea'\n];\n\nconst isProjectTransition = projectKeywords.some(keyword => \n  userMessage.toLowerCase().includes(keyword)\n);\n\n// Calculate engagement metrics\nconst exchangeCount = Math.floor(conversationHistory.length / 2) + 1;\nconst shouldTransition = conversationFlow.shouldTransition || exchangeCount >= 5;\n\n// Determine conversation phase\nlet phase = 'exploration';\nif (exchangeCount >= 3 && !isPricingQuery) {\n  phase = 'engagement';\n}\nif (shouldTransition || isProjectTransition) {\n  phase = 'transition';\n}\n\nreturn {\n  userMessage,\n  conversationHistory,\n  sessionId: $json.sessionId,\n  businessPolicy,\n  isPricingQuery,\n  isProjectTransition,\n  exchangeCount,\n  shouldTransition,\n  phase,\n  executionId: $json.executionId,\n  processedAt: new Date().toISOString()\n};"
+      },
+      "id": "message-processor",
+      "name": "Process Message & Intent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isPricingQuery }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "pricing-gate",
+      "name": "Pricing Query Gate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [800, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isProjectTransition }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "project-transition-gate",
+      "name": "Project Transition Gate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [800, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate pricing redirect response\nconst { sessionId, executionId, phase } = $json;\n\nreturn {\n  text: \"For pricing and detailed quotes, I'll connect you with our team for a personalized consultation. Our rates depend on project scope, complexity, and timeline.\",\n  suggestedQuestions: [\n    \"Schedule consultation with your team\",\n    \"What factors affect your pricing?\",\n    \"Tell me about your development process instead\", \n    \"Ready to define my project instead\"\n  ],\n  requiresTeamConsultation: true,\n  conversationPhase: phase,\n  exchangeCount: $json.exchangeCount,\n  shouldTransition: false,\n  metadata: {\n    responseType: 'pricing_redirect',\n    sessionId,\n    executionId,\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "id": "pricing-response",
+      "name": "Generate Pricing Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1000, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate project transition response\nconst { sessionId, executionId, exchangeCount } = $json;\n\nreturn {\n  text: \"Perfect! I can help you validate and define your project. Let me switch you to our project discovery mode where I'll guide you through our proven validation process.\",\n  suggestedQuestions: [\n    \"Start project discovery now\",\n    \"Tell me about the validation process\",\n    \"What information will you need?\",\n    \"How long does validation take?\"\n  ],\n  requiresTeamConsultation: false,\n  conversationPhase: 'transition',\n  exchangeCount,\n  shouldTransition: true,\n  metadata: {\n    responseType: 'project_transition',\n    sessionId,\n    executionId,\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "id": "transition-response",
+      "name": "Generate Transition Response", 
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1000, 500]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "create",
+        "model": "gpt-3.5-turbo",
+        "messages": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are ARIA, a business Q&A expert for m8s.ai. Answer questions about services, development process, team, and technical capabilities. Keep responses concise (2-3 sentences max).\n\nKEY RULES:\n- NEVER discuss pricing - always redirect to team consultation\n- Focus on: services, process, team expertise, technology stack\n- If shouldTransition=true, suggest project discovery mode\n- Maintain professional, helpful tone\n\nCOMPANY KNOWLEDGE:\n- Services: AI-powered development with human architect oversight\n- Team: AI agents + elite human architects (Unit 8200 background)\n- Process: 1) Discovery & Validation 2) Architecture Review 3) AI Development 4) Quality Delivery\n- Tech Stack: React, Node.js, Python, AI/ML, cloud deployment, automation\n- Specialties: Business automation, enterprise systems, rapid prototyping"
+            },
+            {
+              "role": "user",
+              "content": "{{ $json.userMessage }}\n\nContext: Exchange #{{ $json.exchangeCount }}, Phase: {{ $json.phase }}, ShouldTransition: {{ $json.shouldTransition }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 150,
+          "topP": 1,
+          "frequencyPenalty": 0,
+          "presencePenalty": 0
+        }
+      },
+      "id": "ai-response-generator",
+      "name": "Generate AI Response",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [1000, 400],
+      "credentials": {
+        "openAiApi": {
+          "id": "{{ $vars.OPENAI_CREDENTIAL_ID }}",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format AI response with dynamic suggested questions\nconst aiResponse = $json.choices[0].message.content;\nconst context = $('message-processor').first().json;\n\nlet suggestedQuestions;\n\n// Dynamic question suggestions based on conversation phase\nif (context.shouldTransition || context.phase === 'transition') {\n  suggestedQuestions = [\n    \"Yes, let's validate my project idea\",\n    \"Tell me about your validation process\",\n    \"What information do you need from me?\",\n    \"How long does project discovery take?\"\n  ];\n} else if (context.phase === 'engagement') {\n  suggestedQuestions = [\n    \"Show me examples of your work\",\n    \"How do you ensure quality?\",\n    \"What makes your team different?\",\n    \"Ready to discuss my project\"\n  ];\n} else {\n  suggestedQuestions = [\n    \"How does your development process work?\",\n    \"Tell me about your team structure\",\n    \"What technologies do you specialize in?\",\n    \"Can you show me case studies?\"\n  ];\n}\n\nreturn {\n  text: aiResponse,\n  suggestedQuestions,\n  requiresTeamConsultation: false,\n  conversationPhase: context.phase,\n  exchangeCount: context.exchangeCount,\n  shouldTransition: context.shouldTransition,\n  metadata: {\n    responseType: 'ai_generated',\n    sessionId: context.sessionId,\n    executionId: context.executionId,\n    aiModel: 'gpt-3.5-turbo',\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "id": "response-formatter",
+      "name": "Format AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1200, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "X-Response-Time",
+                "value": "{{ $now - $workflow.startedAt }}ms"
+              },
+              {
+                "name": "X-Execution-ID", 
+                "value": "{{ $json.metadata?.executionId || 'unknown' }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "webhook-response",
+      "name": "Send Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1400, 350]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log execution for monitoring and debugging\nconst response = $json;\nconst startTime = $('input-validator').first().json.timestamp;\nconst executionTime = Date.now() - new Date(startTime).getTime();\n\nconsole.log('Business Q&A Execution Log:', {\n  sessionId: response.metadata?.sessionId,\n  executionId: response.metadata?.executionId,\n  responseType: response.metadata?.responseType,\n  phase: response.conversationPhase,\n  exchangeCount: response.exchangeCount,\n  executionTimeMs: executionTime,\n  timestamp: new Date().toISOString()\n});\n\nreturn { logged: true };"
+      },
+      "id": "execution-logger", 
+      "name": "Log Execution",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1600, 350]
+    }
+  ],
+  "connections": {
+    "Business Q&A Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Process Message & Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Message & Intent": {
+      "main": [
+        [
+          {
+            "node": "Pricing Query Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pricing Query Gate": {
+      "main": [
+        [
+          {
+            "node": "Generate Pricing Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Project Transition Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Project Transition Gate": {
+      "main": [
+        [
+          {
+            "node": "Generate Transition Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Pricing Response": {
+      "main": [
+        [
+          {
+            "node": "Send Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Transition Response": {
+      "main": [
+        [
+          {
+            "node": "Send Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate AI Response": {
+      "main": [
+        [
+          {
+            "node": "Format AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format AI Response": {
+      "main": [
+        [
+          {
+            "node": "Send Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Webhook Response": {
+      "main": [
+        [
+          {
+            "node": "Log Execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": {
+      "id": "business-qa-error-handler"
+    },
+    "timezone": "UTC",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "id": "business-qa",
+      "name": "Business Q&A"
+    },
+    {
+      "id": "customer-facing",
+      "name": "Customer Facing"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "business-qa-workflow",
+  "versionId": "1"
+}

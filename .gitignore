@@ -90,3 +90,7 @@ Thumbs.db
 
 # Bun
 .bun
+
+# Claude and BMad directories
+.claude/
+.bmad-core/

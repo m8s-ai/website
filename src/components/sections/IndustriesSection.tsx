@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export const IndustriesSection = () => {
-  const { t, isRTL } = useLanguage();
-  
+  const { t } = useLanguage();
+
   const industries = [
     {
       icon: CreditCard,
@@ -125,7 +125,7 @@ export const IndustriesSection = () => {
                   <CardDescription className="text-muted-foreground leading-relaxed text-base">
                     {industry.description}
                   </CardDescription>
-                  
+
                   <div>
                     <h4 className="font-semibold text-foreground mb-3">{t("industries.key_use_cases")}</h4>
                     <div className="grid grid-cols-2 gap-2">

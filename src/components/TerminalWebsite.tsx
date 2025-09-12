@@ -355,46 +355,118 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = ({ className = ""
               </div>
               
               <div className="grid md:grid-cols-3 gap-8">
-                <div className="bg-gradient-to-br from-emerald-900/20 to-gray-900/20 border border-emerald-500/20 rounded-2xl p-6 backdrop-blur-sm">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-emerald-400 font-bold text-lg">SB</span>
+                {/* Story 1 - Rotem Perets */}
+                <div className="bg-gradient-to-br from-cyan-900/20 to-gray-900/20 border border-cyan-500/20 rounded-2xl backdrop-blur-sm flex flex-col h-full">
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="flex items-center mb-6">
+                      {/* Text content */}
+                      <div className={`${isRTL ? 'text-right order-2' : 'text-left order-1'} min-w-0 flex-1`}>
+                        <h4 className="text-white font-semibold text-lg leading-tight">{t('website.success_story1_company')}</h4>
+                        <p className="text-gray-400 text-sm mt-1">VP Engineering at Package AI</p>
+                      </div>
+                      
+                      {/* Image */}
+                      <div className={`w-12 h-12 rounded-full ${isRTL ? 'order-1 ml-3' : 'order-2 mr-3'} flex-shrink-0 overflow-hidden ring-2 ring-cyan-500/30`}>
+                        <img 
+                          src="https://media.licdn.com/dms/image/v2/C4D03AQH--QNM9GpwVw/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1571067730855?e=1760572800&v=beta&t=Rs-8D2X9V_H314VN0Ia3gwPvQbHuhvbxYmqaOx20LmI"
+                          alt="Rotem Perets"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback to initials if image fails to load
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div className="w-full h-full bg-cyan-500/20 rounded-full flex items-center justify-center text-cyan-400 font-bold text-sm hidden">
+                          RP
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-white font-semibold">{t('website.success_story3_company')}</h4>
-                      <p className="text-gray-400 text-sm">E-commerce Startup</p>
+                    <div className="flex-1 flex flex-col">
+                      <p className={`text-gray-300 text-sm mb-6 leading-relaxed flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {t('website.success_story1_description')}
+                      </p>
+                      <div className={`text-cyan-400 text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {t('website.success_story1_result')}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-gray-300 text-sm mb-4">{t('website.success_story3_description')}</p>
-                  <div className="text-emerald-400 text-xs">{t('website.success_story3_result')}</div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-cyan-900/20 to-gray-900/20 border border-cyan-500/20 rounded-2xl p-6 backdrop-blur-sm">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-cyan-500/20 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-cyan-400 font-bold text-lg">TechCorp</span>
+                {/* Story 2 - Dr. Oved Daniel */}
+                <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/20 border border-purple-500/20 rounded-2xl backdrop-blur-sm flex flex-col h-full">
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="flex items-center mb-6">
+                      {/* Text content */}
+                      <div className={`${isRTL ? 'text-right order-2' : 'text-left order-1'} min-w-0 flex-1`}>
+                        <h4 className="text-white font-semibold text-lg leading-tight">{t('website.success_story2_company')}</h4>
+                        <p className="text-gray-400 text-sm mt-1">Board Member, International Headache Society</p>
+                      </div>
+                      
+                      {/* Image */}
+                      <div className={`w-12 h-12 rounded-full ${isRTL ? 'order-1 ml-3' : 'order-2 mr-3'} flex-shrink-0 overflow-hidden ring-2 ring-purple-500/30`}>
+                        <img 
+                          src="https://media.licdn.com/dms/image/v2/D4D03AQECGwtaNrsIEQ/profile-displayphoto-scale_200_200/B4DZj3AsS7H0Ac-/0/1756490811897?e=1760572800&v=beta&t=sYL6Ik6V446XBshaML6KjRjQL5A5YEJrZg8mEGZYYRA"
+                          alt="Dr. Oved Daniel"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback to initials if image fails to load
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div className="w-full h-full bg-purple-500/20 rounded-full flex items-center justify-center text-purple-400 font-bold text-sm hidden">
+                          OD
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-white font-semibold">{t('website.success_story1_company')}</h4>
-                      <p className="text-gray-400 text-sm">Enterprise Client</p>
+                    <div className="flex-1 flex flex-col">
+                      <p className={`text-gray-300 text-sm mb-6 leading-relaxed flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {t('website.success_story2_description')}
+                      </p>
+                      <div className={`text-purple-400 text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {t('website.success_story2_result')}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-gray-300 text-sm mb-4">{t('website.success_story1_description')}</p>
-                  <div className="text-cyan-400 text-xs">{t('website.success_story1_result')}</div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/20 border border-purple-500/20 rounded-2xl p-6 backdrop-blur-sm">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-purple-400 font-bold text-lg">MK</span>
+                {/* Story 3 - LocalBiz */}
+                <div className="bg-gradient-to-br from-emerald-900/20 to-gray-900/20 border border-emerald-500/20 rounded-2xl backdrop-blur-sm flex flex-col h-full">
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="flex items-center mb-6">
+                      {/* Text content */}
+                      <div className={`${isRTL ? 'text-right order-2' : 'text-left order-1'} min-w-0 flex-1`}>
+                        <h4 className="text-white font-semibold text-lg leading-tight">{t('website.success_story3_company')}</h4>
+                        <p className="text-gray-400 text-sm mt-1">Software Developer/Manager</p>
+                      </div>
+                      
+                      {/* Image */}
+                      <div className={`w-12 h-12 rounded-full ${isRTL ? 'order-1 ml-3' : 'order-2 mr-3'} flex-shrink-0 overflow-hidden ring-2 ring-emerald-500/30`}>
+                        <img 
+                          src="https://media.licdn.com/dms/image/v2/C5103AQEFCZFVH4VjIQ/profile-displayphoto-shrink_100_100/profile-displayphoto-shrink_100_100/0/1516291988350?e=1760572800&v=beta&t=oLWKcKjnWTtKlsUk-ZwqqK6uS15IpL9N7UXEgx-SMHA"
+                          alt="Maoz Mussel"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback to initials if image fails to load
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div className="w-full h-full bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-400 font-bold text-sm hidden">
+                          MM
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-white font-semibold">{t('website.success_story2_company')}</h4>
-                      <p className="text-gray-400 text-sm">Mobile App Founder</p>
+                    <div className="flex-1 flex flex-col">
+                      <p className={`text-gray-300 text-sm mb-6 leading-relaxed flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {t('website.success_story3_description')}
+                      </p>
+                      <div className={`text-emerald-400 text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {t('website.success_story3_result')}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-gray-300 text-sm mb-4">{t('website.success_story2_description')}</p>
-                  <div className="text-purple-400 text-xs">{t('website.success_story2_result')}</div>
                 </div>
               </div>
             </div>

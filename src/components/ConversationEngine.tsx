@@ -1,47 +1,37 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { analyticsManager } from '@/utils/analyticsManager';
-import { BotModeSelector } from './BotModeSelector';
-import { ConversationTemplate } from '@/features/conversation';
-import type { BotMode, ConversationEngineProps } from '@/types/conversation';
+
+interface ConversationEngineProps {
+  onComplete?: () => void;
+  initialBotMode?: 'qa' | 'project';
+  onBotModeSelect?: (mode: 'qa' | 'project') => void;
+}
 
 export const ConversationEngine: React.FC<ConversationEngineProps> = ({ 
   onComplete, 
-  initialBotMode, 
-  onBotModeSelect 
+  initialBotMode = 'project'
 }) => {
   // Initialize analytics
   useEffect(() => {
     analyticsManager.startConversation('initial');
   }, []);
 
-  // Handle bot mode selection for legacy support
-  const handleBotModeSelect = useCallback((mode: BotMode) => {
-    if (onBotModeSelect) {
-      onBotModeSelect(mode);
-    }
-    
-    analyticsManager.trackTerminalEvent('bot_strategy_selected', {
-      bot_mode: mode,
-      conversation_id: 'conv_' + Date.now(),
-      strategy_pattern: true
-    });
-  }, [onBotModeSelect]);
+  // Auto-complete after a short delay for now
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onComplete?.();
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
 
-  // Show bot mode selector if no initial mode provided
-  if (!initialBotMode) {
-    return <BotModeSelector onModeSelect={handleBotModeSelect} />;
-  }
-
-  // Use the new atomic design template
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-black border border-gray-600 rounded-lg shadow-2xl h-[80vh]">
-        <ConversationTemplate
-          initialBotMode={initialBotMode}
-          onComplete={onComplete}
-          canSwitchMode={true}
-          className="h-full"
-        />
+      <div className="bg-black border border-gray-600 rounded-lg shadow-2xl h-[80vh] flex items-center justify-center">
+        <div className="text-center text-green-400 font-mono">
+          <div className="text-xl mb-4">ConversationEngine</div>
+          <div className="text-sm text-gray-400 mb-4">Temporary placeholder - ready for refactor</div>
+          <div className="text-xs text-gray-500">Mode: {initialBotMode}</div>
+        </div>
       </div>
     </div>
   );

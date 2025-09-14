@@ -14,7 +14,7 @@ interface TerminalOverlayProps {
 
 export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, initialBotMode = 'project' }) => {
   const audio = useAudioManager({ isEnabled: true, volume: 0.3 });
-  
+
   // Terminal overlay always uses English - hardcoded
   const TERMINAL_COMMANDS = [
     { command: '$ cd /usr/local/m8s/aria', output: null },
@@ -26,7 +26,7 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
     { command: '$ aria --version', output: 'ARIA v3.2.1 - AI Project Validation Assistant' },
     { command: '$ aria --help', output: 'Available modes: [qa] [project-validation] [technical-analysis]' }
   ];
-  
+
   // Welcome message after terminal simulation
   const WELCOME_MESSAGE = 'ARIA Project Validation Terminal';
   const [terminalStarted, setTerminalStarted] = useState(false);
@@ -70,26 +70,26 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
     if (terminalStarted && currentCommandIndex < TERMINAL_COMMANDS.length) {
       const currentCmd = TERMINAL_COMMANDS[currentCommandIndex];
       console.log(`Processing command ${currentCommandIndex}:`, currentCmd);
-      
+
       // Step 1: Show command (if it exists)
       if (currentCmd.command) {
         const timer = setTimeout(() => {
           audio.playBootSound(currentCommandIndex);
-          
+
           // Add command to history
           setCommandHistory(prev => [...prev, {
             command: currentCmd.command,
             output: null,
             completed: false
           }]);
-          
+
           // Step 2: Show output after a delay
           if (currentCmd.output) {
             setTimeout(() => {
-              setCommandHistory(prev => prev.map((item, index) => 
+              setCommandHistory(prev => prev.map((item, index) =>
                 index === prev.length - 1 ? { ...item, output: currentCmd.output, completed: true } : item
               ));
-              
+
               // Move to next command after showing output
               setTimeout(() => {
                 setCurrentCommandIndex(prev => prev + 1);
@@ -101,24 +101,24 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
             }, 100);
           }
         }, 200);
-        
+
         return () => clearTimeout(timer);
       } else {
         // Only output, no command
         const timer = setTimeout(() => {
           audio.playBootSound(currentCommandIndex);
-          
+
           setCommandHistory(prev => [...prev, {
             command: null,
             output: currentCmd.output,
             completed: true
           }]);
-          
+
           setTimeout(() => {
             setCurrentCommandIndex(prev => prev + 1);
           }, 600);
         }, 50);
-        
+
         return () => clearTimeout(timer);
       }
     }
@@ -133,7 +133,7 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
           total_terminal_time: terminalStartTime ? Math.round((Date.now() - terminalStartTime) / 1000) : 0,
           commands_executed: TERMINAL_COMMANDS.length
         });
-        
+
         setTerminalComplete(true);
         setConversationStarted(true);
         audio.playBackgroundAmbient();
@@ -154,19 +154,19 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
 
   const handleStartConversation = useCallback(async () => {
     const totalTerminalTime = terminalStartTime ? Math.round((Date.now() - terminalStartTime) / 1000) : 0;
-    
+
     analyticsManager.trackTerminalEvent('overlay_conversation_initiated', {
       interaction_method: 'button_click',
       total_terminal_time: totalTerminalTime,
       bot_name: 'ARIA'
     });
-    
+
     await audio.playTransitionSound();
-    
+
     // Start the transition sequence for ConversationEngine
     setTransitionMessage('Getting ARIA ready to chat...');
     setShowTransition(true);
-    
+
     setTimeout(() => {
       setTransitionMessage('Preparing your project analysis...');
     }, 200);
@@ -212,12 +212,12 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
   // Render different states
   if (showConversationEngine) {
     return (
-      <div 
-        ref={conversationRef} 
-        className="w-full h-full bg-transparent focus:outline-none overflow-auto terminal-scrollbar" 
-        tabIndex={0} 
+      <div
+        ref={conversationRef}
+        className="w-full h-full bg-transparent focus:outline-none overflow-auto terminal-scrollbar"
+        tabIndex={0}
         autoFocus
-        style={{ 
+        style={{
           pointerEvents: 'auto',
           scrollbarWidth: 'thin',
           scrollbarColor: '#10b981 #1f2937'
@@ -231,8 +231,8 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
           // Let events pass through to ConversationEngine
         }}
       >
-        <ConversationEngine 
-          onComplete={onComplete || (() => {})} 
+        <ConversationEngine
+          onComplete={onComplete || (() => {})}
           initialBotMode={initialBotMode}
         />
       </div>
@@ -267,7 +267,7 @@ export const TerminalOverlay: React.FC<TerminalOverlayProps> = ({ onComplete, in
     <div className="w-full h-full bg-transparent text-green-400 font-mono overflow-hidden relative">
       {/* Screen glow effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-green-900/10 via-transparent to-green-900/10 pointer-events-none" />
-      
+
       {/* Terminal content */}
       <div className="relative z-10 pt-4 px-8 pb-8 h-full flex flex-col justify-start items-center max-w-4xl mx-auto text-center">
         {/* Terminal Command Simulation */}

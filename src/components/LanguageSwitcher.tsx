@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Languages } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, type Language } from "@/contexts/LanguageContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ interface LanguageSwitcherProps {
 export const LanguageSwitcher = ({ onLanguageChange }: LanguageSwitcherProps) => {
   const { language, setLanguage } = useLanguage();
 
-  const handleLanguageChange = (newLanguage: string) => {
+  const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
     onLanguageChange?.();
   };

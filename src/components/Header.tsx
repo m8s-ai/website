@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import { Bot } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Header = () => {
   const { t } = useLanguage();
-  
+
   return (
     <header className="glass-card border-b border-border/20 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-6 py-6">
@@ -26,7 +25,7 @@ export const Header = () => {
             </p>
           </div>
         </Link>
-        <ThemeToggle />
+
         </div>
       </div>
     </header>

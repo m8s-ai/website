@@ -5,7 +5,6 @@ import { useState, ReactNode } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useChatWindow } from "@/contexts/ChatWindowContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface PublicHeaderProps {
   children?: ReactNode;
@@ -14,12 +13,11 @@ interface PublicHeaderProps {
 export const PublicHeader: React.FC<PublicHeaderProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t } = useLanguage();
-  const { isChatExpanded, isChatMinimized } = useChatWindow();
+  const { isChatExpanded } = useChatWindow();
 
   return (
-    <header className={`glass-card border-b border-border/20 backdrop-blur-md sticky top-0 z-50 transition-all duration-500 ease-in-out ${
-      isChatExpanded ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
-    }`}>
+    <header className={`glass-card border-b border-border/20 backdrop-blur-md sticky top-0 z-50 transition-all duration-500 ease-in-out ${isChatExpanded ? 'transform -translate-y-full opacity-0' : 'transform translate-y-0 opacity-100'
+      }`}>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -62,7 +60,6 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ children }) => {
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             {children}
-            <ThemeToggle />
             <LanguageSwitcher />
             <Button variant="ghost" asChild>
               <Link to="/contact">{t('nav.contact')}</Link>
@@ -107,7 +104,6 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ children }) => {
               </Link>
               <div className="flex flex-col space-y-2 pt-2">
                 <div className="flex items-center justify-between">
-                  <ThemeToggle />
                   <LanguageSwitcher />
                 </div>
                 <Button variant="ghost" asChild>

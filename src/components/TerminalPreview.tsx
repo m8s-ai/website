@@ -46,16 +46,18 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
     <section className={`py-12 md:py-16 ${className}`}>
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Plan Your POC with ARIA
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                {t('terminal_preview.title')}
+              </span>
+            </h2>
+            <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-black text-xs px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+              BETA
             </span>
-          </h2>
-          <p className="text-lg text-gray-300">
-            Meet ARIA, your AI project validation bot. Click to start planning your proof-of-concept through our interactive terminal interface.
-          </p>
-          <p className="text-base text-emerald-300 mt-2">
-            We validate your idea with ARIA & schedule a meeting, then with our special AI development tools ship super fast at amazing prices.
+          </div>
+          <p className="text-gray-400 text-lg">
+            {t('terminal_preview.description')}
           </p>
         </div>
 
@@ -87,7 +89,7 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
               </div>
             </div>
 
-            {/* Terminal Content - Centered Vertically */}fd
+            {/* Terminal Content - Centered Vertically */}
             <div className="font-mono text-sm md:text-base h-32 flex flex-col justify-center space-y-3" dir="ltr">
               {bootText.map((line, index) => (
                 <div key={index} className="flex items-center justify-center space-x-4">

@@ -9,8 +9,6 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ChatWindowProvider } from "@/contexts/ChatWindowContext";
 import { analyticsManager } from "@/utils/analyticsManager";
-import { Marketplace } from "./pages/Marketplace";
-import { AutomationDetail } from "./pages/AutomationDetail";
 import NotFound from "./pages/NotFound";
 import { Protected } from "./components/Protected";
 import { TerminalWebsite } from "./components/TerminalWebsite";
@@ -41,8 +39,7 @@ const App = () => {
                   <Route path="/" element={<TerminalWebsite />} />
                   <Route path="/home" element={<TerminalWebsite />} />
                   <Route path="/completion-summary" element={<CompletionSummaryPage />} />
-                  <Route path="/marketplace" element={<Protected><Marketplace /></Protected>} />
-                  <Route path="/automation/:id" element={<Protected><AutomationDetail /></Protected>} />
+                  
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

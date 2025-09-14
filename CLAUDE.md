@@ -79,3 +79,4 @@ This is an AI automation company website with:
 - Follow existing patterns: PascalCase for components
 - Use descriptive names that match business domain
 - Maintain consistency with existing shadcn/ui component structure
+- @src/components/TerminalWebsite.tsx is my home website and main website

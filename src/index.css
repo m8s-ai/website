@@ -564,3 +564,21 @@ All colors MUST be HSL.
     background: rgba(31, 41, 55, 0.2);
   }
 }
+
+/* ARIA Avatar Blinking Animation */
+@keyframes ariaBlink {
+  0%, 90%, 100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  95% {
+    transform: scaleY(0.1);
+    opacity: 0.8;
+  }
+}
+
+/* Additional glow effect for ARIA avatar */
+.aria-avatar {
+  filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.4)) brightness(110%);
+  transition: all 0.3s ease;
+}

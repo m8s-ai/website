@@ -13,8 +13,8 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
   const { t, isRTL } = useLanguage();
   const [showCursor, setShowCursor] = useState(true);
   const [bootText] = useState([
-    'INITIALIZING PROJECT VALIDATION ENGINE...',
-    'ARIA BOT SYSTEMS ONLINE...'
+    'INITIALIZING AI PROJECT VALIDATION...',
+    'ARIA DEVELOPMENT ASSISTANT ONLINE...'
   ]);
 
   // Cursor blinking effect
@@ -46,18 +46,23 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
     <section className={`py-12 md:py-16 ${className}`}>
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              {t('terminal_preview.title')}
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                {t('terminal_preview.title')}
+              </span>
+            </h2>
+            <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-black text-xs px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+              BETA
             </span>
-          </h2>
-          <p className="text-lg text-gray-300">
+          </div>
+          <p className="text-gray-400 text-lg">
             {t('terminal_preview.description')}
           </p>
         </div>
 
         <div className="max-w-3xl mx-auto">
-          <div 
+          <div
             onClick={handleClick}
             className="relative bg-black border border-gray-600 rounded-lg shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-green-500/20 p-6"
             role="button"
@@ -72,18 +77,22 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
           >
             {/* Terminal Header */}
             <div className="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
-              <div className="flex items-center">
+              <div className="flex items-center flex-1">
                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-2" />
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-2" />
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
               </div>
-              <div className="text-gray-400 text-sm font-mono">m8s.ai Terminal</div>
+              <div className="text-gray-400 text-sm font-mono flex items-center">
+                m8s.ai Terminal
+              </div>
             </div>
 
-            {/* Terminal Content */}
-            <div className="font-mono text-sm md:text-base space-y-2" dir="ltr">
+            {/* Terminal Content - Centered Vertically */}
+            <div className="font-mono text-sm md:text-base h-32 flex flex-col justify-center space-y-3" dir="ltr">
               {bootText.map((line, index) => (
-                <div key={index} className="flex items-center space-x-4">
+                <div key={index} className="flex items-center justify-center space-x-4">
                   <span className="text-amber-400" style={{
                     textShadow: '0 0 10px rgba(251, 191, 36, 0.8)'
                   }}>
@@ -96,13 +105,13 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
                   </span>
                 </div>
               ))}
-              
-              <div className="flex items-center space-x-2 pt-2">
-                <span className="text-green-400">READY FOR POC VALIDATION...</span>
+
+              <div className="flex items-center justify-center space-x-2">
+                <span className="text-green-400">VALIDATE • SCHEDULE • SHIP FAST</span>
                 <div className="w-2 h-4 inline-block">
                   {showCursor && (
-                    <div 
-                      className="bg-green-400 w-full h-full" 
+                    <div
+                      className="bg-green-400 w-full h-full"
                       style={{
                         boxShadow: '0 0 10px rgba(34, 197, 94, 0.8)'
                       }}
@@ -111,11 +120,11 @@ export const TerminalPreview: React.FC<TerminalPreviewProps> = ({ onExpand, clas
                 </div>
               </div>
 
-              {/* Click prompt */}
-              <div className="pt-4 text-center">
+              {/* Click prompt - centered */}
+              <div className="flex items-center justify-center">
                 <div className={`inline-flex items-center px-4 py-2 border border-green-400 text-green-400 rounded text-sm hover:bg-green-400 hover:text-black transition-colors duration-200 gap-2 ${isRTL ? 'flex-row-reverse' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
                   <span>🤖</span>
-                  {t('terminal_preview.start_planning_aria')}
+                  <span>START VALIDATION WITH ARIA</span>
                 </div>
               </div>
             </div>

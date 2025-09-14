@@ -1,0 +1,272 @@
+{
+  "name": "Bot 3: Document Generator Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST", 
+        "path": "summarizer",
+        "responseMode": "responseNode"
+      },
+      "id": "summarizer-webhook",
+      "name": "Summarizer Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process enhanced project data from Bot 2 with AI intelligence\nconst data = $json;\nconst projectData = data.projectData || {};\n\n// Validate required fields\nif (!data.email || !data.name || !data.sessionId || !projectData) {\n  throw new Error('Missing required fields: email, name, sessionId, or projectData');\n}\n\n// Extract enhanced AI-generated data\nconst insights = projectData.insights || [];\nconst riskFlags = projectData.riskFlags || [];\nconst techRecommendations = projectData.techRecommendations || [];\nconst projectPhases = projectData.projectPhases || {};\n\n// Process and format enhanced data\nconst processedData = {\n  // Client information\n  email: data.email,\n  name: data.name, \n  company: data.company || 'Not provided',\n  preferredContact: data.preferredContact || 'Email with detailed analysis first',\n  \n  // Enhanced project details\n  projectIdea: (projectData.questionsAnswers?.find(q => q.questionId === 'project_idea')?.answer || 'Not specified').substring(0, 300),\n  businessProblem: (projectData.questionsAnswers?.find(q => q.questionId === 'business_problem')?.answer || 'Not specified').substring(0, 300),\n  successCriteria: (projectData.questionsAnswers?.find(q => q.questionId === 'success_criteria')?.answer || 'Not specified').substring(0, 200),\n  projectScale: projectData.questionsAnswers?.find(q => q.questionId === 'project_scale')?.answer || 'Not specified',\n  timeline: projectData.questionsAnswers?.find(q => q.questionId === 'timeline_expectations')?.answer || 'Not specified',\n  \n  // AI-generated intelligence\n  complexity: projectData.complexity || 'standard',\n  priority: data.priority || 'MEDIUM',\n  leadScore: data.leadScore || projectData.leadScore || 0,\n  riskLevel: data.riskLevel || 'MEDIUM',\n  estimatedEffort: projectData.estimatedEffort || 'To be determined',\n  \n  // Enhanced analysis\n  insights: insights.map(i => `${i.category}: ${i.description} (${i.impact} impact)`),\n  riskFlags: riskFlags,\n  techRecommendations: techRecommendations,\n  projectPhases: {\n    phase1: projectPhases.phase1 || ['Requirements analysis', 'Technical planning'],\n    phase2: projectPhases.phase2 || ['Core development', 'Integration'],\n    phase3: projectPhases.phase3 || ['Testing', 'Deployment']\n  },\n  \n  // Questions analysis\n  totalQuestions: projectData.totalQuestions || 0,\n  questionsAnswers: projectData.questionsAnswers || [],\n  totalInsights: insights.length,\n  totalRiskFactors: riskFlags.length,\n  \n  // Document generation data\n  documentTemplate: 'enhanced-project-interrogation-template-v3',\n  documentData: {\n    client_name: data.name,\n    company_name: data.company || 'Not provided',\n    session_id: data.sessionId,\n    project_analysis: {\n      complexity: projectData.complexity,\n      insights: insights,\n      risks: riskFlags,\n      tech_stack: techRecommendations,\n      phases: projectPhases\n    }\n  },\n  \n  // Metadata\n  sessionId: data.sessionId,\n  submittedAt: new Date().toLocaleString(),\n  source: 'Enhanced Project Discovery Bot v3.0',\n  status: 'READY_FOR_DOCUMENT_GENERATION',\n  recommendedArchitect: projectData.complexity === 'complex' ? 'Enterprise AI Specialist' : \n                        projectData.complexity === 'standard' ? 'Senior Full-Stack Architect' : \n                        'Development Team Lead',\n  urgency: data.priority === 'CRITICAL' ? 'IMMEDIATE' : \n           data.priority === 'HIGH' ? 'WITHIN_2_HOURS' : 'STANDARD_24_48H'\n};\n\nreturn processedData;"
+      },
+      "id": "validate-data",
+      "name": "Validate & Process Data",
+      "type": "n8n-nodes-base.code",
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.priority }}",
+              "value2": "HIGH"
+            }
+          ]
+        }
+      },
+      "id": "priority-check",
+      "name": "Priority Check", 
+      "type": "n8n-nodes-base.if",
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_GOOGLE_SHEETS_ID_HERE"
+        },
+        "sheetName": "Project_Leads",
+        "columnToMatchOn": "A",
+        "options": {
+          "useAppend": true
+        },
+        "values": {
+          "A": "={{ $json.email }}",
+          "B": "={{ $json.name }}",
+          "C": "={{ $json.company }}",
+          "D": "={{ $json.projectIdea }}",
+          "E": "={{ $json.businessProblem }}",
+          "F": "={{ $json.projectScale }}",
+          "G": "={{ $json.complexity }}",
+          "H": "={{ $json.priority }}",
+          "I": "={{ $json.leadScore }}",
+          "J": "={{ $json.estimatedEffort }}",
+          "K": "={{ $json.totalInsights }}",
+          "L": "={{ $json.totalRiskFactors }}",
+          "M": "={{ $json.techRecommendations.join(', ') }}",
+          "N": "={{ $json.timeline }}",
+          "O": "={{ $json.submittedAt }}",
+          "P": "={{ $json.sessionId }}",
+          "Q": "={{ $json.source }}",
+          "R": "={{ $json.recommendedArchitect }}",
+          "S": "={{ $json.status }}",
+          "T": "={{ $json.urgency }}",
+          "U": "={{ $json.preferredContact }}",
+          "V": "={{ $json.insights.join('; ') }}",
+          "W": "={{ $json.riskFlags.join('; ') }}"
+        }
+      },
+      "id": "excel-update",
+      "name": "Update Excel Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [800, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "postToChannel",
+        "channel": "#urgent-leads",
+        "text": "🚨 **HIGH PRIORITY LEAD** 🚨\\n\\n👤 **Client**: {{ $json.name }} ({{ $json.email }})\\n🏢 **Company**: {{ $json.company }}\\n📊 **Lead Score**: {{ $json.leadScore }}/20\\n🎯 **Priority**: {{ $json.priority }}\\n📋 **Project**: {{ $json.projectIdea }}\\n🔧 **Scale**: {{ $json.projectScale }}\\n⚙️ **Complexity**: {{ $json.complexity }}\\n\\n**⚡ URGENT ACTION REQUIRED ⚡**\\nArchitect assignment needed within 2 hours\\n\\n📝 **Session**: {{ $json.sessionId }}\\n🕒 **Submitted**: {{ $json.submittedAt }}"
+      },
+      "id": "urgent-slack",
+      "name": "Urgent Slack Alert",
+      "type": "n8n-nodes-base.slack",
+      "position": [1000, 200],
+      "credentials": {
+        "slackApi": {
+          "id": "slack-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "subject": "New Project Lead: {{ $json.name }}",
+        "emailType": "text",
+        "message": "New project lead submitted:\\n\\nClient: {{ $json.name }} ({{ $json.email }})\\nCompany: {{ $json.company }}\\nLead Score: {{ $json.leadScore }}/20\\nPriority: {{ $json.priority }}\\nProject: {{ $json.projectIdea }}\\nScale: {{ $json.projectScale }}\\nComplexity: {{ $json.complexity }}\\n\\nTotal Questions: {{ $json.totalQuestions }}\\nSession ID: {{ $json.sessionId }}\\nSubmitted: {{ $json.submittedAt }}\\n\\nNext Steps:\\n- Added to Excel sheet\\n- {{ $json.priority === 'HIGH' ? 'URGENT: Architect assignment within 2 hours' : 'Standard processing - 24-48h response' }}\\n\\nRecommended Architect: {{ $json.recommendedArchitect }}",
+        "toEmail": "team@m8s.ai"
+      },
+      "id": "email-team",
+      "name": "Email Team",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1000, 400],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate final summary and response\nconst data = $json;\n\nconst summary = {\n  // Processing confirmation\n  success: true,\n  message: 'Project data processed and team notified',\n  \n  // Client confirmation\n  client: {\n    email: data.email,\n    name: data.name,\n    priority: data.priority\n  },\n  \n  // Actions taken\n  actionsCompleted: [\n    'Excel sheet updated with project details',\n    data.priority === 'HIGH' ? 'Urgent Slack alert sent' : 'Standard team notification sent',\n    'Email notification sent to team',\n    `Recommended architect: ${data.recommendedArchitect}`\n  ],\n  \n  // Next steps\n  nextSteps: [\n    data.priority === 'HIGH' ? 'Architect will contact within 2 hours' : 'Team will respond within 24-48 hours',\n    'Check your email for confirmation',\n    'Meeting will be scheduled based on your preferred time'\n  ],\n  \n  // Metadata\n  sessionId: data.sessionId,\n  processedAt: new Date().toISOString()\n};\n\n// Log successful processing\nconsole.log('Summarizer Bot - Project Processed:', {\n  email: data.email,\n  priority: data.priority,\n  questionsCount: data.totalQuestions,\n  sessionId: data.sessionId\n});\n\nreturn summary;"
+      },
+      "id": "generate-summary",
+      "name": "Generate Summary",
+      "type": "n8n-nodes-base.code", 
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}"
+      },
+      "id": "send-response",
+      "name": "Send Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1400, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Error handler for summarizer failures\nconst error = $json.error || 'Unknown error';\nconst originalData = $('summarizer-webhook').first().json;\n\nconsole.error('Summarizer Bot Error:', error);\n\n// Return error response\nreturn {\n  success: false,\n  message: 'Summarizer processing encountered an error',\n  error: error.toString(),\n  fallback: 'Data preserved for manual processing', \n  originalEmail: originalData?.email || 'unknown',\n  sessionId: originalData?.sessionId || 'unknown',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "error-handler",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "position": [1200, 500]
+    }
+  ],
+  "connections": {
+    "Summarizer Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate & Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Process Data": {
+      "main": [
+        [
+          {
+            "node": "Priority Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority Check": {
+      "main": [
+        [
+          {
+            "node": "Update Excel Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Excel Sheet",
+            "type": "main", 
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Excel Sheet": {
+      "main": [
+        [
+          {
+            "node": "Urgent Slack Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent Slack Alert": {
+      "main": [
+        [
+          {
+            "node": "Generate Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Team": {
+      "main": [
+        [
+          {
+            "node": "Generate Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Send Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

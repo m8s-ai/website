@@ -13,6 +13,8 @@ import NotFound from "./pages/NotFound";
 import { Protected } from "./components/Protected";
 import { TerminalWebsite } from "./components/TerminalWebsite";
 import { CompletionSummaryPage } from "./pages/CompletionSummaryPage";
+import ClaudeFlowApp from "./pages/claude-flow/ClaudeFlowApp";
+import Debug from "./pages/Debug";
 
 
 
@@ -39,6 +41,14 @@ const App = () => {
                   <Route path="/" element={<TerminalWebsite />} />
                   <Route path="/home" element={<TerminalWebsite />} />
                   <Route path="/completion-summary" element={<CompletionSummaryPage />} />
+                  <Route path="/debug" element={<Debug />} />
+                  
+                  {/* Claude Flow Routes - Protected */}
+                  <Route path="/claude-flow/*" element={
+                    <Protected>
+                      <ClaudeFlowApp />
+                    </Protected>
+                  } />
                   
                   <Route path="*" element={<NotFound />} />
                 </Routes>

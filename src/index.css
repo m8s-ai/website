@@ -173,6 +173,19 @@ All colors MUST be HSL.
     background: var(--gradient-card);
     backdrop-filter: var(--blur-glass);
     border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+  }
+
+  .glass-input {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: var(--blur-glass);
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+
+  .glass-input:focus {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
   }
 
   /* Enhanced scrollbar */

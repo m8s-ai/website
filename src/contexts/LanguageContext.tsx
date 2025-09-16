@@ -716,6 +716,7 @@ const translations = {
     'nav.home': 'Home',
     'nav.services': 'Services',
     'nav.pricing': 'Pricing',
+    'nav.claude-flow': 'Claude Flow',
 
     // Terminal Preview
     'terminal_preview.title': 'Plan Your POC with ARIA',
@@ -1498,6 +1499,7 @@ const translations = {
     'nav.home': 'בית',
     'nav.services': 'שירותים',
     'nav.pricing': 'תמחור',
+    'nav.claude-flow': 'קלוד פלו',
 
     // Terminal Preview
     'terminal_preview.title': 'תכנן את ה-POC שלך עם ARIA',

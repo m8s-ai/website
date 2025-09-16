@@ -32,6 +32,7 @@ const NAVIGATION_SECTIONS: NavigationSection[] = [
   { id: "home", command: "Home", label: "Overview" },
   { id: "services", command: "Services", label: "What we do" },
   { id: "pricing", command: "Pricing", label: "Plans" },
+  { id: "claude-flow", command: "Claude Flow", label: "AI Automation" },
   { id: "contact", command: "Contact", label: "Get in touch" },
   { id: "about", command: "About", label: "Our story" }
 ];
@@ -384,6 +385,14 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = memo(({ className
     });
 
     await audio.playSelectionSound();
+    
+    // Handle Claude Flow navigation differently (external route)
+    if (sectionId === 'claude-flow') {
+      // Use React Router navigation instead of window.location for SPA behavior
+      window.location.assign('/claude-flow');
+      return;
+    }
+    
     setActiveSection(sectionId);
     
     // Smooth scroll to section
@@ -482,6 +491,10 @@ export const TerminalWebsite: React.FC<TerminalWebsiteProps> = memo(({ className
 
       case 'about':
         return <MemoizedAboutSection />;
+
+      case 'claude-flow':
+        // This case shouldn't render since we redirect to /claude-flow
+        return null;
 
       default:
         return null;

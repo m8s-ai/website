@@ -716,7 +716,7 @@ const translations = {
     'nav.home': 'Home',
     'nav.services': 'Services',
     'nav.pricing': 'Pricing',
-    'nav.claude-flow': 'Claude Flow',
+    'nav.claude-flow': 'M8s App',
 
     // Terminal Preview
     'terminal_preview.title': 'Plan Your POC with ARIA',

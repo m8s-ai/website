@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -7,14 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { ChatWindowProvider } from "@/contexts/ChatWindowContext";
 import { analyticsManager } from "@/utils/analyticsManager";
+import { LandingPage } from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
-import { Protected } from "./components/Protected";
-import { TerminalWebsite } from "./components/TerminalWebsite";
-import { CompletionSummaryPage } from "./pages/CompletionSummaryPage";
-
-
 
 const queryClient = new QueryClient();
 
@@ -30,23 +24,16 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
-          <ChatWindowProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<TerminalWebsite />} />
-                  <Route path="/home" element={<TerminalWebsite />} />
-                  <Route path="/completion-summary" element={<CompletionSummaryPage />} />
-                  
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-              {/* I'm disabling the assistant button for now */}
-              {/* <AssistantButton /> */}
-            </TooltipProvider>
-          </ChatWindowProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
         </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>

@@ -1,0 +1,11 @@
+export { Hero } from './Hero';
+export { TheProblem } from './TheProblem';
+export { WhatIsM8S } from './WhatIsM8S';
+export { Workflows } from './Workflows';
+export { SmarterAI } from './SmarterAI';
+export { Integrations } from './Integrations';
+export { BuiltForPMs } from './BuiltForPMs';
+export { Credibility } from './Credibility';
+export { CTASection } from './CTASection';
+export { Header } from './Header';
+export { Footer } from './Footer';

@@ -787,10 +787,122 @@ const translations = {
     'website.final_cta_expert': '🧠 Expert consultation included',
 
     // Common
-    'common.automate': 'mates',
+    'common.automate': 'M8S',
     'common.loading': 'Loading...',
     'common.learn_more': 'Learn More',
     'common.get_started': 'Get Started',
+
+    // Landing Page - Navigation
+    'landing.nav.numbers': 'By The Numbers',
+    'landing.nav.howItWorks': 'How It Works',
+    'landing.nav.team': 'AI Team',
+    'landing.nav.contact': 'Contact',
+    'landing.nav.cta': 'Get Started',
+
+    // Landing Page - Hero
+    'landing.hero.badge': 'AI-Powered Development Team',
+    'landing.hero.title.line1': 'Build Software',
+    'landing.hero.title.line2': '10x Faster with AI Agents',
+    'landing.hero.subtitle': 'Our team of 12 specialized AI agents handles everything from requirements to deployment — at a fraction of the cost and time of traditional development.',
+    'landing.hero.cta.primary': 'Start Building Now',
+    'landing.hero.cta.secondary': 'See How It Works',
+    'landing.hero.stats.agents': 'AI Agents',
+    'landing.hero.stats.workflows': 'Workflows',
+    'landing.hero.stats.faster': 'Faster Delivery',
+
+    // Landing Page - By The Numbers
+    'landing.numbers.title': 'By The Numbers',
+    'landing.numbers.subtitle': 'Real metrics from real projects — not promises, proven results.',
+    'landing.numbers.costReduction': 'Cost Reduction',
+    'landing.numbers.costReductionDesc': 'Compared to traditional development teams',
+    'landing.numbers.fasterDelivery': 'Faster Delivery',
+    'landing.numbers.fasterDeliveryDesc': 'From concept to production',
+    'landing.numbers.savings': 'Average Savings',
+    'landing.numbers.savingsDesc': 'Per project compared to agency rates',
+    'landing.numbers.months': 'Months',
+    'landing.numbers.monthsDesc': 'Typical MVP timeline',
+    'landing.numbers.traditional.title': 'Traditional Approach',
+    'landing.numbers.traditional.item1': '$150K-$500K for MVP development',
+    'landing.numbers.traditional.item2': '6-12 months to launch',
+    'landing.numbers.traditional.item3': 'High communication overhead',
+    'landing.numbers.withM8S.title': 'With M8S AI Team',
+    'landing.numbers.withM8S.item1': '$15K-$75K for complete MVP',
+    'landing.numbers.withM8S.item2': '3-6 weeks to launch',
+    'landing.numbers.withM8S.item3': 'AI agents work 24/7',
+
+    // Landing Page - How It Works
+    'landing.howItWorks.title': 'How It Works',
+    'landing.howItWorks.subtitle': 'Three simple steps to transform your idea into production-ready software.',
+    'landing.howItWorks.step1.title': 'Tell Us Your Vision',
+    'landing.howItWorks.step1.description': 'Share your project requirements through our discovery process. Our AI agents analyze and break down your needs.',
+    'landing.howItWorks.step2.title': 'AI Team Takes Over',
+    'landing.howItWorks.step2.description': '12 specialized agents collaborate — from architect to developer to tester — building your solution in parallel.',
+    'landing.howItWorks.step3.title': 'Launch & Iterate',
+    'landing.howItWorks.step3.description': 'Get production-ready code, documentation, and deployment. Continuous improvement as you scale.',
+
+    // Landing Page - Workflow Showcase
+    'landing.workflow.badge': 'PM-Focused Workflow Example',
+    'landing.workflow.title': 'See Your Workflow in Action',
+    'landing.workflow.subtitle': 'Watch how our AI agents collaborate on a typical product management workflow.',
+    'landing.workflow.step1.title': 'Requirements Gathering',
+    'landing.workflow.step1.description': 'Natural language specs transformed into structured requirements',
+    'landing.workflow.step2.title': 'Stakeholder Analysis',
+    'landing.workflow.step2.description': 'User personas and journey mapping automated',
+    'landing.workflow.step3.title': 'Technical Architecture',
+    'landing.workflow.step3.description': 'System design and API specifications generated',
+    'landing.workflow.step4.title': 'Implementation',
+    'landing.workflow.step4.description': 'Clean, tested code with full documentation',
+    'landing.workflow.result.highlight': 'Result:',
+    'landing.workflow.result.text': 'A complete feature delivered in days, not months.',
+
+    // Landing Page - AI Team
+    'landing.team.title': 'Meet Your AI Team',
+    'landing.team.subtitle': '12 specialized agents working in harmony to build your software.',
+    'landing.team.analyst.name': 'Analyst',
+    'landing.team.analyst.role': 'Deep research & requirements analysis',
+    'landing.team.pm.name': 'PM Agent',
+    'landing.team.pm.role': 'Project planning & story creation',
+    'landing.team.architect.name': 'Architect',
+    'landing.team.architect.role': 'System design & technical specs',
+    'landing.team.dev.name': 'Developer',
+    'landing.team.dev.role': 'Clean, tested implementation',
+    'landing.team.ux.name': 'UX Designer',
+    'landing.team.ux.role': 'User experience & interface design',
+    'landing.team.techWriter.name': 'Tech Writer',
+    'landing.team.techWriter.role': 'Documentation & guides',
+    'landing.team.tea.name': 'Test Engineer',
+    'landing.team.tea.role': 'Quality assurance & testing',
+    'landing.team.sm.name': 'Scrum Master',
+    'landing.team.sm.role': 'Process & team coordination',
+    'landing.team.discovery.name': 'Discovery',
+    'landing.team.discovery.role': 'Stakeholder interviews & validation',
+    'landing.team.po.name': 'Product Owner',
+    'landing.team.po.role': 'Backlog & prioritization',
+    'landing.team.devops.name': 'DevOps',
+    'landing.team.devops.role': 'Infrastructure & deployment',
+    'landing.team.orchestrator.name': 'Orchestrator',
+    'landing.team.orchestrator.role': 'Agent coordination & workflow',
+    'landing.team.cta.highlight': 'All 12 agents',
+    'landing.team.cta.text': 'work together seamlessly on every project.',
+
+    // Landing Page - Integrations
+    'landing.integrations.title': 'Works With Your Stack',
+    'landing.integrations.subtitle': 'Seamlessly integrate with the tools you already use.',
+    'landing.integrations.more': 'And many more integrations available...',
+
+    // Landing Page - CTA
+    'landing.cta.title.line1': 'Ready to Build',
+    'landing.cta.title.line2': '10x Faster?',
+    'landing.cta.subtitle': 'Join innovative teams who are shipping products faster with our AI development team.',
+    'landing.cta.button.email': 'Get in Touch',
+    'landing.cta.button.schedule': 'Schedule a Demo',
+    'landing.cta.trust.response': '24h response time',
+    'landing.cta.trust.noCommitment': 'No commitment',
+    'landing.cta.trust.customSolution': 'Custom solutions',
+
+    // Landing Page - Footer
+    'landing.footer.rights': 'All rights reserved.',
+    'landing.footer.tagline': 'Building the future of software development with AI.',
   },
   he: {
     // Header
@@ -1569,17 +1681,129 @@ const translations = {
     'website.final_cta_expert': '🧠 ייעוץ מומחים כלול',
 
     // Common
-    'common.automate': 'mates',
+    'common.automate': 'M8S',
     'common.loading': 'טוען...',
     'common.learn_more': 'למד עוד',
     'common.get_started': 'התחל כעת',
+
+    // Landing Page - Navigation
+    'landing.nav.numbers': 'במספרים',
+    'landing.nav.howItWorks': 'איך זה עובד',
+    'landing.nav.team': 'צוות AI',
+    'landing.nav.contact': 'צור קשר',
+    'landing.nav.cta': 'התחל עכשיו',
+
+    // Landing Page - Hero
+    'landing.hero.badge': 'צוות פיתוח מונע AI',
+    'landing.hero.title.line1': 'בנה תוכנה',
+    'landing.hero.title.line2': 'פי 10 מהר יותר עם סוכני AI',
+    'landing.hero.subtitle': 'צוות של 12 סוכני AI מתמחים מטפל בהכל - מדרישות ועד הפצה - בשבריר מהעלות והזמן של פיתוח מסורתי.',
+    'landing.hero.cta.primary': 'התחל לבנות עכשיו',
+    'landing.hero.cta.secondary': 'ראה איך זה עובד',
+    'landing.hero.stats.agents': 'סוכני AI',
+    'landing.hero.stats.workflows': 'תהליכי עבודה',
+    'landing.hero.stats.faster': 'משלוח מהיר יותר',
+
+    // Landing Page - By The Numbers
+    'landing.numbers.title': 'במספרים',
+    'landing.numbers.subtitle': 'מדדים אמיתיים מפרויקטים אמיתיים - לא הבטחות, תוצאות מוכחות.',
+    'landing.numbers.costReduction': 'הפחתת עלויות',
+    'landing.numbers.costReductionDesc': 'בהשוואה לצוותי פיתוח מסורתיים',
+    'landing.numbers.fasterDelivery': 'משלוח מהיר יותר',
+    'landing.numbers.fasterDeliveryDesc': 'מקונספט לייצור',
+    'landing.numbers.savings': 'חיסכון ממוצע',
+    'landing.numbers.savingsDesc': 'לפרויקט בהשוואה לתעריפי סוכנות',
+    'landing.numbers.months': 'חודשים',
+    'landing.numbers.monthsDesc': 'לוח זמנים טיפוסי ל-MVP',
+    'landing.numbers.traditional.title': 'גישה מסורתית',
+    'landing.numbers.traditional.item1': '$150K-$500K לפיתוח MVP',
+    'landing.numbers.traditional.item2': '6-12 חודשים להשקה',
+    'landing.numbers.traditional.item3': 'עומס תקשורת גבוה',
+    'landing.numbers.withM8S.title': 'עם צוות M8S AI',
+    'landing.numbers.withM8S.item1': '$15K-$75K ל-MVP מלא',
+    'landing.numbers.withM8S.item2': '3-6 שבועות להשקה',
+    'landing.numbers.withM8S.item3': 'סוכני AI עובדים 24/7',
+
+    // Landing Page - How It Works
+    'landing.howItWorks.title': 'איך זה עובד',
+    'landing.howItWorks.subtitle': 'שלושה צעדים פשוטים להפוך את הרעיון שלך לתוכנה מוכנה לייצור.',
+    'landing.howItWorks.step1.title': 'ספר לנו את החזון שלך',
+    'landing.howItWorks.step1.description': 'שתף את דרישות הפרויקט דרך תהליך הגילוי שלנו. סוכני ה-AI שלנו מנתחים ומפרקים את הצרכים שלך.',
+    'landing.howItWorks.step2.title': 'צוות ה-AI מתחיל לעבוד',
+    'landing.howItWorks.step2.description': '12 סוכנים מתמחים משתפים פעולה - מאדריכל ועד מפתח ועד בודק - בונים את הפתרון שלך במקביל.',
+    'landing.howItWorks.step3.title': 'השקה ושיפור',
+    'landing.howItWorks.step3.description': 'קבל קוד מוכן לייצור, תיעוד והפצה. שיפור מתמיד ככל שאתה גדל.',
+
+    // Landing Page - Workflow Showcase
+    'landing.workflow.badge': 'דוגמת תהליך עבודה למנהלי מוצר',
+    'landing.workflow.title': 'ראה את תהליך העבודה שלך בפעולה',
+    'landing.workflow.subtitle': 'צפה איך סוכני ה-AI שלנו משתפים פעולה בתהליך עבודה טיפוסי של ניהול מוצר.',
+    'landing.workflow.step1.title': 'איסוף דרישות',
+    'landing.workflow.step1.description': 'מפרטים בשפה טבעית מומרים לדרישות מובנות',
+    'landing.workflow.step2.title': 'ניתוח בעלי עניין',
+    'landing.workflow.step2.description': 'פרסונות משתמש ומיפוי מסע אוטומטיים',
+    'landing.workflow.step3.title': 'ארכיטקטורה טכנית',
+    'landing.workflow.step3.description': 'עיצוב מערכת ומפרטי API נוצרים',
+    'landing.workflow.step4.title': 'מימוש',
+    'landing.workflow.step4.description': 'קוד נקי ונבדק עם תיעוד מלא',
+    'landing.workflow.result.highlight': 'תוצאה:',
+    'landing.workflow.result.text': 'פיצ׳ר מלא מסופק בימים, לא בחודשים.',
+
+    // Landing Page - AI Team
+    'landing.team.title': 'הכר את צוות ה-AI שלך',
+    'landing.team.subtitle': '12 סוכנים מתמחים עובדים בהרמוניה לבנות את התוכנה שלך.',
+    'landing.team.analyst.name': 'אנליסט',
+    'landing.team.analyst.role': 'מחקר מעמיק וניתוח דרישות',
+    'landing.team.pm.name': 'מנהל מוצר',
+    'landing.team.pm.role': 'תכנון פרויקט ויצירת סיפורים',
+    'landing.team.architect.name': 'אדריכל',
+    'landing.team.architect.role': 'עיצוב מערכת ומפרטים טכניים',
+    'landing.team.dev.name': 'מפתח',
+    'landing.team.dev.role': 'מימוש נקי ונבדק',
+    'landing.team.ux.name': 'מעצב UX',
+    'landing.team.ux.role': 'חווית משתמש ועיצוב ממשק',
+    'landing.team.techWriter.name': 'כותב טכני',
+    'landing.team.techWriter.role': 'תיעוד ומדריכים',
+    'landing.team.tea.name': 'מהנדס בדיקות',
+    'landing.team.tea.role': 'בקרת איכות ובדיקות',
+    'landing.team.sm.name': 'סקראם מאסטר',
+    'landing.team.sm.role': 'תהליך ותיאום צוות',
+    'landing.team.discovery.name': 'גילוי',
+    'landing.team.discovery.role': 'ראיונות בעלי עניין ותיקוף',
+    'landing.team.po.name': 'בעל מוצר',
+    'landing.team.po.role': 'באקלוג ותעדוף',
+    'landing.team.devops.name': 'DevOps',
+    'landing.team.devops.role': 'תשתית והפצה',
+    'landing.team.orchestrator.name': 'מתזמר',
+    'landing.team.orchestrator.role': 'תיאום סוכנים ותהליכי עבודה',
+    'landing.team.cta.highlight': 'כל 12 הסוכנים',
+    'landing.team.cta.text': 'עובדים יחד בחלקות על כל פרויקט.',
+
+    // Landing Page - Integrations
+    'landing.integrations.title': 'עובד עם הכלים שלך',
+    'landing.integrations.subtitle': 'משתלב בצורה חלקה עם הכלים שאתה כבר משתמש בהם.',
+    'landing.integrations.more': 'ועוד הרבה אינטגרציות זמינות...',
+
+    // Landing Page - CTA
+    'landing.cta.title.line1': 'מוכן לבנות',
+    'landing.cta.title.line2': 'פי 10 מהר יותר?',
+    'landing.cta.subtitle': 'הצטרף לצוותים חדשניים ששולחים מוצרים מהר יותר עם צוות הפיתוח AI שלנו.',
+    'landing.cta.button.email': 'צור קשר',
+    'landing.cta.button.schedule': 'קבע הדגמה',
+    'landing.cta.trust.response': 'מענה תוך 24 שעות',
+    'landing.cta.trust.noCommitment': 'ללא התחייבות',
+    'landing.cta.trust.customSolution': 'פתרונות מותאמים',
+
+    // Landing Page - Footer
+    'landing.footer.rights': 'כל הזכויות שמורות.',
+    'landing.footer.tagline': 'בונים את עתיד פיתוח התוכנה עם AI.',
   }
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('he');
+  const [language, setLanguage] = useState<Language>('en');
 
   const t = (key: string): string => {
     return translations[language][key as keyof typeof translations[typeof language]] || key;

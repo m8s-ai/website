@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Plug, Workflow, Bot, ArrowRight } from 'lucide-react';
+import { Plug, Workflow, Bot } from 'lucide-react';
 
 export const WhatIsM8S = () => {
   const steps = [
@@ -70,12 +70,7 @@ export const WhatIsM8S = () => {
                 <p className="text-muted-foreground text-sm">{step.description}</p>
               </div>
               
-              {/* Arrow between cards (hidden on mobile, visible on md+) */}
-              {index < steps.length - 1 && (
-                <div className="hidden md:flex absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                  <ArrowRight className="w-6 h-6 text-primary/40" />
-                </div>
-              )}
+
             </motion.div>
           ))}
         </div>

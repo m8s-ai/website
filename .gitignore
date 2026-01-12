@@ -93,4 +93,14 @@ Thumbs.db
 
 # Claude and BMad directories
 .claude/
+.bmad/
 .bmad-core/
+.opencode/
+.swarm/
+.claude-flow/
+.hive-mind/
+.mcp.json
+claude-flow.bat
+claude-flow.config.json
+claude-flow.ps1
+memory/

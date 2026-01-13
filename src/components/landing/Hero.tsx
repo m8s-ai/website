@@ -28,9 +28,9 @@ export const Hero = () => {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
         >
-          <span className="text-foreground">Stop the </span>
+          <span className="text-foreground">Your </span>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-pink-500">
-            AI Chaos
+            AI Product Team
           </span>
         </motion.h1>
 
@@ -41,9 +41,9 @@ export const Hero = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
         >
-          Your team is vibe coding without context. PRDs don't exist. Nobody knows what's already built.
+          A single platform from ideation to development-ready stories.
           <br className="hidden md:block" />
-          <span className="text-foreground font-medium">M8S connects your tools and gives non-technical users access to real data from your codebase.</span>
+          <span className="text-foreground font-medium">M8S agents work alongside you to prioritize, write specs, and keep everyone aligned.</span>
         </motion.p>
 
         {/* CTA Button */}

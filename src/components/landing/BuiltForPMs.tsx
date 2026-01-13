@@ -1,27 +1,27 @@
 import { motion } from 'framer-motion';
-import { Database, GitBranch, MessageSquare, BarChart3 } from 'lucide-react';
+import { Database, Zap, FileText, PresentationIcon } from 'lucide-react';
 
 export const BuiltForPMs = () => {
   const benefits = [
     {
       icon: Database,
       title: 'Query Your Codebase',
-      description: 'Ask "What does the checkout flow do?" and get real answers from your actual code.',
+      description: 'Ask "What does the checkout flow do?" and get real answers. Stay aligned with actual product context.',
     },
     {
-      icon: GitBranch,
-      title: 'See What\'s Built',
-      description: 'Know exactly what features exist before planning new ones. No more duplicate work.',
+      icon: Zap,
+      title: 'Faster PRDs & Stories',
+      description: 'Generate PRDs, epics, and stories faster and more accurately than ever before.',
     },
     {
-      icon: MessageSquare,
-      title: 'Skip the Dev Meeting',
-      description: 'Get technical context without interrupting your engineers. They\'ll thank you.',
+      icon: FileText,
+      title: 'Quality You Haven\'t Seen',
+      description: 'Specifications grounded in real code, real decisions, real data. No more gaps between docs and reality.',
     },
     {
-      icon: BarChart3,
-      title: 'Real Analytics Context',
-      description: 'Pull Mixpanel/Amplitude data into your PRDs. Decisions backed by real usage.',
+      icon: PresentationIcon,
+      title: 'Charts, Diagrams & Slides',
+      description: 'Create visuals directly from code, PRDs, and product decisions. No context switching.',
     },
   ];
 
@@ -37,13 +37,13 @@ export const BuiltForPMs = () => {
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-foreground">Built for PMs. </span>
+            <span className="text-foreground">Built for Product Managers. </span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-              Powered by Real Data.
+              Unique Strengths.
             </span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Finally, non-technical users can access real data from the codebase without bugging developers.
+            Stay continuously aligned with real product context. Generate outputs at a level of quality not seen before.
           </p>
         </motion.div>
 

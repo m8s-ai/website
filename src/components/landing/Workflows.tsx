@@ -1,43 +1,37 @@
 import { motion } from 'framer-motion';
-import { FileText, List, Briefcase, Lightbulb, Palette, CheckCircle, Clock } from 'lucide-react';
+import { FileText, List, Briefcase, Lightbulb, Palette, CheckCircle } from 'lucide-react';
 
 export const Workflows = () => {
   const workflows = [
     {
       icon: FileText,
-      title: 'PRD Generator',
-      time: '10 min',
-      description: 'Full product requirements document from a feature idea',
+      title: 'Ideation → PRD',
+      description: 'Turn rough ideas into complete product requirements documents',
     },
     {
       icon: List,
-      title: 'Epics & Stories',
-      time: '15 min',
-      description: 'Break down features into actionable dev tickets',
+      title: 'PRD → Epics & Stories',
+      description: 'Break down PRDs into development-ready epics and user stories',
     },
     {
       icon: Briefcase,
-      title: 'Product Brief',
-      time: '5 min',
-      description: 'Executive summary for stakeholder alignment',
+      title: 'Codebase → Documentation',
+      description: 'Generate architecture docs and API specs from your actual code',
     },
     {
       icon: Lightbulb,
-      title: 'Brainstorm to Plan',
-      time: '20 min',
-      description: 'Turn messy ideas into structured project plans',
+      title: 'Feature → Delivery Plan',
+      description: 'Map features to structured implementation plans with dependencies',
     },
     {
       icon: Palette,
-      title: 'UX Design Doc',
-      time: '15 min',
-      description: 'User flows and wireframe specs for designers',
+      title: 'PRD → Flowcharts & Diagrams',
+      description: 'Create visual flows and architecture diagrams from specifications',
     },
     {
       icon: CheckCircle,
-      title: 'Implementation Ready',
-      time: '10 min',
-      description: 'Verify all requirements are dev-ready before sprint',
+      title: 'Decisions → Presentations',
+      description: 'Turn product decisions into stakeholder-ready slides',
     },
   ];
 
@@ -55,13 +49,13 @@ export const Workflows = () => {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-foreground">30+ Workflows. </span>
+            <span className="text-foreground">Predefined Flows. </span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-              Here's 6.
+              Or Go Freestyle.
             </span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Each workflow is grounded in your actual codebase, tools, and data. Not generic templates — real context.
+            Choose a structured flow for guided results, or just start a conversation — ask for a single PRD, explore your codebase, or let the AI team direct you. Your call.
           </p>
         </motion.div>
 
@@ -81,13 +75,7 @@ export const Workflows = () => {
                   <workflow.icon className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="text-lg font-bold text-foreground">{workflow.title}</h3>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
-                      <Clock className="w-3 h-3" />
-                      {workflow.time}
-                    </div>
-                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-1">{workflow.title}</h3>
                   <p className="text-muted-foreground text-sm">{workflow.description}</p>
                 </div>
               </div>
@@ -103,7 +91,7 @@ export const Workflows = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-center text-sm text-muted-foreground mt-8"
         >
-          + Architecture docs, API specs, test plans, release notes, and more...
+          + Architecture docs, API specs, test plans, release notes, drawings, and more...
         </motion.p>
       </div>
     </section>

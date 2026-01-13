@@ -1,22 +1,22 @@
 import { motion } from 'framer-motion';
-import { Brain, Zap, DollarSign } from 'lucide-react';
+import { Link, Brain, Layers, Sparkles } from 'lucide-react';
 
 export const SmarterAI = () => {
   const features = [
     {
+      icon: Link,
+      title: 'Deep Integration',
+      description: 'Connect to code repositories, project management tools, documents, and knowledge sources. All inputs become part of a shared, living context.',
+    },
+    {
       icon: Brain,
-      title: 'Right Model, Right Task',
-      description: 'Complex reasoning gets deep-thinking models. Simple tasks get fast, cheap ones. You only pay for what you need.',
+      title: 'Context-Driven Output',
+      description: 'Generate PRDs, epics, stories, flowcharts, diagrams, and presentations — all created from real context, not copy-paste or guesswork.',
     },
     {
-      icon: Zap,
-      title: 'Code-Native Architecture',
-      description: 'No grep. No brute-force file scanning. M8S understands code structure and navigates directly to what matters.',
-    },
-    {
-      icon: DollarSign,
-      title: '90% Lower Token Costs',
-      description: 'Smart routing + efficient retrieval = dramatically lower AI costs compared to terminal-based agents.',
+      icon: Layers,
+      title: 'Shared Living Context',
+      description: 'Code, documents, and product decisions stay connected. Your AI team always works with the latest information.',
     },
   ];
 
@@ -34,13 +34,13 @@ export const SmarterAI = () => {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-foreground">Smarter AI. </span>
+            <span className="text-foreground">Everything </span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
-              Fraction of the Cost.
+              Connected.
             </span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Most AI tools burn through tokens with brute-force methods. M8S is different.
+            M8S connects to the tools you already use. All inputs become part of a shared, living context.
           </p>
         </motion.div>
 
@@ -73,9 +73,9 @@ export const SmarterAI = () => {
           className="mt-12 text-center"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
-            <DollarSign className="w-4 h-4 text-green-400" />
+            <Sparkles className="w-4 h-4 text-green-400" />
             <span className="text-sm text-green-400 font-medium">
-              Stop paying for AI that guesses. Pay for AI that knows.
+              Collaboration, not automation for its own sake.
             </span>
           </div>
         </motion.div>

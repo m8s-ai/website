@@ -1,25 +1,31 @@
 import { motion } from 'framer-motion';
-import { Plug, Workflow, Bot } from 'lucide-react';
+import { Users, Workflow, FileOutput, Send } from 'lucide-react';
 
 export const WhatIsM8S = () => {
   const steps = [
     {
-      icon: Plug,
+      icon: Users,
       step: '1',
-      title: 'Connect',
-      description: 'Link your Jira, GitHub, GitLab, Slack, Mixpanel, and more. One-time setup.',
+      title: 'Meet Your AI Team',
+      description: 'M8S agents (PM, Architect, Developer, QA) work alongside you with clear roles and shared context.',
     },
     {
       icon: Workflow,
       step: '2',
-      title: 'Pick a Workflow',
-      description: 'Choose from 30+ templates: PRDs, epics, architecture docs, and more.',
+      title: 'Choose a Flow',
+      description: 'Select structured flows: Ideation → PRD, PRD → Epics & Stories, Codebase → Documentation, and more.',
     },
     {
-      icon: Bot,
+      icon: FileOutput,
       step: '3',
-      title: 'AI Does the Work',
-      description: 'M8S pulls real data from your tools and generates docs grounded in your codebase.',
+      title: 'Get Real Output',
+      description: 'Generate PRDs, epics, stories, diagrams, and slides — all grounded in your code and product decisions.',
+    },
+    {
+      icon: Send,
+      step: '4',
+      title: 'Ship to Your Tools',
+      description: 'Push stories to Jira, specs to Cursor, or docs to Notion. Connect the output to your favorite coding platform.',
     },
   ];
 
@@ -27,7 +33,7 @@ export const WhatIsM8S = () => {
     <section id="solution" className="py-20 px-4 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
       
-      <div className="max-w-5xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -37,18 +43,18 @@ export const WhatIsM8S = () => {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-foreground">The </span>
+            <span className="text-foreground">One Platform. </span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-              Solution
+              One AI Team.
             </span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            M8S is the AI ops layer that connects your tools and gives product teams workflows that actually work.
+            M8S is a collaborative experience where AI agents work alongside you — step by step, within a shared context of code, documents, and product decisions.
           </p>
         </motion.div>
 
-        {/* Steps with arrows */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+        {/* Steps - 4 columns inline */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
           {steps.map((step, index) => (
             <motion.div
               key={step.title}

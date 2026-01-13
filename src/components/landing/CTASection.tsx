@@ -25,15 +25,15 @@ export const CTASection = () => {
 
           {/* Main heading */}
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="text-foreground">Stop the Chaos. </span>
+            <span className="text-foreground">Structure. Speed. </span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-              Start Shipping.
+              Real Collaboration.
             </span>
           </h2>
 
           {/* Subtitle */}
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-            15-minute call. We'll show you how M8S connects to your tools and demo a workflow on your actual codebase.
+            15-minute call. See how M8S creates a structured, fast, and collaborative product-building experience — powered by an AI team that works inside the same context as you.
           </p>
 
           {/* CTA button */}

@@ -5,18 +5,18 @@ export const TheProblem = () => {
   const problems = [
     {
       icon: Zap,
-      title: 'Vibe Coding',
-      description: 'Devs are shipping with AI copilots but no shared context. Everyone builds in their own bubble.',
+      title: 'AI in Silos',
+      description: 'Each role works in their own environment. No shared context, no structured collaboration. Fragmented output with no continuity.',
     },
     {
       icon: FileX,
-      title: 'No PRDs',
-      description: 'Requirements live in Slack threads, meetings, or nowhere. AI can\'t help if it doesn\'t know what to build.',
+      title: 'PRDs Disconnected from Code',
+      description: 'PRDs are incomplete, not connected to the codebase, and outdated fast. This causes delays, misalignment, and rework.',
     },
     {
       icon: Users,
-      title: 'Wild West',
-      description: 'Every team member uses different AI tools differently. No consistency. No governance. Just chaos.',
+      title: 'The Wild West',
+      description: 'No consistent process. No standards. Hard to onboard new team members. Quality and velocity are hard to sustain.',
     },
   ];
 
@@ -34,10 +34,10 @@ export const TheProblem = () => {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-            The AI Boom Created a <span className="text-destructive">Problem</span>
+            Product Development is <span className="text-destructive">Broken</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Your team adopted AI tools. Great. But without structure, you got chaos instead of productivity.
+            AI usage today happens in silos. The result? Fragmented output, no continuity, and chaos instead of productivity.
           </p>
         </motion.div>
 

@@ -23,7 +23,7 @@ export const Credibility = () => {
 
           {/* Quote text */}
           <blockquote className="text-xl md:text-2xl font-medium text-foreground leading-relaxed mt-4 mb-8">
-            "I built M8S because I was tired of repeating myself. Every project, same questions: 'Where's the PRD?' 'What's already built?' 'Who owns this?' Now I use M8S daily as a contractor — it's how I deliver faster than agencies 3x my size."
+            "I built M8S because product development was broken. Fragmented AI, disconnected PRDs, no shared context. Now I use M8S daily — it's how I deliver structured, fast, and high-quality work that was previously impossible."
           </blockquote>
 
           {/* Author */}

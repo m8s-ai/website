@@ -8,7 +8,6 @@ import {
   SmarterAI,
   Integrations,
   BuiltForPMs,
-  Credibility,
   CTASection,
   Footer,
 } from '@/components/landing';
@@ -24,10 +23,9 @@ export const LandingPage = () => {
         <TheProblem />
         <WhatIsM8S />
         <Workflows />
+        <BuiltForPMs />
         <SmarterAI />
         <Integrations />
-        <BuiltForPMs />
-        <Credibility />
         <CTASection />
       </main>
       <Footer />

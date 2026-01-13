@@ -71,7 +71,6 @@ This is an AI automation company website with:
 ### Development Notes
 - Uses path alias `@` for `./src`
 - ESLint configured with React and TypeScript rules
-- Lovable platform integration for collaborative development
 - No testing framework configured - add tests as needed
 - Uses React Query (@tanstack/react-query) for data fetching
 

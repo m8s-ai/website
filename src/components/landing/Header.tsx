@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Calendar } from 'lucide-react';
+import { M8SLogo } from './M8SLogo';
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,9 +32,7 @@ export const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-              M8S
-            </span>
+            <M8SLogo size="md" animated={false} />
           </a>
 
           {/* Desktop Navigation */}

@@ -10,6 +10,7 @@ import {
   BuiltForPMs,
   CTASection,
   Footer,
+  VideoShowcase,
 } from '@/components/landing';
 
 export const LandingPage = () => {
@@ -22,6 +23,7 @@ export const LandingPage = () => {
         <Hero />
         <TheProblem />
         <WhatIsM8S />
+        <VideoShowcase />
         <Workflows />
         <BuiltForPMs />
         <SmarterAI />

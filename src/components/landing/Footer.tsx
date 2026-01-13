@@ -17,10 +17,10 @@ export const Footer = () => {
 
           {/* Contact */}
           <a 
-            href="mailto:hello@m8s.ai" 
+            href="mailto:idan@m8s.ai" 
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            hello@m8s.ai
+            idan@m8s.ai
           </a>
         </div>
       </div>

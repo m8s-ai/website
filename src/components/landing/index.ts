@@ -9,5 +9,5 @@ export { Credibility } from './Credibility';
 export { CTASection } from './CTASection';
 export { Header } from './Header';
 export { Footer } from './Footer';
-export { VideoShowcase } from './VideoShowcase';
 export { M8SLogo } from './M8SLogo';
+export { ProductShowcase } from './ProductShowcase';
